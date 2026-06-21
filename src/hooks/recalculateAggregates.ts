@@ -65,7 +65,7 @@ async function recalculate(args: {
   })
   lfrs.favouritesCount = favouritesResult.totalDocs
 
-  // Count and average ratings
+  // Count and average ratings (from both standalone ratings and approved reviews)
   const ratingsResult = await req.payload.find({
     collection: config.collectionSlugs.ratings,
     depth: 0,
@@ -73,24 +73,48 @@ async function recalculate(args: {
     req,
     where: baseWhere,
   })
-  lfrs.ratingsCount = ratingsResult.totalDocs
+  
+  const reviewsWhere: any = { and: [{ targetCollection: { equals: targetCollection } }, { targetDoc: { equals: targetDoc } }] }
+  if (config.reviewModeration) {
+    reviewsWhere.and.push({ status: { equals: 'approved' } })
+  }
+  
+  const reviewsResult = await req.payload.find({
+    collection: config.collectionSlugs.reviews,
+    depth: 0,
+    limit: 0,
+    req,
+    where: reviewsWhere,
+  })
 
-  if (ratingsResult.totalDocs > 0) {
-    const totalScore = ratingsResult.docs.reduce(
-      (sum: number, doc: Record<string, unknown>) => sum + (doc.score as number),
-      0,
-    )
-    lfrs.ratingsAverage = Math.round((totalScore / ratingsResult.totalDocs) * 100) / 100
+  
+  // Collect scores from both
+  let totalScore = 0
+  let scoreCount = 0
+  
+  for (const doc of ratingsResult.docs) {
+    if (typeof doc.score === 'number') {
+      totalScore += doc.score
+      scoreCount++
+    }
+  }
+  
+  for (const doc of reviewsResult.docs) {
+    if (typeof doc.score === 'number') {
+      totalScore += doc.score
+      scoreCount++
+    }
+  }
+
+  lfrs.ratingsCount = scoreCount
+
+  if (scoreCount > 0) {
+    lfrs.ratingsAverage = Math.round((totalScore / scoreCount) * 100) / 100
   } else {
     lfrs.ratingsAverage = 0
   }
 
-  // Count reviews
-  const reviewsResult = await req.payload.count({
-    collection: config.collectionSlugs.reviews,
-    req,
-    where: baseWhere,
-  })
+  // Count reviews (only approved ones if moderation enabled)
   lfrs.reviewsCount = reviewsResult.totalDocs
 
   // Update the target document with the new aggregate values

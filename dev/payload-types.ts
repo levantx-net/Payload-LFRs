@@ -6,25 +6,97 @@
  * and re-run `payload generate:types` to regenerate this file.
  */
 
+/**
+ * Supported timezones in IANA format.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supportedTimezones".
+ */
+export type SupportedTimezones =
+  | 'Pacific/Midway'
+  | 'Pacific/Niue'
+  | 'Pacific/Honolulu'
+  | 'Pacific/Rarotonga'
+  | 'America/Anchorage'
+  | 'Pacific/Gambier'
+  | 'America/Los_Angeles'
+  | 'America/Tijuana'
+  | 'America/Denver'
+  | 'America/Phoenix'
+  | 'America/Chicago'
+  | 'America/Guatemala'
+  | 'America/New_York'
+  | 'America/Bogota'
+  | 'America/Caracas'
+  | 'America/Santiago'
+  | 'America/Buenos_Aires'
+  | 'America/Sao_Paulo'
+  | 'Atlantic/South_Georgia'
+  | 'Atlantic/Azores'
+  | 'Atlantic/Cape_Verde'
+  | 'Europe/London'
+  | 'Europe/Berlin'
+  | 'Africa/Lagos'
+  | 'Europe/Athens'
+  | 'Africa/Cairo'
+  | 'Europe/Moscow'
+  | 'Asia/Riyadh'
+  | 'Asia/Dubai'
+  | 'Asia/Baku'
+  | 'Asia/Karachi'
+  | 'Asia/Tashkent'
+  | 'Asia/Calcutta'
+  | 'Asia/Dhaka'
+  | 'Asia/Almaty'
+  | 'Asia/Jakarta'
+  | 'Asia/Bangkok'
+  | 'Asia/Shanghai'
+  | 'Asia/Singapore'
+  | 'Asia/Tokyo'
+  | 'Asia/Seoul'
+  | 'Australia/Brisbane'
+  | 'Australia/Sydney'
+  | 'Pacific/Guam'
+  | 'Pacific/Noumea'
+  | 'Pacific/Auckland'
+  | 'Pacific/Fiji';
+
 export interface Config {
   auth: {
     users: UserAuthOperations;
   };
+  blocks: {};
   collections: {
-    posts: Post;
-    media: Media;
-    'plugin-collection': PluginCollection;
     users: User;
+    posts: Post;
+    products: Product;
+    'internal-docs': InternalDoc;
+    media: Media;
+    'lfrs-likes': LfrsLike;
+    'lfrs-dislikes': LfrsDislike;
+    'lfrs-favourites': LfrsFavourite;
+    'lfrs-ratings': LfrsRating;
+    'lfrs-reviews': LfrsReview;
+    'lfrs-replies': LfrsReply;
+    'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
   collectionsJoins: {};
   collectionsSelect: {
-    posts: PostsSelect<false> | PostsSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
-    'plugin-collection': PluginCollectionSelect<false> | PluginCollectionSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    'internal-docs': InternalDocsSelect<false> | InternalDocsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
+    'lfrs-likes': LfrsLikesSelect<false> | LfrsLikesSelect<true>;
+    'lfrs-dislikes': LfrsDislikesSelect<false> | LfrsDislikesSelect<true>;
+    'lfrs-favourites': LfrsFavouritesSelect<false> | LfrsFavouritesSelect<true>;
+    'lfrs-ratings': LfrsRatingsSelect<false> | LfrsRatingsSelect<true>;
+    'lfrs-reviews': LfrsReviewsSelect<false> | LfrsReviewsSelect<true>;
+    'lfrs-replies': LfrsRepliesSelect<false> | LfrsRepliesSelect<true>;
+    'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -32,12 +104,14 @@ export interface Config {
   db: {
     defaultIDType: string;
   };
+  fallbackLocale: null;
   globals: {};
   globalsSelect: {};
   locale: null;
-  user: User & {
-    collection: 'users';
+  widgets: {
+    collections: CollectionsWidget;
   };
+  user: User;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -63,11 +137,78 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users".
+ */
+export interface User {
+  id: string;
+  roles?: ('admin' | 'subscriber' | 'employee')[] | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
   id: string;
-  addedByPlugin?: string | null;
+  title?: string | null;
+  lfrs?: {
+    likesCount?: number | null;
+    dislikesCount?: number | null;
+    favouritesCount?: number | null;
+    ratingsCount?: number | null;
+    ratingsAverage?: number | null;
+    reviewsCount?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  name?: string | null;
+  lfrs?: {
+    likesCount?: number | null;
+    favouritesCount?: number | null;
+    ratingsCount?: number | null;
+    ratingsAverage?: number | null;
+    reviewsCount?: number | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "internal-docs".
+ */
+export interface InternalDoc {
+  id: string;
+  title?: string | null;
+  lfrs?: {
+    likesCount?: number | null;
+    ratingsCount?: number | null;
+    ratingsAverage?: number | null;
+    reviewsCount?: number | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -91,29 +232,105 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection".
+ * via the `definition` "lfrs-likes".
  */
-export interface PluginCollection {
+export interface LfrsLike {
   id: string;
+  user: string | User;
+  targetCollection: string;
+  targetDoc: string;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users".
+ * via the `definition` "lfrs-dislikes".
  */
-export interface User {
+export interface LfrsDislike {
   id: string;
+  user: string | User;
+  targetCollection: string;
+  targetDoc: string;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  password?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-favourites".
+ */
+export interface LfrsFavourite {
+  id: string;
+  user: string | User;
+  targetCollection: string;
+  targetDoc: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-ratings".
+ */
+export interface LfrsRating {
+  id: string;
+  user: string | User;
+  targetCollection: string;
+  targetDoc: string;
+  score: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-reviews".
+ */
+export interface LfrsReview {
+  id: string;
+  user: string | User;
+  targetCollection: string;
+  targetDoc: string;
+  title?: string | null;
+  body: string;
+  score: number;
+  media?:
+    | {
+        file: string | Media;
+        id?: string | null;
+      }[]
+    | null;
+  status?: ('pending' | 'approved' | 'rejected') | null;
+  repliesCount?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-replies".
+ */
+export interface LfrsReply {
+  id: string;
+  user: string | User;
+  review: string | LfrsReview;
+  body: string;
+  status?: ('pending' | 'approved' | 'rejected') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv".
+ */
+export interface PayloadKv {
+  id: string;
+  key: string;
+  data:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -123,20 +340,48 @@ export interface PayloadLockedDocument {
   id: string;
   document?:
     | ({
+        relationTo: 'users';
+        value: string | User;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: string | Post;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'internal-docs';
+        value: string | InternalDoc;
       } | null)
     | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
     | ({
-        relationTo: 'plugin-collection';
-        value: string | PluginCollection;
+        relationTo: 'lfrs-likes';
+        value: string | LfrsLike;
       } | null)
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'lfrs-dislikes';
+        value: string | LfrsDislike;
+      } | null)
+    | ({
+        relationTo: 'lfrs-favourites';
+        value: string | LfrsFavourite;
+      } | null)
+    | ({
+        relationTo: 'lfrs-ratings';
+        value: string | LfrsRating;
+      } | null)
+    | ({
+        relationTo: 'lfrs-reviews';
+        value: string | LfrsReview;
+      } | null)
+    | ({
+        relationTo: 'lfrs-replies';
+        value: string | LfrsReply;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -182,10 +427,78 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "users_select".
+ */
+export interface UsersSelect<T extends boolean = true> {
+  roles?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
-  addedByPlugin?: T;
+  title?: T;
+  lfrs?:
+    | T
+    | {
+        likesCount?: T;
+        dislikesCount?: T;
+        favouritesCount?: T;
+        ratingsCount?: T;
+        ratingsAverage?: T;
+        reviewsCount?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  lfrs?:
+    | T
+    | {
+        likesCount?: T;
+        favouritesCount?: T;
+        ratingsCount?: T;
+        ratingsAverage?: T;
+        reviewsCount?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "internal-docs_select".
+ */
+export interface InternalDocsSelect<T extends boolean = true> {
+  title?: T;
+  lfrs?:
+    | T
+    | {
+        likesCount?: T;
+        ratingsCount?: T;
+        ratingsAverage?: T;
+        reviewsCount?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -208,27 +521,90 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "plugin-collection_select".
+ * via the `definition` "lfrs-likes_select".
  */
-export interface PluginCollectionSelect<T extends boolean = true> {
-  id?: T;
+export interface LfrsLikesSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "users_select".
+ * via the `definition` "lfrs-dislikes_select".
  */
-export interface UsersSelect<T extends boolean = true> {
+export interface LfrsDislikesSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
   updatedAt?: T;
   createdAt?: T;
-  email?: T;
-  resetPasswordToken?: T;
-  resetPasswordExpiration?: T;
-  salt?: T;
-  hash?: T;
-  loginAttempts?: T;
-  lockUntil?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-favourites_select".
+ */
+export interface LfrsFavouritesSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-ratings_select".
+ */
+export interface LfrsRatingsSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
+  score?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-reviews_select".
+ */
+export interface LfrsReviewsSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
+  title?: T;
+  body?: T;
+  score?: T;
+  media?:
+    | T
+    | {
+        file?: T;
+        id?: T;
+      };
+  status?: T;
+  repliesCount?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-replies_select".
+ */
+export interface LfrsRepliesSelect<T extends boolean = true> {
+  user?: T;
+  review?: T;
+  body?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-kv_select".
+ */
+export interface PayloadKvSelect<T extends boolean = true> {
+  key?: T;
+  data?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -261,6 +637,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "collections_widget".
+ */
+export interface CollectionsWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
