@@ -1022,13 +1022,13 @@ src/
 ### Phase 5: Dev Environment & Testing
 > **Files**: `dev/*`, `dev/int.spec.ts`
 
-- [ ] Update `dev/payload.config.ts` with realistic test collections
-- [ ] Add a `users` collection with auth to dev config
-- [ ] Write integration tests for each endpoint (including dislike, reply, distribution)
-- [ ] Write integration tests for hook behaviors (aggregate counts, cascade delete, like/dislike mutual exclusivity)
-- [ ] Write integration tests for access control
-- [ ] Write integration tests for uniqueness enforcement
-- [ ] Write integration tests for reply threading (one level only)
+- [x] Update `dev/payload.config.ts` with realistic test collections
+- [x] Add a `users` collection with auth to dev config
+- [x] Write integration tests for each endpoint (including dislike, reply, distribution)
+- [x] Write integration tests for hook behaviors (aggregate counts, cascade delete, like/dislike mutual exclusivity)
+- [x] Write integration tests for access control
+- [x] Write integration tests for uniqueness enforcement
+- [x] Write integration tests for reply threading (one level only)
 
 ### Phase 6: Frontend UI Components
 > **Files**: `components/*`, `exports/client.ts`

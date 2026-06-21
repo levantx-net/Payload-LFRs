@@ -37,8 +37,44 @@ const buildConfigWithMemoryDB = async () => {
     },
     collections: [
       {
+        slug: 'users',
+        auth: true,
+        fields: [
+          {
+            name: 'roles',
+            type: 'select',
+            defaultValue: ['subscriber'],
+            hasMany: true,
+            options: ['admin', 'subscriber', 'employee'],
+          },
+        ],
+      },
+      {
         slug: 'posts',
-        fields: [],
+        fields: [
+          {
+            name: 'title',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        slug: 'products',
+        fields: [
+          {
+            name: 'name',
+            type: 'text',
+          },
+        ],
+      },
+      {
+        slug: 'internal-docs',
+        fields: [
+          {
+            name: 'title',
+            type: 'text',
+          },
+        ],
       },
       {
         slug: 'media',
@@ -60,8 +96,34 @@ const buildConfigWithMemoryDB = async () => {
     plugins: [
       payloadLfRs({
         collections: {
-          posts: true,
+          'internal-docs': {
+            favourites: false,
+            likes: ['employee', 'admin'],
+          },
+          posts: {
+            dislikes: true, // test mutual exclusivity
+            favourites: true,
+            likes: true,
+            ratings: true,
+            replies: true,
+            reviews: true,
+          },
+          products: {
+            likes: true,
+            ratings: ({ req }: any) => {
+              // Only allow rating if user is authenticated (custom fn test)
+              return !!req.user
+            },
+            replies: false, // disabled
+            reviews: ['admin', 'subscriber'], // role based access
+          },
         },
+        reviewMedia: {
+          maxFiles: 3,
+          uploadCollection: 'media',
+        },
+        reviewModeration: true,
+        usersCollectionSlug: 'users',
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
