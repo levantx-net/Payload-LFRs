@@ -1,5 +1,6 @@
 import type {
   LfrsCollectionOptions,
+  LfrsFeatureAccess,
   LfrsPluginConfig,
   LfrsReviewMediaConfig,
   SanitizedCollectionOptions,
@@ -68,15 +69,15 @@ export function sanitizeRatingConfig(input?: LfrsPluginConfig['rating']): Saniti
  */
 export function sanitizeReviewMediaConfig(
   input?: LfrsReviewMediaConfig,
-): SanitizedReviewMediaConfig | null {
+): null | SanitizedReviewMediaConfig {
   if (!input || !input.uploadCollection) {
     return null
   }
 
   return {
     allowedMimeTypes: input.allowedMimeTypes ?? DEFAULT_REVIEW_MEDIA_ALLOWED_MIME_TYPES,
-    maxFileSize: input.maxFileSize ?? DEFAULT_REVIEW_MEDIA_MAX_FILE_SIZE,
     maxFiles: input.maxFiles ?? DEFAULT_REVIEW_MEDIA_MAX_FILES,
+    maxFileSize: input.maxFileSize ?? DEFAULT_REVIEW_MEDIA_MAX_FILE_SIZE,
     uploadCollection: input.uploadCollection,
   }
 }
@@ -84,7 +85,9 @@ export function sanitizeReviewMediaConfig(
 /**
  * Sanitizes a single collection's options, filling in defaults.
  */
-export function sanitizeCollectionOptions(input: LfrsCollectionOptions): SanitizedCollectionOptions {
+export function sanitizeCollectionOptions(
+  input: LfrsCollectionOptions,
+): SanitizedCollectionOptions {
   return {
     dislikes: input.dislikes ?? false,
     favourites: input.favourites ?? true,
@@ -99,7 +102,7 @@ export function sanitizeCollectionOptions(input: LfrsCollectionOptions): Sanitiz
  * Returns true if a feature access value means the feature is enabled
  * (i.e. anything other than `false`).
  */
-export function isFeatureEnabled(access: boolean | string[] | Function): boolean {
+export function isFeatureEnabled(access: LfrsFeatureAccess): boolean {
   return access !== false
 }
 

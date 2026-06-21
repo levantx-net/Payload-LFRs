@@ -10,7 +10,7 @@ import type { CollectionSlug, PayloadRequest } from 'payload'
  * - `string[]` → only users whose `roles` array includes at least one of these roles
  * - `Function` → custom async check receiving the request and target document
  */
-export type LfrsFeatureAccess = boolean | string[] | LfrsFeatureAccessFn
+export type LfrsFeatureAccess = boolean | LfrsFeatureAccessFn | string[]
 
 /**
  * Custom access function for dynamic per-document checks.
@@ -201,11 +201,6 @@ export interface LfrsPluginConfig {
   rating?: LfrsRatingConfig
 
   /**
-   * Whether reviews require moderation before being visible (default: false)
-   */
-  reviewModeration?: boolean
-
-  /**
    * Review media configuration.
    * Allows users to attach images/videos to their reviews.
    *
@@ -214,6 +209,11 @@ export interface LfrsPluginConfig {
    * and file uploads are silently skipped.
    */
   reviewMedia?: LfrsReviewMediaConfig
+
+  /**
+   * Whether reviews require moderation before being visible (default: false)
+   */
+  reviewModeration?: boolean
 
   /**
    * The slug of the users collection for auth (default: 'users')
@@ -239,7 +239,7 @@ export interface SanitizedLfrsConfig {
   rating: SanitizedRatingConfig
   /** Whether any collection has replies enabled */
   repliesEnabled: boolean
-  reviewMedia: SanitizedReviewMediaConfig | null
+  reviewMedia: null | SanitizedReviewMediaConfig
   reviewModeration: boolean
   usersCollectionSlug: string
 }
