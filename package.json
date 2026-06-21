@@ -1,7 +1,7 @@
 {
   "name": "payload-lf-rs",
   "version": "1.0.0",
-  "description": "A blank template to get started with Payload 3.0",
+  "description": "Like, Favourite, Rate & Review plugin for Payload CMS 3.x",
   "license": "MIT",
   "type": "module",
   "exports": {
@@ -72,6 +72,7 @@
     "qs-esm": "8.0.1",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "react-rating": "^2.0.5",
     "rimraf": "3.0.2",
     "sharp": "0.34.2",
     "sort-package-json": "^2.10.0",
@@ -80,7 +81,9 @@
     "vitest": "4.0.18"
   },
   "peerDependencies": {
-    "payload": "^3.84.1"
+    "payload": "^3.84.1",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-rating": "^2.0.5"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
