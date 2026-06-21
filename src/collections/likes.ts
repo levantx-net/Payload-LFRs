@@ -2,6 +2,13 @@ import type { CollectionConfig } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { isAuthenticated } from '../access/isAuthenticated.js'
+import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
+import { createEnforceUniqueness } from '../hooks/enforceUniqueness.js'
+import { enforceUser } from '../hooks/enforceUser.js'
+import { createRecalculateAfterChange, createRecalculateAfterDelete } from '../hooks/recalculateAggregates.js'
+import { createValidateTarget } from '../hooks/validateTarget.js'
+
 /**
  * Creates the `lfrs-likes` collection config.
  *
@@ -15,6 +22,11 @@ import type { SanitizedLfrsConfig } from '../types.js'
 export function createLikesCollection(config: SanitizedLfrsConfig): CollectionConfig {
   return {
     slug: config.collectionSlugs.likes,
+    access: {
+      create: isAuthenticated,
+      delete: isOwnerOrAdmin,
+      read: () => true,
+    },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'createdAt'],
       group: config.adminGroup,
@@ -44,6 +56,15 @@ export function createLikesCollection(config: SanitizedLfrsConfig): CollectionCo
         required: true,
       },
     ],
+    hooks: {
+      afterChange: [createRecalculateAfterChange(config)],
+      afterDelete: [createRecalculateAfterDelete(config)],
+      beforeChange: [
+        enforceUser,
+        createEnforceUniqueness(config.collectionSlugs.likes),
+        createValidateTarget(config),
+      ],
+    },
     timestamps: true,
   }
 }

@@ -2,6 +2,15 @@ import type { CollectionConfig } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { isAuthenticated } from '../access/isAuthenticated.js'
+import { isOwner } from '../access/isOwner.js'
+import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
+import { createEnforceUniqueness } from '../hooks/enforceUniqueness.js'
+import { enforceUser } from '../hooks/enforceUser.js'
+import { createRecalculateAfterChange, createRecalculateAfterDelete } from '../hooks/recalculateAggregates.js'
+import { createValidateScore } from '../hooks/validateScore.js'
+import { createValidateTarget } from '../hooks/validateTarget.js'
+
 /**
  * Creates the `lfrs-ratings` collection config.
  *
@@ -16,6 +25,12 @@ import type { SanitizedLfrsConfig } from '../types.js'
 export function createRatingsCollection(config: SanitizedLfrsConfig): CollectionConfig {
   return {
     slug: config.collectionSlugs.ratings,
+    access: {
+      create: isAuthenticated,
+      delete: isOwnerOrAdmin,
+      read: () => true,
+      update: isOwner,
+    },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'score', 'createdAt'],
       group: config.adminGroup,
@@ -52,6 +67,16 @@ export function createRatingsCollection(config: SanitizedLfrsConfig): Collection
         required: true,
       },
     ],
+    hooks: {
+      afterChange: [createRecalculateAfterChange(config)],
+      afterDelete: [createRecalculateAfterDelete(config)],
+      beforeChange: [
+        enforceUser,
+        createEnforceUniqueness(config.collectionSlugs.ratings),
+        createValidateTarget(config),
+        createValidateScore(config.rating),
+      ],
+    },
     timestamps: true,
   }
 }

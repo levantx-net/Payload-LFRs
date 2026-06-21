@@ -11,6 +11,7 @@ import { createReviewsCollection } from './collections/reviews.js'
 import { sanitizePluginConfig } from './defaults.js'
 import { createAggregateFields } from './fields/aggregateFields.js'
 import { createJoinFields } from './fields/joinFields.js'
+import { createCascadeDelete } from './hooks/cascadeDelete.js'
 import { resolveReviewMedia } from './utilities/resolveReviewMedia.js'
 
 /**
@@ -83,10 +84,24 @@ export const payloadLfRs =
       return config
     }
 
-    // ── Phase 3: Hooks will be wired here ────────────────────────────────────
-    // TODO: Add hooks to interaction collections (enforceUser, enforceUniqueness,
-    //       validateTarget, validateScore, validateReviewMedia, recalculateAggregates)
-    // TODO: Add cascade delete hooks to target collections
+    // ── Phase 3: Wire cascade delete hooks into target collections ──────────
+    // (Interaction collection hooks are handled in their own factory functions)
+    config.collections = config.collections.map((collection) => {
+      if (!sanitized.collections[collection.slug]) {
+        return collection
+      }
+
+      return {
+        ...collection,
+        hooks: {
+          ...(collection.hooks || {}),
+          afterDelete: [
+            createCascadeDelete(sanitized, collection.slug),
+            ...(collection.hooks?.afterDelete || []),
+          ],
+        },
+      }
+    })
 
     // ── Phase 4: Endpoints will be mounted here ──────────────────────────────
     if (!config.endpoints) {
