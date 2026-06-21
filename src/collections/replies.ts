@@ -2,6 +2,14 @@ import type { CollectionConfig, Field } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { isAuthenticated } from '../access/isAuthenticated.js'
+import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
+import { enforceUser } from '../hooks/enforceUser.js'
+import {
+  createRepliesAfterChange,
+  createRepliesAfterDelete,
+} from '../hooks/recalculateRepliesCount.js'
+
 /**
  * Creates the `lfrs-replies` collection config.
  *
@@ -55,12 +63,22 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
 
   return {
     slug: config.collectionSlugs.replies,
+    access: {
+      create: isAuthenticated,
+      delete: isOwnerOrAdmin,
+      read: () => true,
+    },
     admin: {
       defaultColumns: ['user', 'review', 'body', 'createdAt'],
       group: config.adminGroup,
       useAsTitle: 'body',
     },
     fields,
+    hooks: {
+      afterChange: [createRepliesAfterChange(config)],
+      afterDelete: [createRepliesAfterDelete(config)],
+      beforeChange: [enforceUser],
+    },
     timestamps: true,
   }
 }

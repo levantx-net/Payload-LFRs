@@ -1,6 +1,16 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionBeforeChangeHook, CollectionConfig, Field } from 'payload'
 
 import type { SanitizedLfrsConfig, SanitizedReviewMediaConfig } from '../types.js'
+
+import { isAuthenticated } from '../access/isAuthenticated.js'
+import { isOwner } from '../access/isOwner.js'
+import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
+import { createEnforceUniqueness } from '../hooks/enforceUniqueness.js'
+import { enforceUser } from '../hooks/enforceUser.js'
+import { createRecalculateAfterChange, createRecalculateAfterDelete } from '../hooks/recalculateAggregates.js'
+import { createValidateReviewMedia } from '../hooks/validateReviewMedia.js'
+import { createValidateScore } from '../hooks/validateScore.js'
+import { createValidateTarget } from '../hooks/validateTarget.js'
 
 /**
  * Builds the conditional `media` array field for reviews.
@@ -115,14 +125,39 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
     defaultValue: 0,
   })
 
+  // Build hooks
+  const beforeChangeHooks: CollectionBeforeChangeHook[] = [
+    enforceUser,
+    createEnforceUniqueness(config.collectionSlugs.reviews),
+    createValidateTarget(config),
+    createValidateScore(config.rating),
+  ]
+
+  // Add media validation hook if media is enabled
+  const mediaHook = createValidateReviewMedia(config.reviewMedia)
+  if (mediaHook) {
+    beforeChangeHooks.push(mediaHook)
+  }
+
   return {
     slug: config.collectionSlugs.reviews,
+    access: {
+      create: isAuthenticated,
+      delete: isOwnerOrAdmin,
+      read: () => true,
+      update: isOwner,
+    },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'score', 'createdAt'],
       group: config.adminGroup,
       useAsTitle: 'title',
     },
     fields,
+    hooks: {
+      afterChange: [createRecalculateAfterChange(config)],
+      afterDelete: [createRecalculateAfterDelete(config)],
+      beforeChange: beforeChangeHooks,
+    },
     timestamps: true,
   }
 }
