@@ -1,0 +1,281 @@
+.lfrsContainer {
+  --lfrs-primary: #000000;
+  --lfrs-text: #333333;
+  --lfrs-text-muted: #666666;
+  --lfrs-bg: #ffffff;
+  --lfrs-bg-muted: #f5f5f5;
+  --lfrs-border: #e0e0e0;
+  --lfrs-star-active: #ffb400;
+  --lfrs-star-inactive: #e0e0e0;
+  --lfrs-like-active: #0066cc;
+  --lfrs-dislike-active: #cc0000;
+  --lfrs-favourite-active: #ff0055;
+  --lfrs-radius: 6px;
+  --lfrs-font: inherit;
+  
+  font-family: var(--lfrs-font);
+  color: var(--lfrs-text);
+  line-height: 1.5;
+}
+
+/* Rating Component */
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ratingIcon {
+  width: 24px;
+  height: 24px;
+  fill: var(--lfrs-star-inactive);
+  transition: fill 0.2s ease;
+}
+
+.ratingIcon.active {
+  fill: var(--lfrs-star-active);
+}
+
+.ratingReadonly {
+  pointer-events: none;
+}
+
+/* Toggle Buttons (Like/Dislike/Favourite) */
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--lfrs-border);
+  background: var(--lfrs-bg);
+  color: var(--lfrs-text);
+  border-radius: var(--lfrs-radius);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+  background: var(--lfrs-bg-muted);
+}
+
+.toggleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.toggleButton svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.likeActive {
+  color: var(--lfrs-like-active);
+  border-color: var(--lfrs-like-active);
+  background: rgba(0, 102, 204, 0.05);
+}
+
+.dislikeActive {
+  color: var(--lfrs-dislike-active);
+  border-color: var(--lfrs-dislike-active);
+  background: rgba(204, 0, 0, 0.05);
+}
+
+.favouriteActive {
+  color: var(--lfrs-favourite-active);
+  border-color: var(--lfrs-favourite-active);
+  background: rgba(255, 0, 85, 0.05);
+}
+
+/* Rating Summary */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+}
+
+.summaryHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.summaryAverage {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.summaryCount {
+  color: var(--lfrs-text-muted);
+  font-size: 14px;
+}
+
+.summaryBars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summaryBarRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.summaryBarLabel {
+  width: 40px;
+  color: var(--lfrs-text-muted);
+}
+
+.summaryBarTrack {
+  flex: 1;
+  height: 12px;
+  background: var(--lfrs-bg-muted);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.summaryBarFill {
+  height: 100%;
+  background: var(--lfrs-star-active);
+  border-radius: 6px;
+}
+
+.summaryBarPercent {
+  width: 40px;
+  text-align: right;
+  color: var(--lfrs-text-muted);
+}
+
+/* Reviews Section */
+.reviewsSection {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.reviewCard, .replyCard {
+  border: 1px solid var(--lfrs-border);
+  border-radius: var(--lfrs-radius);
+  padding: 16px;
+  background: var(--lfrs-bg);
+}
+
+.replyCard {
+  margin-top: 16px;
+  margin-left: 24px;
+  background: var(--lfrs-bg-muted);
+  border-color: transparent;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.reviewAuthor {
+  font-weight: 600;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: var(--lfrs-text-muted);
+}
+
+.reviewTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.reviewBody {
+  margin: 0 0 16px 0;
+  white-space: pre-wrap;
+}
+
+.reviewMedia {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.reviewMediaItem {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--lfrs-radius);
+  border: 1px solid var(--lfrs-border);
+}
+
+.reviewActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.composeForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--lfrs-border);
+  border-radius: var(--lfrs-radius);
+  background: var(--lfrs-bg-muted);
+}
+
+.composeInput, .composeTextarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--lfrs-border);
+  border-radius: var(--lfrs-radius);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.composeTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.composeActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--lfrs-radius);
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.buttonPrimary {
+  background: var(--lfrs-primary);
+  color: white;
+}
+
+.buttonSecondary {
+  background: var(--lfrs-border);
+  color: var(--lfrs-text);
+}
+
+.buttonText {
+  background: transparent;
+  color: var(--lfrs-text-muted);
+  padding: 4px 8px;
+}
+
+.buttonText:hover {
+  color: var(--lfrs-text);
+}

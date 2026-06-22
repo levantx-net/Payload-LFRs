@@ -1,0 +1,76 @@
+'use client'
+
+import React, { useState } from 'react'
+
+import styles from './styles/lfrs.module.css'
+
+export interface LfrsFavouriteProps {
+  apiBase?: string
+  className?: string
+  initialFavourited?: boolean
+  onToggle?: (favourited: boolean) => void
+  targetCollection: string
+  targetDoc: string
+}
+
+const BookmarkIcon = ({ active }: { active?: boolean }) => (
+  <svg fill={active ? "currentColor" : "none"} stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </svg>
+)
+
+export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
+  apiBase = '/api',
+  className = '',
+  initialFavourited = false,
+  onToggle,
+  targetCollection,
+  targetDoc,
+}) => {
+  const [loading, setLoading] = useState(false)
+  const [favourited, setFavourited] = useState(initialFavourited)
+
+  const handleToggle = async () => {
+    if (loading) {return}
+    
+    // Optimistic update
+    const previousState = favourited
+    setFavourited(!favourited)
+    
+    try {
+      setLoading(true)
+      const res = await fetch(`${apiBase}/lfrs/favourite`, {
+        body: JSON.stringify({ id: targetDoc, collection: targetCollection }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      })
+      
+      if (!res.ok) {throw new Error('API Error')}
+      
+      const data = await res.json()
+      
+      // Sync with real data
+      setFavourited(data.favourited ?? false)
+      onToggle?.(data.favourited ?? false)
+      
+    } catch (e) {
+      // Revert on error
+      setFavourited(previousState)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      className={`${styles.toggleButton} ${favourited ? styles.favouriteActive : ''} ${className}`}
+      disabled={loading}
+      onClick={handleToggle}
+      title={favourited ? 'Remove from favourites' : 'Add to favourites'}
+      type="button"
+    >
+      <BookmarkIcon active={favourited} />
+      <span>{favourited ? 'Favourited' : 'Favourite'}</span>
+    </button>
+  )
+}
