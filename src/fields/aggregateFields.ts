@@ -81,21 +81,22 @@ export function createAggregateFields(
       position: 'sidebar',
       readOnly: true,
       // Always show in sidebar (even when empty — keeps schema consistent)
-      condition: () => true,
       components: {
         Field: 'payload-lf-rs/admin#LfrsStatusWidget',
       },
+      condition: () => true,
     },
-    fields: aggregateSubFields.length > 0
-      ? aggregateSubFields
-      : [
-          // Payload requires at least one field in a group — add a hidden placeholder
-          {
-            name: '_placeholder',
-            type: 'text',
-            admin: { hidden: true },
-          },
-        ],
+    fields:
+      aggregateSubFields.length > 0
+        ? aggregateSubFields
+        : [
+            // Payload requires at least one field in a group — add a hidden placeholder
+            {
+              name: '_placeholder',
+              type: 'text',
+              admin: { hidden: true },
+            },
+          ],
     label: 'LFRs',
   }
 }

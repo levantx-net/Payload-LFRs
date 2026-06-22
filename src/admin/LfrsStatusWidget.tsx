@@ -6,14 +6,33 @@ import React from 'react'
 export const LfrsStatusWidget: React.FC = () => {
   const { value } = useField<any>({ path: 'lfrs' })
 
-  if (!value) return null
+  if (!value) {
+    return null
+  }
 
   return (
     <div style={{ marginBottom: '24px' }}>
-      <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', textTransform: 'uppercase', color: 'var(--theme-elevation-400)' }}>
+      <h4
+        style={{
+          color: 'var(--theme-elevation-400)',
+          fontSize: '14px',
+          margin: '0 0 12px 0',
+          textTransform: 'uppercase',
+        }}
+      >
         Interactions
       </h4>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px', background: 'var(--theme-elevation-50)', borderRadius: '4px', border: '1px solid var(--theme-elevation-100)' }}>
+      <div
+        style={{
+          background: 'var(--theme-elevation-50)',
+          border: '1px solid var(--theme-elevation-100)',
+          borderRadius: '4px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          padding: '16px',
+        }}
+      >
         {typeof value.likesCount === 'number' && (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Likes:</span>
@@ -35,7 +54,9 @@ export const LfrsStatusWidget: React.FC = () => {
         {typeof value.ratingsCount === 'number' && (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Ratings:</span>
-            <strong>{value.ratingsCount} (Avg: {value.ratingsAverage?.toFixed(1) || 0})</strong>
+            <strong>
+              {value.ratingsCount} (Avg: {value.ratingsAverage?.toFixed(1) || 0})
+            </strong>
           </div>
         )}
         {typeof value.reviewsCount === 'number' && (
