@@ -76,11 +76,7 @@ export const payloadLfRs =
 
       return {
         ...collection,
-        fields: [
-          ...(collection.fields || []),
-          aggregateField,
-          ...joinFields,
-        ],
+        fields: [...(collection.fields || []), aggregateField, ...joinFields],
       }
     })
 
@@ -116,7 +112,7 @@ export const payloadLfRs =
     if (!config.endpoints) {
       config.endpoints = []
     }
-    
+
     config.endpoints.push(
       {
         handler: createLikeEndpoint(sanitized),
@@ -162,7 +158,7 @@ export const payloadLfRs =
         handler: createDistributionEndpoint(sanitized),
         method: 'get',
         path: '/lfrs/distribution',
-      }
+      },
     )
 
     if (sanitized.dislikesEnabled) {
@@ -186,7 +182,7 @@ export const payloadLfRs =
 
     if (sanitized.reviewModeration) {
       config.admin.components.views.lfrsModeration = {
-        Component: 'payload-lf-rs/admin#ReviewModerationView',
+        Component: 'payload-lfrs/admin#ReviewModerationView',
         exact: true,
         path: '/lfrs-moderation',
       } as any

@@ -16,20 +16,12 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@payload-config": [
-        "./payload.config.ts"
-      ],
-      "payload-lf-rs": [
-        "../src/index.ts"
-      ],
-      "payload-lf-rs/client": [
-        "../src/exports/client.ts"
-      ],
-      "payload-lf-rs/rsc": [
-        "../src/exports/rsc.ts"
-      ]
+      "@payload-config": ["./payload.config.ts"],
+      "payload-lfrs": ["../src/index.ts"],
+      "payload-lfrs/client": ["../src/exports/client.ts"],
+      "payload-lfrs/rsc": ["../src/exports/rsc.ts"]
     },
     "noEmit": true,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": false
   }
 }

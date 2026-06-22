@@ -6,16 +6,16 @@
 
 ## 1. Overview
 
-The **payload-lf-rs** plugin lets any Payload CMS collection receive social interactions from authenticated users:
+The **payload-lfrs** plugin lets any Payload CMS collection receive social interactions from authenticated users:
 
-| Feature       | Description |
-|---------------|-------------|
-| **Like**      | Toggle like/unlike on a document (one per user per doc) |
+| Feature       | Description                                                                                            |
+| ------------- | ------------------------------------------------------------------------------------------------------ |
+| **Like**      | Toggle like/unlike on a document (one per user per doc)                                                |
 | **Dislike**   | Toggle dislike/un-dislike on a document (optional, one per user per doc, mutually exclusive with like) |
-| **Favourite** | Toggle favourite/unfavourite on a document (one per user per doc) |
-| **Rate**      | Submit a numeric rating (1–5 stars, one per user per doc, can update) |
-| **Review**    | Submit a text review with optional media and a rating (one per user per doc, can update) |
-| **Reply**     | Reply to a review (one level deep, by any user or admin) |
+| **Favourite** | Toggle favourite/unfavourite on a document (one per user per doc)                                      |
+| **Rate**      | Submit a numeric rating (1–5 stars, one per user per doc, can update)                                  |
+| **Review**    | Submit a text review with optional media and a rating (one per user per doc, can update)               |
+| **Reply**     | Reply to a review (one level deep, by any user or admin)                                               |
 
 Each feature is **opt-in** per collection via the plugin config, so consumers can enable only what they need.
 
@@ -29,14 +29,14 @@ The plugin also provides **ready-to-use React UI components** that developers ca
 
 We store interactions in **dedicated plugin-managed collections** rather than embedding them as array/group fields on the target document. Reasons:
 
-| Concern | Embedded fields | Separate collections ✅ |
-|---|---|---|
-| Scalability | Document grows unboundedly with every interaction | Interactions are independent documents; target doc stays lean |
-| Querying | Hard to paginate/filter "all reviews for doc X" | Native `find()` with `where` on `targetDoc` |
-| Access control | Mixed with target doc permissions | Independent access control per interaction type |
-| Aggregation | Must compute in hooks on every read | Cached aggregates on target doc via `afterChange` hooks |
-| User uniqueness | Complex array validation | Simple `unique` compound index equivalent via hooks |
-| Admin UI | Clutters the target doc form | Clean join fields or sidebar widgets |
+| Concern         | Embedded fields                                   | Separate collections ✅                                       |
+| --------------- | ------------------------------------------------- | ------------------------------------------------------------- |
+| Scalability     | Document grows unboundedly with every interaction | Interactions are independent documents; target doc stays lean |
+| Querying        | Hard to paginate/filter "all reviews for doc X"   | Native `find()` with `where` on `targetDoc`                   |
+| Access control  | Mixed with target doc permissions                 | Independent access control per interaction type               |
+| Aggregation     | Must compute in hooks on every read               | Cached aggregates on target doc via `afterChange` hooks       |
+| User uniqueness | Complex array validation                          | Simple `unique` compound index equivalent via hooks           |
+| Admin UI        | Clutters the target doc form                      | Clean join fields or sidebar widgets                          |
 
 ### Aggregate Caching on Target Documents
 
@@ -208,10 +208,7 @@ export interface LfrsRatingConfig {
  * - `string[]` → only users whose `roles` array includes at least one of these roles
  * - `Function` → custom async check receiving the request and target document
  */
-export type LfrsFeatureAccess =
-  | boolean
-  | string[]
-  | LfrsFeatureAccessFn
+export type LfrsFeatureAccess = boolean | string[] | LfrsFeatureAccessFn
 
 /**
  * Custom access function for dynamic per-document checks.
@@ -275,7 +272,7 @@ export interface LfrsCollectionOptions {
 **With media uploads enabled:**
 
 ```ts
-import { payloadLfRs } from 'payload-lf-rs'
+import { payloadLfRs } from 'payload-lfrs'
 
 export default buildConfig({
   collections: [
@@ -329,16 +326,16 @@ payloadLfRs({
 payloadLfRs({
   collections: {
     posts: {
-      likes: true,                         // any authenticated user
-      favourites: true,                     // any authenticated user
-      ratings: ['subscriber', 'admin'],     // only subscribers and admins
-      reviews: ['subscriber', 'admin'],     // only subscribers and admins
+      likes: true, // any authenticated user
+      favourites: true, // any authenticated user
+      ratings: ['subscriber', 'admin'], // only subscribers and admins
+      reviews: ['subscriber', 'admin'], // only subscribers and admins
     },
     'internal-docs': {
-      likes: ['employee', 'admin'],         // only employees
+      likes: ['employee', 'admin'], // only employees
       favourites: ['employee', 'admin'],
-      ratings: false,                       // disabled entirely
-      reviews: false,                       // disabled entirely
+      ratings: false, // disabled entirely
+      reviews: false, // disabled entirely
     },
   },
 })
@@ -415,11 +412,11 @@ payloadLfRs({
 
 ### 4.1 `lfrs-likes`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `user` | `relationship` → users | The user who liked |
-| `targetCollection` | `text` | Slug of the target collection (e.g. `'posts'`) |
-| `targetDoc` | `text` | ID of the liked document |
+| Field              | Type                   | Description                                    |
+| ------------------ | ---------------------- | ---------------------------------------------- |
+| `user`             | `relationship` → users | The user who liked                             |
+| `targetCollection` | `text`                 | Slug of the target collection (e.g. `'posts'`) |
+| `targetDoc`        | `text`                 | ID of the liked document                       |
 
 **Compound uniqueness**: Enforced via `beforeChange` hook — one like per user per target doc.
 
@@ -429,11 +426,11 @@ payloadLfRs({
 
 Only created if **any** collection enables `dislikes`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `user` | `relationship` → users | The user who disliked |
-| `targetCollection` | `text` | Slug of the target collection |
-| `targetDoc` | `text` | ID of the disliked document |
+| Field              | Type                   | Description                   |
+| ------------------ | ---------------------- | ----------------------------- |
+| `user`             | `relationship` → users | The user who disliked         |
+| `targetCollection` | `text`                 | Slug of the target collection |
+| `targetDoc`        | `text`                 | ID of the disliked document   |
 
 **Compound uniqueness**: One dislike per user per target doc.
 
@@ -441,46 +438,48 @@ Only created if **any** collection enables `dislikes`.
 
 ### 4.3 `lfrs-favourites`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `user` | `relationship` → users | The user who favourited |
-| `targetCollection` | `text` | Slug of the target collection |
-| `targetDoc` | `text` | ID of the favourited document |
+| Field              | Type                   | Description                   |
+| ------------------ | ---------------------- | ----------------------------- |
+| `user`             | `relationship` → users | The user who favourited       |
+| `targetCollection` | `text`                 | Slug of the target collection |
+| `targetDoc`        | `text`                 | ID of the favourited document |
 
 Same uniqueness pattern as likes.
 
 ### 4.4 `lfrs-ratings`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `user` | `relationship` → users | The user who rated |
-| `targetCollection` | `text` | Slug of the target collection |
-| `targetDoc` | `text` | ID of the rated document |
-| `score` | `number` | Rating value. Validated: must be a multiple of `rating.step`, within [`step`, `rating.max`]. |
+| Field              | Type                   | Description                                                                                  |
+| ------------------ | ---------------------- | -------------------------------------------------------------------------------------------- |
+| `user`             | `relationship` → users | The user who rated                                                                           |
+| `targetCollection` | `text`                 | Slug of the target collection                                                                |
+| `targetDoc`        | `text`                 | ID of the rated document                                                                     |
+| `score`            | `number`               | Rating value. Validated: must be a multiple of `rating.step`, within [`step`, `rating.max`]. |
 
 **Compound uniqueness**: One rating per user per target doc.
 
 **Score validation example** (with default config `max: 5, step: 1`):
+
 - ✅ `1`, `2`, `3`, `4`, `5`
 - ❌ `0`, `0.5`, `2.5`, `6`, `-1`
 
 **Score validation example** (with `max: 10, step: 0.5`):
+
 - ✅ `0.5`, `1`, `1.5`, `2`, ... `9.5`, `10`
 - ❌ `0`, `0.3`, `10.5`, `-1`
 
 ### 4.5 `lfrs-reviews`
 
-| Field | Type | Condition | Description |
-|-------|------|-----------|-------------|
-| `user` | `relationship` → users | Always | The reviewing user |
-| `targetCollection` | `text` | Always | Slug of the target collection |
-| `targetDoc` | `text` | Always | ID of the reviewed document |
-| `title` | `text` | Always | Review title (optional) |
-| `body` | `textarea` | Always | Review body text |
-| `score` | `number` | Always | Rating included with the review (same validation as standalone ratings) |
-| `media` | `array` → see below | Only if `reviewMedia` is valid | Attached images/videos |
-| `status` | `select` (`pending` \| `approved` \| `rejected`) | Only if `reviewModeration` enabled | Moderation status |
-| `repliesCount` | `number` | Always | Cached count of replies (default: 0) |
+| Field              | Type                                             | Condition                          | Description                                                             |
+| ------------------ | ------------------------------------------------ | ---------------------------------- | ----------------------------------------------------------------------- |
+| `user`             | `relationship` → users                           | Always                             | The reviewing user                                                      |
+| `targetCollection` | `text`                                           | Always                             | Slug of the target collection                                           |
+| `targetDoc`        | `text`                                           | Always                             | ID of the reviewed document                                             |
+| `title`            | `text`                                           | Always                             | Review title (optional)                                                 |
+| `body`             | `textarea`                                       | Always                             | Review body text                                                        |
+| `score`            | `number`                                         | Always                             | Rating included with the review (same validation as standalone ratings) |
+| `media`            | `array` → see below                              | Only if `reviewMedia` is valid     | Attached images/videos                                                  |
+| `status`           | `select` (`pending` \| `approved` \| `rejected`) | Only if `reviewModeration` enabled | Moderation status                                                       |
+| `repliesCount`     | `number`                                         | Always                             | Cached count of replies (default: 0)                                    |
 
 **Compound uniqueness**: One review per user per target doc.
 
@@ -488,11 +487,11 @@ Same uniqueness pattern as likes.
 
 Only created if **any** collection enables `replies`.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `user` | `relationship` → users | The user who replied |
-| `review` | `relationship` → lfrs-reviews | The parent review being replied to |
-| `body` | `textarea` | Reply text |
+| Field    | Type                                             | Description                        |
+| -------- | ------------------------------------------------ | ---------------------------------- |
+| `user`   | `relationship` → users                           | The user who replied               |
+| `review` | `relationship` → lfrs-reviews                    | The parent review being replied to |
+| `body`   | `textarea`                                       | Reply text                         |
 | `status` | `select` (`pending` \| `approved` \| `rejected`) | Only if `reviewModeration` enabled |
 
 **Threading model**: One level deep only — replies reference a review, not other replies. This keeps the UI clean and avoids deeply nested threads.
@@ -535,11 +534,11 @@ When the field **is** added:
 
 Even though the upload collection may have its own mime/size constraints, the plugin adds a **`beforeChange` hook on `lfrs-reviews`** that re-validates each attached file against the plugin-level limits:
 
-| Check | Source | Behaviour on failure |
-|-------|--------|---------------------|
-| File count | `media.length > maxFiles` | `APIError('Maximum of N files allowed', 400)` |
-| MIME type | Each `media[].file` doc's `mimeType` against `allowedMimeTypes` glob patterns | `APIError('File type X is not allowed', 400)` |
-| File size | Each `media[].file` doc's `filesize` against `maxFileSize` | `APIError('File X exceeds the maximum size of N bytes', 400)` |
+| Check      | Source                                                                        | Behaviour on failure                                          |
+| ---------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| File count | `media.length > maxFiles`                                                     | `APIError('Maximum of N files allowed', 400)`                 |
+| MIME type  | Each `media[].file` doc's `mimeType` against `allowedMimeTypes` glob patterns | `APIError('File type X is not allowed', 400)`                 |
+| File size  | Each `media[].file` doc's `filesize` against `maxFileSize`                    | `APIError('File X exceeds the maximum size of N bytes', 400)` |
 
 This provides a **defence-in-depth** layer on top of the upload collection's own restrictions, and gives the plugin consumer fine-grained control without modifying their upload collection config.
 
@@ -600,12 +599,12 @@ flowchart TD
     H -- "returns false" --> J["❌ Deny with 403"]
 ```
 
-| Access value | Resolved at | Behaviour |
-|---|---|---|
-| `false` | Build time | Feature's fields are still added (DB schema consistency), but endpoints return `404` and the feature is hidden from status response |
-| `true` | Runtime | Any authenticated user can perform the action |
-| `string[]` (roles) | Runtime | `req.user.roles` is checked for intersection with the provided array. If no match → `403 Forbidden` |
-| `LfrsFeatureAccessFn` | Runtime | The target document is fetched, then the function is called. If it returns `false` → `403 Forbidden` |
+| Access value          | Resolved at | Behaviour                                                                                                                           |
+| --------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `false`               | Build time  | Feature's fields are still added (DB schema consistency), but endpoints return `404` and the feature is hidden from status response |
+| `true`                | Runtime     | Any authenticated user can perform the action                                                                                       |
+| `string[]` (roles)    | Runtime     | `req.user.roles` is checked for intersection with the provided array. If no match → `403 Forbidden`                                 |
+| `LfrsFeatureAccessFn` | Runtime     | The target document is fetched, then the function is called. If it returns `false` → `403 Forbidden`                                |
 
 > [!NOTE]
 > The role check assumes the user document has a `roles` field (array of strings). This is configurable via the `usersCollectionSlug` option and the plugin reads whatever `roles` field exists on that collection. If the users collection doesn't have a `roles` field and a string[] access is used, the check will always deny.
@@ -614,12 +613,12 @@ flowchart TD
 
 These are the **Payload access control functions** set on the `lfrs-*` interaction collections themselves (separate from the feature access above):
 
-| Operation | Rule |
-|-----------|------|
-| `create` | Authenticated users only. The `user` field is auto-set to `req.user.id` (cannot be spoofed). Feature-level access is checked in the endpoint handler before reaching collection create. |
-| `read` | Public read (anyone can see likes/reviews) or configurable. |
-| `update` | Own interactions only (ratings, reviews — likes/favourites are toggle-only via endpoint). |
-| `delete` | Own interactions only, or admin. |
+| Operation | Rule                                                                                                                                                                                    |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create`  | Authenticated users only. The `user` field is auto-set to `req.user.id` (cannot be spoofed). Feature-level access is checked in the endpoint handler before reaching collection create. |
+| `read`    | Public read (anyone can see likes/reviews) or configurable.                                                                                                                             |
+| `update`  | Own interactions only (ratings, reviews — likes/favourites are toggle-only via endpoint).                                                                                               |
+| `delete`  | Own interactions only, or admin.                                                                                                                                                        |
 
 ### Target Collection Aggregate Fields
 
@@ -693,6 +692,7 @@ Response: {
 ### 7.5 Review
 
 **Without media:**
+
 ```
 POST /api/lfrs/review
 Content-Type: application/json
@@ -722,6 +722,7 @@ Response: { review: ReviewDoc, reviewsCount: number }
 ```
 
 The endpoint handler:
+
 - Validates each ID exists in the upload collection
 - Validates file count against `maxFiles`
 - Validates each file's `mimeType` against `allowedMimeTypes`
@@ -730,6 +731,7 @@ The endpoint handler:
 - If `reviewMedia` is not configured, any `media` in the request body is silently ignored
 
 **Behaviour notes:**
+
 - **Feature access check**: resolves `reviews` access for `collection`
 - Authenticated only
 - Creates or updates (upsert) the user's review
@@ -959,6 +961,7 @@ src/
 ## 10. Implementation Phases
 
 ### Phase 1: Foundation & Types
+
 > **Files**: `types.ts`, `defaults.ts`, `plugin.ts`, `index.ts`
 
 - [x] Define `LfrsPluginConfig` and `LfrsCollectionOptions` types (including `dislikes`, `replies`)
@@ -969,6 +972,7 @@ src/
 - [x] Add `react-rating` as a peer dependency in `package.json`
 
 ### Phase 2: Collections & Fields
+
 > **Files**: `collections/*`, `fields/*`, `utilities/resolveReviewMedia.ts`, `utilities/matchMimeType.ts`
 
 - [x] Create `lfrs-likes` collection config
@@ -987,6 +991,7 @@ src/
 - [x] Wire collections and fields into `plugin.ts`
 
 ### Phase 3: Access Control & Hooks
+
 > **Files**: `access/*`, `hooks/*`, `utilities/*`
 
 - [x] Implement `isAuthenticated` access control
@@ -1002,9 +1007,10 @@ src/
 - [x] Implement `recalculateRepliesCount` hook (update repliesCount on parent review)
 - [x] Implement `cascadeDelete` hook (cleanup on target doc delete — includes dislikes, replies)
 - [x] Wire hooks and access into collection configs
-- [ ] Write tests for each access mode (true, false, roles, custom fn) *(deferred to Phase 5)*
+- [ ] Write tests for each access mode (true, false, roles, custom fn) _(deferred to Phase 5)_
 
 ### Phase 4: Custom Endpoints
+
 > **Files**: `endpoints/*`
 
 - [x] Implement `POST /api/lfrs/like` (toggle, with mutual exclusivity for dislikes)
@@ -1020,6 +1026,7 @@ src/
 - [x] Wire endpoints into `plugin.ts`
 
 ### Phase 5: Dev Environment & Testing
+
 > **Files**: `dev/*`, `dev/int.spec.ts`
 
 - [x] Update `dev/payload.config.ts` with realistic test collections
@@ -1031,6 +1038,7 @@ src/
 - [x] Write integration tests for reply threading (one level only)
 
 ### Phase 6: Frontend UI Components
+
 > **Files**: `components/*`, `exports/client.ts`
 > **Dependencies**: `react-rating` (peer dep)
 
@@ -1065,7 +1073,8 @@ src/
 - [x] Create `styles/lfrs.module.css` — shared styles with CSS custom properties for theming
 - [x] Export all components from `exports/client.ts`
 
-### Phase 7: Admin UI Components *(Optional / Future)*
+### Phase 7: Admin UI Components _(Optional / Future)_
+
 > **Files**: `admin/*`, `exports/*`
 
 - [x] Build `LfrsStatusWidget` — sidebar component showing live counts
@@ -1087,6 +1096,7 @@ We use **text fields** (`targetCollection` as slug string, `targetDoc` as ID str
 ### 11.2 Toggle Endpoints vs Direct CRUD
 
 For **likes**, **dislikes**, and **favourites**, we provide **toggle endpoints** rather than exposing raw create/delete. This:
+
 - Simplifies the frontend API (single call to like/unlike)
 - Prevents accidental double-likes
 - Returns the new count atomically
@@ -1103,6 +1113,7 @@ Cached counts on the target document avoid N+1 queries. The tradeoff is eventual
 ### 11.4 Review Moderation
 
 When `reviewModeration: true`:
+
 - New reviews get `status: 'pending'`
 - Only `approved` reviews are included in public `afterRead` / endpoint responses
 - Admins can change status via the admin panel
@@ -1141,11 +1152,11 @@ flowchart TD
 
 5. **Default values** when `reviewMedia` is provided but individual settings are omitted:
 
-| Setting | Default | Rationale |
-|---------|---------|----------|
-| `maxFiles` | `5` | Generous but bounded |
-| `allowedMimeTypes` | `['image/*']` | Images only by default; videos opt-in |
-| `maxFileSize` | `5242880` (5 MB) | Safe default for most hosting setups |
+| Setting            | Default          | Rationale                             |
+| ------------------ | ---------------- | ------------------------------------- |
+| `maxFiles`         | `5`              | Generous but bounded                  |
+| `allowedMimeTypes` | `['image/*']`    | Images only by default; videos opt-in |
+| `maxFileSize`      | `5242880` (5 MB) | Safe default for most hosting setups  |
 
 ### 11.6 Rating System — Backend vs Frontend Separation
 
@@ -1180,11 +1191,11 @@ The rating system cleanly separates **backend data** from **frontend presentatio
 
 **Default configuration** (when `rating` is omitted):
 
-| Setting | Default | Result |
-|---------|---------|--------|
-| `max` | `5` | 5-star system |
-| `step` | `1` | Whole numbers only (1, 2, 3, 4, 5) |
-| `icon` | `'star'` | Frontend hint to use star icons |
+| Setting | Default  | Result                             |
+| ------- | -------- | ---------------------------------- |
+| `max`   | `5`      | 5-star system                      |
+| `step`  | `1`      | Whole numbers only (1, 2, 3, 4, 5) |
+| `icon`  | `'star'` | Frontend hint to use star icons    |
 
 **Sanitization** at build time (`defaults.ts`):
 
@@ -1197,6 +1208,7 @@ const sanitizeRatingConfig = (input?: LfrsRatingConfig): SanitizedRatingConfig =
 ```
 
 With validation:
+
 - `max` must be > 0
 - `step` must be > 0 and <= `max`
 - `max` must be evenly divisible by `step` (so the scale has clean boundaries)
@@ -1205,10 +1217,10 @@ With validation:
 
 The per-collection, per-feature access system uses a **progressive complexity** model — developers start simple and only add complexity when they need it:
 
-| Tier | Config value | Complexity | Use case |
-|------|-------------|-----------|----------|
-| **1. Boolean** | `true` / `false` | Zero config | "Everyone can like" or "No ratings on this collection" |
-| **2. Roles** | `string[]` | Low | "Only subscribers can review", "Only employees can favourite" |
+| Tier                   | Config value          | Complexity   | Use case                                                                                 |
+| ---------------------- | --------------------- | ------------ | ---------------------------------------------------------------------------------------- |
+| **1. Boolean**         | `true` / `false`      | Zero config  | "Everyone can like" or "No ratings on this collection"                                   |
+| **2. Roles**           | `string[]`            | Low          | "Only subscribers can review", "Only employees can favourite"                            |
 | **3. Custom function** | `LfrsFeatureAccessFn` | Full control | "Only purchasers can review this product", "Only enrolled students can rate this course" |
 
 **Why enforce at endpoint level, not Payload collection `access`?**
@@ -1257,9 +1269,7 @@ export async function resolveFeatureAccess(args: {
   if (typeof access === 'function') {
     if (!req.user) return { allowed: false, reason: 'Authentication required' }
     const result = await access({ req, targetDoc, targetCollection })
-    return result
-      ? { allowed: true }
-      : { allowed: false, reason: 'Access denied by custom rule' }
+    return result ? { allowed: true } : { allowed: false, reason: 'Access denied by custom rule' }
   }
 
   // Fallback: treat undefined as true (feature enabled by default)
@@ -1278,11 +1288,13 @@ User unlikes doc  → like is deleted, no dislike is created
 ```
 
 This is handled **atomically in the endpoint handler** (not in hooks), because:
+
 - The endpoint can perform both operations (delete dislike + create like) in a single request
 - Using hooks would risk infinite loops (deleting a dislike triggers afterDelete → which would try to recalculate → etc.)
 - The endpoint returns both `likesCount` and `dislikesCount` so the frontend can update both counters in one round-trip
 
 **Why dislikes are disabled by default:**
+
 - Most apps need only likes (social media, bookmarks)
 - Dislikes can be contentious and require careful UX consideration
 - The developer explicitly opts in per collection: `dislikes: true` or `dislikes: ['admin']`
@@ -1316,7 +1328,7 @@ The plugin ships **ready-to-use React components** alongside the backend API. Th
 ┌──────────────────────────────────────────────────────┐
 │  Layer 3: Plugin UI Components (React)               │
 │  <LfrsRating>, <LfrsLikeDislike>, <LfrsReviews>...   │
-│  Import from: 'payload-lf-rs/exports/client'         │
+│  Import from: 'payload-lfrs/exports/client'         │
 │  → Drop-in, opinionated, themeable                   │
 ├──────────────────────────────────────────────────────┤
 │  Layer 2: REST API                                   │
@@ -1349,11 +1361,11 @@ The plugin ships **ready-to-use React components** alongside the backend API. Th
 
 ## 12. Database Considerations
 
-| Adapter | Notes |
-|---------|-------|
-| **MongoDB** | Full support. Compound uniqueness via hook check (MongoDB supports compound unique indexes but Payload doesn't expose them — we enforce via `beforeChange`). |
-| **Postgres** | Full support. Same hook-based uniqueness enforcement. |
-| **SQLite** | Full support. Same patterns apply. |
+| Adapter      | Notes                                                                                                                                                        |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **MongoDB**  | Full support. Compound uniqueness via hook check (MongoDB supports compound unique indexes but Payload doesn't expose them — we enforce via `beforeChange`). |
+| **Postgres** | Full support. Same hook-based uniqueness enforcement.                                                                                                        |
+| **SQLite**   | Full support. Same patterns apply.                                                                                                                           |
 
 > [!NOTE]
 > We don't use `point` fields (not supported in SQLite) or any adapter-specific features, ensuring cross-adapter compatibility.

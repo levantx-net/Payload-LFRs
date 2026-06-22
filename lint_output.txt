@@ -1,13 +1,13 @@
 
-> payload-lf-rs@1.0.0 lint C:\Users\mahmo\Documents\payload-lf-rs
+> payload-lfrs@1.0.0 lint C:\Users\mahmo\Documents\payload-lfrs
 > eslint
 
 
-C:\Users\mahmo\Documents\payload-lf-rs\dev\app\my-route\route.ts
+C:\Users\mahmo\Documents\payload-lfrs\dev\app\my-route\route.ts
   4:27  warning  'request' is defined but never used. Allowed unused args must match /^_/u           @typescript-eslint/no-unused-vars
   5:9   warning  'payload' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-C:\Users\mahmo\Documents\payload-lf-rs\dev\int.spec.ts
+C:\Users\mahmo\Documents\payload-lfrs\dev\int.spec.ts
    17:10  warning  'payloadLfRs' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
    20:16  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    21:14  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
@@ -23,7 +23,7 @@ C:\Users\mahmo\Documents\payload-lf-rs\dev\int.spec.ts
    81:7   error    Async method 'ratings' has no 'await' expression                                       @typescript-eslint/require-await
   201:13  warning  'data' is assigned a value but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
 
-C:\Users\mahmo\Documents\payload-lf-rs\dev\payload.config.ts
+C:\Users\mahmo\Documents\payload-lfrs\dev\payload.config.ts
    48:13  error  Expected "defaultValue" to come before "options"       perfectionist/sort-objects
   101:13  error  Expected "dislikes" to come before "likes"             perfectionist/sort-objects
   105:13  error  Expected "replies" to come before "reviews"            perfectionist/sort-objects
@@ -33,41 +33,41 @@ C:\Users\mahmo\Documents\payload-lf-rs\dev\payload.config.ts
   118:13  error  Expected "favourites" to come before "likes"           perfectionist/sort-objects
   123:11  error  Expected "maxFiles" to come before "uploadCollection"  perfectionist/sort-objects
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\dislike.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\dislike.ts
    28:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    36:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
   128:27  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
   138:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\distribution.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\distribution.ts
   27:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   57:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   91:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\favourite.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\favourite.ts
    28:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    36:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
   108:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\interactions.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\interactions.ts
    33:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
    61:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
    78:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   113:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\like.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\like.ts
    28:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    36:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
   128:27  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
   138:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\rate.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\rate.ts
    28:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    36:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
    70:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
   110:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\reply.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\reply.ts
    18:25  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    26:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
    42:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
@@ -78,28 +78,28 @@ C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\reply.ts
   132:21  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
   149:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\review.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\review.ts
    28:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    36:16  warning  'e' is defined but never used. Allowed unused caught errors must match /^(_|ignore)/u  @typescript-eslint/no-unused-vars
    70:25  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
    84:22  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
   121:19  warning  Unexpected any. Specify a different type                                               @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\endpoints\status.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\endpoints\status.ts
    29:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
   130:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\fields\joinFields.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\fields\joinFields.ts
    5:10  warning  'isFeatureEnabled' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
   15:3   warning  'collectionSlug' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
   16:3   warning  'collectionOptions' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
   17:3   warning  'config' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\hooks\recalculateAggregates.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\hooks\recalculateAggregates.ts
   77:23  warning  Unexpected any. Specify a different type                                                           @typescript-eslint/no-explicit-any
   90:9   warning  'standaloneRatingsCount' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
 
-C:\Users\mahmo\Documents\payload-lf-rs\src\hooks\validateReviewMedia.ts
+C:\Users\mahmo\Documents\payload-lfrs\src\hooks\validateReviewMedia.ts
   71:27  warning  'uploadDoc.filename || fileId' will use Object's default stringification format ('[object Object]') when stringified  @typescript-eslint/no-base-to-string
 
 ✖ 69 problems (9 errors, 60 warnings)

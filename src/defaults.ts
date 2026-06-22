@@ -43,18 +43,18 @@ export function sanitizeRatingConfig(input?: LfrsPluginConfig['rating']): Saniti
 
   // Validation
   if (max <= 0) {
-    throw new Error(`[payload-lf-rs] rating.max must be > 0, got ${max}`)
+    throw new Error(`[payload-lfrs] rating.max must be > 0, got ${max}`)
   }
 
   if (step <= 0 || step > max) {
-    throw new Error(`[payload-lf-rs] rating.step must be > 0 and <= max (${max}), got ${step}`)
+    throw new Error(`[payload-lfrs] rating.step must be > 0 and <= max (${max}), got ${step}`)
   }
 
   // Ensure max is evenly divisible by step (with float tolerance)
   const remainder = max % step
   if (Math.abs(remainder) > 1e-9 && Math.abs(remainder - step) > 1e-9) {
     throw new Error(
-      `[payload-lf-rs] rating.max (${max}) must be evenly divisible by rating.step (${step})`,
+      `[payload-lfrs] rating.max (${max}) must be evenly divisible by rating.step (${step})`,
     )
   }
 

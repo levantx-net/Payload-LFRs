@@ -16,11 +16,11 @@ A comprehensive plugin for [Payload CMS 3.x](https://payloadcms.com) that adds *
 ## Installation
 
 ```bash
-npm install payload-lf-rs
+npm install payload-lfrs
 # or
-pnpm add payload-lf-rs
+pnpm add payload-lfrs
 # or
-yarn add payload-lf-rs
+yarn add payload-lfrs
 ```
 
 ## Basic Usage
@@ -29,7 +29,7 @@ Add the plugin to your Payload configuration:
 
 ```typescript
 import { buildConfig } from 'payload'
-import { payloadLfRs } from 'payload-lf-rs'
+import { payloadLfRs } from 'payload-lfrs'
 
 export default buildConfig({
   // ... your existing config
@@ -165,7 +165,7 @@ _Authentication is required for `POST` and `DELETE` endpoints._
 
 ## Frontend UI Components
 
-The plugin provides a suite of ready-to-use React components for your frontend application. These components are exported via `payload-lf-rs/client` and are built as client components (`"use client"`) to handle user interactions and optimistic UI updates seamlessly.
+The plugin provides a suite of ready-to-use React components for your frontend application. These components are exported via `payload-lfrs/client` and are built as client components (`"use client"`) to handle user interactions and optimistic UI updates seamlessly.
 
 ### Available Components
 
@@ -180,7 +180,7 @@ The plugin provides a suite of ready-to-use React components for your frontend a
 ### Example Usage
 
 ```tsx
-import { LfrsLikeDislike, LfrsRating } from 'payload-lf-rs/client'
+import { LfrsLikeDislike, LfrsRating } from 'payload-lfrs/client'
 
 export function PostDetails({ post }) {
   return (

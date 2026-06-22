@@ -25,7 +25,7 @@ export function resolveReviewMedia(
   if (!collection) {
     // eslint-disable-next-line no-console
     console.warn(
-      `[payload-lf-rs] reviewMedia.uploadCollection "${uploadCollection}" not found in Payload config. ` +
+      `[payload-lfrs] reviewMedia.uploadCollection "${uploadCollection}" not found in Payload config. ` +
         `Review media uploads will be disabled.`,
     )
     return null
@@ -35,7 +35,7 @@ export function resolveReviewMedia(
   if (!collection.upload) {
     // eslint-disable-next-line no-console
     console.warn(
-      `[payload-lf-rs] Collection "${uploadCollection}" does not have upload enabled. ` +
+      `[payload-lfrs] Collection "${uploadCollection}" does not have upload enabled. ` +
         `Review media uploads will be disabled.`,
     )
     return null
