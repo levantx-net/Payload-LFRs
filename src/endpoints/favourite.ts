@@ -25,6 +25,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         throw new APIError('Favourites are not enabled for this collection', 404)
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let targetDoc: any
       try {
         targetDoc = await req.payload.findByID({
@@ -33,7 +34,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
           overrideAccess: true,
           req,
         })
-      } catch (e) {
+      } catch (_e) {
         throw new APIError('Target document not found', 404)
       }
 
@@ -105,6 +106,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         favourited,
         favouritesCount: updatedDoc.lfrs?.favouritesCount || 0,
       })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })

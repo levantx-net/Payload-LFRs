@@ -14,6 +14,7 @@ export interface LfrsReviewCardProps {
   onReplySuccess?: () => void
   ratingConfig: { icon: string; max: number; step: number }
   repliesEnabled?: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   review: any
 }
 
@@ -59,6 +60,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = ({
 
       {review.media && review.media.length > 0 && (
         <div className={styles.reviewMedia}>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           {review.media.map((item: any, idx: number) => {
             if (!item.file?.url) {return null}
             return (
@@ -99,6 +101,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = ({
 
       {review.replies && review.replies.length > 0 && (
         <div style={{ marginTop: '16px' }}>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           {review.replies.map((reply: any) => (
             <LfrsReplyCard key={reply.id} reply={reply} />
           ))}

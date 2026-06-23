@@ -60,7 +60,7 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
       setFavourited(data.favourited ?? false)
       onToggle?.(data.favourited ?? false)
       
-    } catch (e) {
+    } catch (_e) {
       // Revert on error
       setFavourited(previousState)
     } finally {

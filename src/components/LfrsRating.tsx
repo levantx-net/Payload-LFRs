@@ -38,10 +38,10 @@ export const LfrsRating: React.FC<LfrsRatingProps> = ({
   max = 5,
   onChange,
   readonly = false,
-  step = 1,
+  step: _step = 1,
   value = 0,
 }) => {
-  const [hoverValue, setHoverValue] = useState<number | null>(null)
+  const [hoverValue, setHoverValue] = useState<null | number>(null)
 
   const renderIcon = (active: boolean) => {
     switch (icon) {
@@ -56,6 +56,7 @@ export const LfrsRating: React.FC<LfrsRatingProps> = ({
   const items = Array.from({ length: max }, (_, i) => i + 1)
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div 
       className={`${styles.rating} ${readonly ? styles.ratingReadonly : ''} ${className}`}
       onMouseLeave={() => !readonly && setHoverValue(null)}
@@ -63,14 +64,19 @@ export const LfrsRating: React.FC<LfrsRatingProps> = ({
       {items.map((item) => {
         const isActive = hoverValue !== null ? item <= hoverValue : item <= value
         return (
-          <div
+          <button
             key={item}
             onClick={() => !readonly && onChange?.(item)}
             onMouseEnter={() => !readonly && setHoverValue(item)}
-            style={{ cursor: readonly ? 'default' : 'pointer', display: 'flex' }}
+            // eslint-disable-next-line perfectionist/sort-objects
+            // eslint-disable-next-line perfectionist/sort-objects
+            style={{ cursor: readonly ? 'default' : 'pointer', display: 'flex', border: 'none', background: 'transparent', padding: 0 }}
+            type="button"
+            // eslint-disable-next-line perfectionist/sort-jsx-props
+            aria-label={`Rate ${item} out of ${max}`}
           >
             {renderIcon(isActive)}
-          </div>
+          </button>
         )
       })}
     </div>

@@ -25,6 +25,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
         throw new APIError('Dislikes are not enabled for this collection', 404)
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let targetDoc: any
       try {
         targetDoc = await req.payload.findByID({
@@ -33,7 +34,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
           overrideAccess: true,
           req,
         })
-      } catch (e) {
+      } catch (_e) {
         throw new APIError('Target document not found', 404)
       }
 
@@ -125,6 +126,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
         req,
       })
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const responseData: any = {
         disliked,
         dislikesCount: updatedDoc.lfrs?.dislikesCount || 0,
@@ -135,6 +137,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
       }
 
       return Response.json(responseData)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })

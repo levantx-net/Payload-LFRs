@@ -30,6 +30,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
       else if (sortParam === 'highest') {sort = '-score'}
       else if (sortParam === 'lowest') {sort = 'score'}
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = {
         and: [
           { targetCollection: { equals: collection } },
@@ -58,6 +59,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
 
         // Fetch replies if replies are enabled
         if (enabledFeatures.has('replies')) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           for (const review of reviews.docs as any[]) {
             const replies = await req.payload.find({
               collection: sanitized.collectionSlugs.replies,
@@ -75,6 +77,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
             review.replies = replies.docs
           }
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           for (const review of reviews.docs as any[]) {
             review.replies = []
           }
@@ -110,6 +113,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
       }
 
       throw new APIError('Invalid type parameter. Must be "reviews" or "ratings"', 400)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })

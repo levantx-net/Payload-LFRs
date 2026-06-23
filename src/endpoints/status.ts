@@ -26,6 +26,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
 
       const enabledFeatures = getEnabledFeatures(collectionOptions)
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = {
         dislikesEnabled: enabledFeatures.has('dislikes'),
         mediaEnabled: sanitized.mediaEnabled,
@@ -127,6 +128,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       }
 
       return Response.json(response)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })

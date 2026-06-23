@@ -67,6 +67,7 @@ export function createValidateReviewMedia(
       const filesize = uploadDoc.filesize as number
       if (filesize && filesize > maxFileSize) {
         const maxSizeMB = (maxFileSize / (1024 * 1024)).toFixed(1)
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         const filename = uploadDoc.filename ? String(uploadDoc.filename) : String(fileId)
         throw new APIError(
           `File "${filename}" exceeds the maximum size of ${maxSizeMB} MB`,

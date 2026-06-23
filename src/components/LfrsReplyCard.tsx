@@ -6,6 +6,7 @@ import styles from './styles/lfrs.module.css'
 
 export interface LfrsReplyCardProps {
   className?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reply: any
 }
 

@@ -113,7 +113,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
         likesCount: data.likesCount ?? 0 
       })
       
-    } catch (e) {
+    } catch (_e) {
       // Revert on error
       setLiked(previousState.liked)
       setDisliked(previousState.disliked)

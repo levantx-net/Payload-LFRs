@@ -38,9 +38,12 @@ export const ReviewModerationView: React.FC = () => {
         method: 'PATCH',
       })
       // Refresh
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setReviewsParams((prev: any) => ({ ...prev }))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setRepliesParams((prev: any) => ({ ...prev }))
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -53,9 +56,12 @@ export const ReviewModerationView: React.FC = () => {
         method: 'PATCH',
       })
       // Refresh
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setReviewsParams((prev: any) => ({ ...prev }))
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setRepliesParams((prev: any) => ({ ...prev }))
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -73,6 +79,7 @@ export const ReviewModerationView: React.FC = () => {
           <div>Loading...</div>
         ) : reviewsData?.docs?.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {reviewsData.docs.map((doc: any) => (
               <div
                 key={doc.id}
@@ -90,6 +97,7 @@ export const ReviewModerationView: React.FC = () => {
                     {doc.title || 'No title'} (Score: {doc.score})
                   </strong>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    // eslint-disable-next-line @eslint-react/dom/no-missing-button-type
                     <button
                       onClick={() => handleApprove('lfrs-reviews', doc.id)}
                       style={{
@@ -103,6 +111,7 @@ export const ReviewModerationView: React.FC = () => {
                     >
                       Approve
                     </button>
+                    // eslint-disable-next-line @eslint-react/dom/no-missing-button-type
                     <button
                       onClick={() => handleReject('lfrs-reviews', doc.id)}
                       style={{
@@ -137,6 +146,7 @@ export const ReviewModerationView: React.FC = () => {
           <div>Loading...</div>
         ) : repliesData?.docs?.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             {repliesData.docs.map((doc: any) => (
               <div
                 key={doc.id}
@@ -155,6 +165,7 @@ export const ReviewModerationView: React.FC = () => {
                     {typeof doc.review === 'object' ? doc.review?.id : doc.review}
                   </strong>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    // eslint-disable-next-line @eslint-react/dom/no-missing-button-type
                     <button
                       onClick={() => handleApprove('lfrs-replies', doc.id)}
                       style={{
@@ -168,6 +179,7 @@ export const ReviewModerationView: React.FC = () => {
                     >
                       Approve
                     </button>
+                    // eslint-disable-next-line @eslint-react/dom/no-missing-button-type
                     <button
                       onClick={() => handleReject('lfrs-replies', doc.id)}
                       style={{
