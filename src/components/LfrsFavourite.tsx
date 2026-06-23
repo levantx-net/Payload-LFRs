@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import styles from './styles/lfrs.module.css'
 
@@ -23,14 +23,30 @@ const BookmarkIcon = ({ active }: { active?: boolean }) => (
 export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
   apiBase = '/api',
   className = '',
-  initialFavourited = false,
+  initialFavourited,
   onAuthError,
   onToggle,
   targetCollection,
   targetDoc,
 }) => {
   const [loading, setLoading] = useState(false)
-  const [favourited, setFavourited] = useState(initialFavourited)
+  const [favourited, setFavourited] = useState(initialFavourited ?? false)
+
+  useEffect(() => {
+    if (initialFavourited === undefined) {
+      fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
+        .then((res) => {
+          if (res.ok) {return res.json()}
+          return null
+        })
+        .then((data) => {
+          if (data && typeof data.favourited === 'boolean') {
+            setFavourited(data.favourited)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [apiBase, initialFavourited, targetCollection, targetDoc])
 
   const handleToggle = async () => {
     if (loading) {return}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import styles from './styles/lfrs.module.css'
 
@@ -34,20 +34,41 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   apiBase = '/api',
   className = '',
   dislikesEnabled = false,
-  initialDisliked = false,
-  initialDislikesCount = 0,
-  initialLiked = false,
-  initialLikesCount = 0,
+  initialDisliked,
+  initialDislikesCount,
+  initialLiked,
+  initialLikesCount,
   onAuthError,
   onToggle,
   targetCollection,
   targetDoc,
 }) => {
   const [loading, setLoading] = useState(false)
-  const [liked, setLiked] = useState(initialLiked)
-  const [disliked, setDisliked] = useState(initialDisliked)
-  const [likesCount, setLikesCount] = useState(initialLikesCount)
-  const [dislikesCount, setDislikesCount] = useState(initialDislikesCount)
+  const [liked, setLiked] = useState(initialLiked ?? false)
+  const [disliked, setDisliked] = useState(initialDisliked ?? false)
+  const [likesCount, setLikesCount] = useState(initialLikesCount ?? 0)
+  const [dislikesCount, setDislikesCount] = useState(initialDislikesCount ?? 0)
+
+  useEffect(() => {
+    if (initialLiked === undefined || initialDisliked === undefined) {
+      fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
+        .then((res) => {
+          if (res.ok) {return res.json()}
+          return null
+        })
+        .then((data) => {
+          if (data) {
+            if (initialLiked === undefined && typeof data.liked === 'boolean') {
+              setLiked(data.liked)
+            }
+            if (initialDisliked === undefined && typeof data.disliked === 'boolean') {
+              setDisliked(data.disliked)
+            }
+          }
+        })
+        .catch(() => {})
+    }
+  }, [apiBase, initialLiked, initialDisliked, targetCollection, targetDoc])
 
   const handleToggle = async (type: 'dislike' | 'like') => {
     if (loading) {return}
