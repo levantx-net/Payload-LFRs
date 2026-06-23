@@ -54,6 +54,11 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         throw new APIError('Authentication required', 401)
       }
 
+      // All mutations use skipLfrsHooks to suppress the hook-based recalculation.
+      // The endpoint handles aggregate updates directly at the end, which is more
+      // robust than relying on hooks that share mutable context across the request.
+      const mutationContext = { skipLfrsHooks: true }
+
       // Check if like exists
       const existingLikes = await req.payload.find({
         collection: sanitized.collectionSlugs.likes,
@@ -71,10 +76,11 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
       let liked = false
 
       if (existingLikes.docs.length > 0) {
-        // Delete existing like
+        // Delete existing like (un-like)
         await req.payload.delete({
           id: existingLikes.docs[0].id as string,
           collection: sanitized.collectionSlugs.likes,
+          context: mutationContext,
           overrideAccess: true,
           req,
         })
@@ -98,6 +104,7 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
             await req.payload.delete({
               id: existingDislikes.docs[0].id as string,
               collection: sanitized.collectionSlugs.dislikes,
+              context: mutationContext,
               overrideAccess: true,
               req,
             })
@@ -107,6 +114,7 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         // Create new like
         await req.payload.create({
           collection: sanitized.collectionSlugs.likes,
+          context: mutationContext,
           data: {
             targetCollection: collection,
             targetDoc: id,
@@ -118,44 +126,63 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         liked = true
       }
 
-      // Directly count interactions instead of relying on re-fetched aggregate fields,
-      // which may be stale if the recalculate hooks haven't fully committed yet.
-      const [likesCountResult, dislikesCountResult] = await Promise.all([
-        req.payload.count({
-          collection: sanitized.collectionSlugs.likes,
-          overrideAccess: true,
-          req,
-          where: {
-            and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
-          },
-        }),
+      // --- Count interactions directly (source of truth) ---
+      const [likesCount, dislikesCount] = await Promise.all([
+        req.payload
+          .count({
+            collection: sanitized.collectionSlugs.likes,
+            overrideAccess: true,
+            req,
+            where: {
+              and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
+            },
+          })
+          .then((r) => r.totalDocs),
         enabledFeatures.has('dislikes')
-          ? req.payload.count({
-              collection: sanitized.collectionSlugs.dislikes,
-              overrideAccess: true,
-              req,
-              where: {
-                and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
-              },
-            })
-          : Promise.resolve(null),
+          ? req.payload
+              .count({
+                collection: sanitized.collectionSlugs.dislikes,
+                overrideAccess: true,
+                req,
+                where: {
+                  and: [
+                    { targetCollection: { equals: collection } },
+                    { targetDoc: { equals: id } },
+                  ],
+                },
+              })
+              .then((r) => r.totalDocs)
+          : Promise.resolve(0),
       ])
 
+      // --- Update the target document's aggregate counts directly ---
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const responseData: any = {
-        liked,
-        likesCount: likesCountResult.totalDocs,
+      const lfrsUpdate: Record<string, any> = { likesCount }
+      if (enabledFeatures.has('dislikes')) {
+        lfrsUpdate.dislikesCount = dislikesCount
       }
 
-      if (dislikesCountResult) {
+      await req.payload.update({
+        id,
+        collection,
+        context: { skipLfrsHooks: true },
+        data: { lfrs: lfrsUpdate },
+        overrideAccess: true,
+        req,
+      })
+
+      // --- Build response ---
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const responseData: any = { liked, likesCount }
+
+      if (enabledFeatures.has('dislikes')) {
         responseData.disliked = false
-        responseData.dislikesCount = dislikesCountResult.totalDocs
+        responseData.dislikesCount = dislikesCount
       }
 
       return Response.json(responseData)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.error('[LFRS-LIKE] ERROR:', err.message, 'status:', err.status)
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })
     }

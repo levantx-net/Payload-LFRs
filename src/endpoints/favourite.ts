@@ -54,6 +54,9 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         throw new APIError('Authentication required', 401)
       }
 
+      // Suppress hook-based recalculation; the endpoint handles it directly.
+      const mutationContext = { skipLfrsHooks: true }
+
       // Check if favourite exists
       const existingFavourites = await req.payload.find({
         collection: sanitized.collectionSlugs.favourites,
@@ -75,6 +78,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         await req.payload.delete({
           id: existingFavourites.docs[0].id as string,
           collection: sanitized.collectionSlugs.favourites,
+          context: mutationContext,
           overrideAccess: true,
           req,
         })
@@ -83,6 +87,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         // Create new favourite
         await req.payload.create({
           collection: sanitized.collectionSlugs.favourites,
+          context: mutationContext,
           data: {
             targetCollection: collection,
             targetDoc: id,
@@ -94,19 +99,30 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         favourited = true
       }
 
-      // Re-fetch target doc to get updated counts
-      const updatedDoc = await req.payload.findByID({
+      // --- Count interactions directly (source of truth) ---
+      const favouritesCount = await req.payload
+        .count({
+          collection: sanitized.collectionSlugs.favourites,
+          overrideAccess: true,
+          req,
+          where: {
+            and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
+          },
+        })
+        .then((r) => r.totalDocs)
+
+      // --- Update the target document's aggregate counts directly ---
+      await req.payload.update({
         id,
         collection,
+        context: { skipLfrsHooks: true },
+        data: { lfrs: { favouritesCount } },
         overrideAccess: true,
         req,
       })
 
-      return Response.json({
-        favourited,
-        favouritesCount: updatedDoc.lfrs?.favouritesCount || 0,
-      })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return Response.json({ favourited, favouritesCount })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })

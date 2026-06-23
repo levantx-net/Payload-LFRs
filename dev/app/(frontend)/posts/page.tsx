@@ -1,6 +1,7 @@
 import configPromise from '@payload-config'
 import Link from 'next/link'
 import { getPayload } from 'payload'
+
 import { LfrsFavourite } from '../components/LfrsWithRedirects'
 
 export default async function PostsPage() {
@@ -15,10 +16,13 @@ export default async function PostsPage() {
       <h1 className="page-title">All Posts</h1>
       <div className="grid">
         {posts.docs.map((post) => (
-          <div key={post.id} className="card">
-            <div className="card-header" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div className="card" key={post.id}>
+            <div
+              className="card-header"
+              style={{ alignItems: 'center', display: 'flex', gap: '1rem' }}
+            >
               <div className="card-fav-wrapper">
-                <LfrsFavourite targetCollection="posts" targetDoc={post.id as string} />
+                <LfrsFavourite targetCollection="posts" targetDoc={post.id} />
               </div>
               <Link href={`/posts/${post.id}`}>
                 <h2 className="card-title">{post.title}</h2>
@@ -27,7 +31,11 @@ export default async function PostsPage() {
             <p className="text-muted" style={{ marginTop: '0.5rem' }}>
               This is a short description for post: {post.title}
             </p>
-            <Link href={`/posts/${post.id}`} className="nav-link" style={{ marginTop: 'auto', display: 'inline-block', paddingTop: '1rem' }}>
+            <Link
+              className="nav-link"
+              href={`/posts/${post.id}`}
+              style={{ display: 'inline-block', marginTop: 'auto', paddingTop: '1rem' }}
+            >
               Read more &rarr;
             </Link>
           </div>

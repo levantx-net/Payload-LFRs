@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export function LoginButton() {
   const [loading, setLoading] = useState(false)
@@ -12,14 +12,14 @@ export function LoginButton() {
     try {
       setLoading(true)
       const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           email: 'dev@payloadcms.com',
           password: 'test',
         }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
       })
 
       if (res.ok) {
@@ -37,11 +37,21 @@ export function LoginButton() {
   }
 
   if (isLoggedIn) {
-    return <span className="nav-link" style={{ color: 'var(--lfrs-star-active)' }}>Logged in ✓</span>
+    return (
+      <span className="nav-link" style={{ color: 'var(--lfrs-star-active)' }}>
+        Logged in ✓
+      </span>
+    )
   }
 
   return (
-    <button onClick={handleLogin} disabled={loading} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+    <button
+      className="nav-link"
+      disabled={loading}
+      onClick={handleLogin}
+      style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+      type="button"
+    >
       {loading ? 'Logging in...' : 'Login to Test'}
     </button>
   )

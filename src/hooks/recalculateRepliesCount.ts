@@ -16,12 +16,13 @@ async function recalculateReplies(args: {
 }): Promise<void> {
   const { config, req, reviewId } = args
 
-  const result = await req.payload.count({
+  const result = await req.payload.find({
     collection: config.collectionSlugs.replies,
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
     req,
-    where: {
-      review: { equals: reviewId },
-    },
+    where: { review: { equals: reviewId } },
   })
 
   await req.payload.update({

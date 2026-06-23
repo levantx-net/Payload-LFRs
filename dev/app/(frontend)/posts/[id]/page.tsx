@@ -26,14 +26,14 @@ export default async function SinglePostPage({ params }: { params: { id: string 
   // To properly render LfrsLikeDislike and LfrsFavourite initial states,
   // we would typically fetch the current user's interaction status.
   // We'll rely on the optimistic updates and API endpoint data for now.
-  const likesCount = post.lfrs?.likesCount || 0
-  const dislikesCount = post.lfrs?.dislikesCount || 0
+  const likesCount = post?.lfrs?.likesCount || 0
+  const dislikesCount = post?.lfrs?.dislikesCount || 0
 
   return (
     <div className="post-container">
       <div className="post-header">
         <div style={{ alignItems: 'flex-start', display: 'flex', justifyContent: 'space-between' }}>
-          <h1 className="post-title">{post.title}</h1>
+          <h1 className="post-title">{post?.title}</h1>
           <LfrsFavourite targetCollection="posts" targetDoc={id} />
         </div>
 
@@ -51,7 +51,7 @@ export default async function SinglePostPage({ params }: { params: { id: string 
 
       <div className="post-content">
         <p>
-          This is the content of the post: {post.title}. In a real application, this would be
+          This is the content of the post: {post?.title}. In a real application, this would be
           rendering rich text or other fields from the Payload CMS.
         </p>
         <p>

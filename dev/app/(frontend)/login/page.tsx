@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
@@ -13,15 +13,17 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password) return setError('Please enter both email and password.')
-    
+    if (!email || !password) {
+      return setError('Please enter both email and password.')
+    }
+
     try {
       setLoading(true)
       setError('')
       const res = await fetch('/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
       })
 
       if (res.ok) {
@@ -39,52 +41,86 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto', textAlign: 'center' }}>
+    <div style={{ margin: '4rem auto', maxWidth: '400px', textAlign: 'center' }}>
       <h1 className="page-title">Login</h1>
       <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
         Welcome back. Please login to your account.
       </p>
-      
+
       {error && (
-        <div style={{ background: 'rgba(244, 63, 94, 0.1)', color: 'var(--accent)', padding: '1rem', borderRadius: '8px', marginBottom: '1rem' }}>
+        <div
+          style={{
+            background: 'rgba(244, 63, 94, 0.1)',
+            borderRadius: '8px',
+            color: 'var(--accent)',
+            marginBottom: '1rem',
+            padding: '1rem',
+          }}
+        >
           {error}
         </div>
       )}
 
-      <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}>
+      <form
+        onSubmit={handleLogin}
+        style={{ display: 'flex', flexDirection: 'column', gap: '1rem', textAlign: 'left' }}
+      >
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Email</label>
-          <input 
-            type="email" 
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'white', fontFamily: 'inherit' }} 
+          <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>
+            Email
+          </label>
+          <input
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             required
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              color: 'white',
+              fontFamily: 'inherit',
+              padding: '0.75rem',
+              width: '100%',
+            }}
+            type="email"
+            value={email}
           />
         </div>
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Password</label>
-          <input 
-            type="password" 
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'white', fontFamily: 'inherit' }} 
+          <label style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>
+            Password
+          </label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
             required
+            style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              color: 'white',
+              fontFamily: 'inherit',
+              padding: '0.75rem',
+              width: '100%',
+            }}
+            type="password"
+            value={password}
           />
         </div>
-        <button 
-          type="submit" 
-          disabled={loading} 
-          className="btn-fav" 
+        <button
+          className="btn-fav"
+          disabled={loading}
           style={{ justifyContent: 'center', marginTop: '1rem' }}
+          type="submit"
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
-      <div style={{ marginTop: '2rem', color: 'var(--text-muted)' }}>
-        Don't have an account? <Link href="/register" style={{ color: 'var(--primary)' }}>Register here</Link>
+      <div style={{ color: 'var(--text-muted)', marginTop: '2rem' }}>
+        Don&apos;t have an account?{' '}
+        <Link href="/register" style={{ color: 'var(--primary)' }}>
+          Register here
+        </Link>
       </div>
     </div>
   )

@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 export function LogoutButton() {
   const [loading, setLoading] = useState(false)
@@ -21,7 +21,19 @@ export function LogoutButton() {
   }
 
   return (
-    <button onClick={handleLogout} disabled={loading} className="nav-link" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit' }}>
+    <button
+      className="nav-link"
+      disabled={loading}
+      onClick={handleLogout}
+      style={{
+        background: 'none',
+        border: 'none',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        fontSize: 'inherit',
+      }}
+      type="button"
+    >
       {loading ? 'Logging out...' : 'Logout'}
     </button>
   )

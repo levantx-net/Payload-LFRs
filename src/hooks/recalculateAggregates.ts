@@ -55,11 +55,11 @@ async function recalculate(args: {
     ratingsResult,
     reviewsResult,
   ] = await Promise.all([
-    req.payload.count({ collection: config.collectionSlugs.likes, req, where: baseWhere }),
-    config.dislikesEnabled ? req.payload.count({ collection: config.collectionSlugs.dislikes, req, where: baseWhere }) : Promise.resolve(null),
-    req.payload.count({ collection: config.collectionSlugs.favourites, req, where: baseWhere }),
-    req.payload.find({ collection: config.collectionSlugs.ratings, depth: 0, limit: 0, req, where: baseWhere }),
-    req.payload.find({ collection: config.collectionSlugs.reviews, depth: 0, limit: 0, req, where: reviewsWhere }),
+    req.payload.find({ collection: config.collectionSlugs.likes, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }),
+    config.dislikesEnabled ? req.payload.find({ collection: config.collectionSlugs.dislikes, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }) : Promise.resolve(null),
+    req.payload.find({ collection: config.collectionSlugs.favourites, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }),
+    req.payload.find({ collection: config.collectionSlugs.ratings, overrideAccess: true, depth: 0, limit: 0, req, where: baseWhere }),
+    req.payload.find({ collection: config.collectionSlugs.reviews, overrideAccess: true, depth: 0, limit: 0, req, where: reviewsWhere }),
   ])
 
   lfrs.likesCount = likesResult.totalDocs
@@ -104,8 +104,16 @@ async function recalculate(args: {
     collection: targetCollection,
     context: { skipLfrsHooks: true },
     data: { lfrs },
+    overrideAccess: true,
     req,
   })
+
+  // Reset the flag immediately. Payload merges the context parameter into
+  // req.context, which is shared across all operations in this request.
+  // Without this cleanup, subsequent hooks (e.g. the afterChange from creating
+  // a dislike after deleting a like) would see skipLfrsHooks=true and skip
+  // their recalculation, leaving the target doc with stale counts.
+  context.skipLfrsHooks = false
 }
 
 /**
