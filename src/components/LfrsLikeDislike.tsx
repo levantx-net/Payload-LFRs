@@ -18,6 +18,7 @@ export interface LfrsLikeDislikeProps {
     liked: boolean
     likesCount: number
   }) => void
+  style?: React.CSSProperties
   targetCollection: string
   targetDoc: string
 }
@@ -57,6 +58,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   initialLikesCount,
   onAuthError,
   onToggle,
+  style,
   targetCollection,
   targetDoc,
 }) => {
@@ -180,10 +182,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   }
 
   return (
-    <div
-      className={`${styles.likeDislikeGroup} ${className}`}
-      style={{ display: 'flex', gap: '8px' }}
-    >
+    <div className={`${styles.likeDislikeGroup} ${className}`} style={{ display: 'inline-flex', gap: '8px', ...style }}>
       {likesEnabled && (
         <button
           aria-label={liked ? 'Unlike' : 'Like'}

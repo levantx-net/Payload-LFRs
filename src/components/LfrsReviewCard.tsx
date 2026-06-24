@@ -16,6 +16,7 @@ export interface LfrsReviewCardProps {
   ratingConfig: { icon: string; max: number; step: number }
   repliesEnabled?: boolean
   review: any
+  style?: React.CSSProperties
 }
 
 export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
@@ -27,6 +28,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
     ratingConfig,
     repliesEnabled = false,
     review,
+    style,
   }) => {
     const [isReplying, setIsReplying] = useState(false)
 
@@ -39,7 +41,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
     }
 
     return (
-      <div className={`${styles.reviewCard} ${className}`}>
+      <div className={`${styles.reviewCard} ${className}`} style={style}>
         <div className={styles.reviewHeader}>
           <div>
             <div className={styles.reviewAuthor}>{authorName}</div>

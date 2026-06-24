@@ -282,6 +282,49 @@ export function PostDetails({ post }) {
 }
 ```
 
+### UI Customization (CSS Variables)
+
+The UI components are built to seamlessly integrate with your existing site. They use **CSS Variables** which can be overridden globally in your app (e.g. in your `:root` or `body` block), or scoped directly to the components using the `style` prop!
+
+Here are the available variables and their default fallback values:
+
+```css
+:root {
+  --lfrs-primary: #000000;          /* Used for primary buttons (e.g. "Write a Review") */
+  --lfrs-text: #333333;             /* Main text color */
+  --lfrs-text-muted: #666666;       /* Dates, secondary text, placeholders */
+  --lfrs-bg: #ffffff;               /* Main background color for cards */
+  --lfrs-bg-muted: #f5f5f5;         /* Background for replies and forms */
+  --lfrs-border: #e0e0e0;           /* Borders around cards and inputs */
+  
+  --lfrs-star-active: #ffb400;      /* Color of filled rating stars and bars */
+  --lfrs-star-inactive: #e0e0e0;    /* Color of empty rating stars */
+  
+  --lfrs-like-active: #0066cc;      /* Active state for Like button */
+  --lfrs-dislike-active: #cc0000;   /* Active state for Dislike button */
+  --lfrs-favourite-active: #ff0055; /* Active state for Favourite button */
+  
+  --lfrs-radius: 6px;               /* Border radius for buttons, inputs, and cards */
+  --lfrs-font: inherit;             /* Font family inherited from your app by default */
+}
+```
+
+#### Example: Inline Scoped Customization
+
+If you want to style a single component, you can pass the variables via the `style` prop:
+
+```tsx
+<LfrsRatingSummary 
+  targetCollection="posts" 
+  targetDoc={post.id} 
+  style={{
+    '--lfrs-star-active': '#10b981', // Green stars
+    '--lfrs-bg': '#1f2937',          // Dark mode background
+    '--lfrs-text': '#f9fafb'         // Light text
+  } as React.CSSProperties}
+/>
+```
+
 ## Building Custom UIs (Headless Usage)
 
 The plugin is designed to be completely framework-agnostic. While we provide React components for convenience, you can build your own custom user interfaces in any framework (Vue, Svelte, Angular, React Native, or vanilla JavaScript) by directly interacting with the plugin's REST API.

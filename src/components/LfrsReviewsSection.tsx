@@ -10,6 +10,7 @@ export interface LfrsReviewsSectionProps {
   apiBase?: string
   className?: string
   onAuthError?: () => void
+  style?: React.CSSProperties
   targetCollection: string
   targetDoc: string
 }
@@ -18,6 +19,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
   apiBase = '/api',
   className = '',
   onAuthError,
+  style,
   targetCollection,
   targetDoc,
 }) => {
@@ -97,13 +99,13 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
   const handleWriteReview = useCallback(() => setShowCompose(true), [])
 
   if (statusLoading && reviewsLoading) {
-    return <div className={`${styles.reviewsSection} ${className}`}>Loading reviews...</div>
+    return <div className={`${styles.reviewsSection} ${className}`} style={style}>Loading reviews...</div>
   }
 
   const hasMyReview = !!status?.review
 
   return (
-    <div className={`${styles.reviewsSection} ${className}`}>
+    <div className={`${styles.reviewsSection} ${className}`} style={style}>
       <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
         <h2>Reviews</h2>
         {(!hasMyReview || status?.allowMultipleReviews) && !showCompose && status && (

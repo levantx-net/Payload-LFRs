@@ -8,6 +8,7 @@ import styles from './styles/lfrs.module.css'
 export interface LfrsRatingSummaryProps {
   apiBase?: string
   className?: string
+  style?: React.CSSProperties
   targetCollection: string
   targetDoc: string
 }
@@ -30,6 +31,7 @@ interface DistributionData {
 export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
   apiBase = '/api',
   className = '',
+  style,
   targetCollection,
   targetDoc,
 }) => {
@@ -71,7 +73,7 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
   const sortedDistribution = [...data.distribution].sort((a, b) => b.score - a.score)
 
   return (
-    <div className={`${styles.summary} ${className}`}>
+    <div className={`${styles.summary} ${className}`} style={style}>
       <div className={styles.summaryHeader}>
         <div className={styles.summaryAverage}>{data.averageScore.toFixed(1)}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>

@@ -10,6 +10,7 @@ export interface LfrsFavouriteProps {
   initialFavourited?: boolean
   onAuthError?: () => void
   onToggle?: (favourited: boolean) => void
+  style?: React.CSSProperties
   targetCollection: string
   targetDoc: string
 }
@@ -26,6 +27,7 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
   initialFavourited,
   onAuthError,
   onToggle,
+  style,
   targetCollection,
   targetDoc,
 }) => {
@@ -89,6 +91,7 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
       className={`${styles.toggleButton} ${favourited ? styles.favouriteActive : ''} ${className}`}
       disabled={loading}
       onClick={handleToggle}
+      style={style}
       title={favourited ? 'Remove from favourites' : 'Add to favourites'}
       type="button"
     >
