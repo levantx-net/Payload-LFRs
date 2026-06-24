@@ -1,5 +1,6 @@
 import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
 
+import { resolveFeatureAccess } from '../utilities/resolveFeatureAccess.js'
 import type { SanitizedLfrsConfig } from '../types.js'
 
 export const createUserReviewsEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
@@ -16,6 +17,29 @@ export const createUserReviewsEndpoint = (sanitized: SanitizedLfrsConfig): Paylo
       const collectionOptions = sanitized.collections[collection]
       if (!collectionOptions) {
         throw new APIError('LFRs is not enabled for this collection', 404)
+      }
+
+      let targetDoc: any
+      try {
+        targetDoc = await req.payload.findByID({
+          id,
+          collection,
+          overrideAccess: true,
+          req,
+        })
+      } catch (err: any) {
+        throw new APIError('Target document not found', 404)
+      }
+
+      const readAccess = await resolveFeatureAccess({
+        access: collectionOptions.readReviews,
+        req,
+        targetCollection: collection,
+        targetDoc,
+      })
+
+      if (!readAccess.allowed) {
+        throw new APIError(readAccess.reason || 'Forbidden', 403)
       }
 
       const reviews = await req.payload.find({

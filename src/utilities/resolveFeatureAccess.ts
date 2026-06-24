@@ -25,6 +25,11 @@ export async function resolveFeatureAccess(args: {
 }): Promise<FeatureAccessResult> {
   const { access, req, targetCollection, targetDoc } = args
 
+  // Tier 0: Public
+  if (access === 'public') {
+    return { allowed: true }
+  }
+
   // Tier 1: Boolean
   if (access === false) {
     return { allowed: false, reason: 'Feature is disabled' }

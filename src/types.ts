@@ -5,12 +5,13 @@ import type { CollectionSlug, PayloadRequest } from 'payload'
 /**
  * Access control for a single LFRs feature on a specific collection.
  *
- * - `true`     → any authenticated user can perform this action (default)
+ * - `'public'` → feature is completely public (even to guests)
+ * - `true`     → any authenticated user can perform this action (default for interactions)
  * - `false`    → feature disabled for this collection
  * - `string[]` → only users whose `roles` array includes at least one of these roles
  * - `Function` → custom async check receiving the request and target document
  */
-export type LfrsFeatureAccess = boolean | LfrsFeatureAccessFn | string[]
+export type LfrsFeatureAccess = 'public' | boolean | LfrsFeatureAccessFn | string[]
 
 /**
  * Custom access function for dynamic per-document checks.
@@ -73,6 +74,12 @@ export interface LfrsCollectionOptions {
    * Default: true (any authenticated user)
    */
   reviews?: LfrsFeatureAccess
+
+  /**
+   * Access control for viewing reviews and replies.
+   * Default: 'public' (guests can view)
+   */
+  readReviews?: LfrsFeatureAccess
 
   /**
    * Whether to allow users to leave multiple reviews on the same document.
@@ -264,6 +271,7 @@ export interface SanitizedCollectionOptions {
   ratings: LfrsFeatureAccess
   replies: LfrsFeatureAccess
   reviews: LfrsFeatureAccess
+  readReviews: LfrsFeatureAccess
   allowMultipleReviews: boolean
   enableReviewRating: boolean
 }

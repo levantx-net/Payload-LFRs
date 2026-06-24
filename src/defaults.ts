@@ -97,6 +97,7 @@ export function sanitizeCollectionOptions(
     ratings: input.ratings ?? true,
     replies: input.replies ?? true,
     reviews: input.reviews ?? true,
+    readReviews: input.readReviews ?? 'public',
   }
 }
 

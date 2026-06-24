@@ -3,6 +3,7 @@ import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
 import type { SanitizedLfrsConfig } from '../types.js'
 
 import { getEnabledFeatures } from '../utilities/getEnabledFeatures.js'
+import { resolveFeatureAccess } from '../utilities/resolveFeatureAccess.js'
 
 export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
@@ -38,9 +39,32 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
       }
 
+      let targetDoc: any
+      try {
+        targetDoc = await req.payload.findByID({
+          id,
+          collection,
+          overrideAccess: true,
+          req,
+        })
+      } catch (err: any) {
+        throw new APIError('Target document not found', 404)
+      }
+
       if (type === 'reviews') {
         if (!enabledFeatures.has('reviews')) {
           throw new APIError('Reviews are not enabled for this collection', 404)
+        }
+
+        const readAccess = await resolveFeatureAccess({
+          access: collectionOptions.readReviews,
+          req,
+          targetCollection: collection,
+          targetDoc,
+        })
+
+        if (!readAccess.allowed) {
+          throw new APIError(readAccess.reason || 'Forbidden', 403)
         }
 
         if (sanitized.reviewModeration) {

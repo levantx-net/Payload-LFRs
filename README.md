@@ -80,6 +80,7 @@ collections: {
     favourites: ['admin', 'subscriber'], // Only specific roles can favourite
     ratings: true,
     reviews: true,
+    readReviews: 'public', // Set who can read reviews
     allowMultipleReviews: true, // Allow users to leave multiple reviews (default: false)
     enableReviewRating: false, // Make review ratings optional for comment-style reviews (default: true)
     replies: ['admin'], // Enable replies, but only admins can respond
