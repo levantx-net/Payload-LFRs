@@ -259,6 +259,17 @@ export interface LfrsCollectionOptions {
    */
   reviews?: LfrsFeatureAccess
   /**
+   * Whether to allow users to leave multiple reviews on the same document.
+   * Default: false
+   */
+  allowMultipleReviews?: boolean
+  /**
+   * Whether reviews must include a rating score.
+   * If false, users can leave comments without rating.
+   * Default: true
+   */
+  enableReviewRating?: boolean
+  /**
    * Enable/control replies on reviews.
    * Default: true (any authenticated user can reply).
    * Replies are one level deep — no nested threads.
@@ -481,7 +492,7 @@ Same uniqueness pattern as likes.
 | `status`           | `select` (`pending` \| `approved` \| `rejected`) | Only if `reviewModeration` enabled | Moderation status                                                       |
 | `repliesCount`     | `number`                                         | Always                             | Cached count of replies (default: 0)                                    |
 
-**Compound uniqueness**: One review per user per target doc.
+**Compound uniqueness**: One review per user per target doc, unless `allowMultipleReviews` is enabled for the target collection, in which case users can post multiple reviews.
 
 ### 4.6 `lfrs-replies`
 
@@ -818,6 +829,18 @@ Response: {
 - Returns count of ratings per score value — powers the Amazon-style rating breakdown bars
 - Combines ratings from both standalone ratings and review scores
 
+### 7.10 Get User Favourites
+
+```
+GET /api/lfrs/user-favourites?collection=<slug>
+Response: {
+  favourites: string[] // Array of targetDoc IDs
+}
+```
+
+- Authenticated only
+- Returns an array of document IDs that the current user has favourited in the specified target collection.
+
 ---
 
 ## 8. Hooks Architecture
@@ -838,7 +861,8 @@ Response: {
   - `<= rating.max`
   - A clean multiple of `rating.step` (using modulo with floating-point tolerance: `Math.abs(score % step) < 1e-9`)
 - Throws `APIError('Invalid score. Must be between X and Y in increments of Z', 400)`
-- Runs on both `lfrs-ratings` and `lfrs-reviews` collections
+- Runs on both `lfrs-ratings` and `lfrs-reviews` collections.
+- **Dynamic Check**: An inline hook also ensures that `data.score` is provided on `reviews` if and only if `enableReviewRating` is true for that target collection.
 
 #### `beforeChange` — review-specific: `validateReviewMedia`
 
