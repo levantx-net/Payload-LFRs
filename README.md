@@ -184,8 +184,49 @@ The plugin exposes several endpoints for interacting with the LFRs features from
 - `GET /api/lfrs/interactions` - Get paginated lists of interactions.
 - `GET /api/lfrs/distribution` - Get the rating distribution for a document.
 - `GET /api/lfrs/user-favourites` - Get an array of document IDs favourited by the user for a collection.
-- `GET /api/lfrs/likes-count` - Get the count of likes for a specific document.
-- `GET /api/lfrs/dislikes-count` - Get the count of dislikes for a specific document.
+
+#### `GET /api/lfrs/likes-count`
+
+Retrieves the total count of likes for a specific document.
+
+**Query Parameters:**
+- `collection` (required)
+- `id` (required)
+
+**Returns:** `{ "likesCount": number }`
+
+#### `GET /api/lfrs/likes-users`
+
+Retrieves an array of user IDs who liked a specific document.
+
+**Query Parameters:**
+- `collection` (required)
+- `id` (required)
+- `limit` (optional, default: 1000)
+
+**Returns:** `{ "userIds": string[] }`
+
+#### `GET /api/lfrs/dislikes-count`
+
+Retrieves the total count of dislikes for a specific document.
+
+**Query Parameters:**
+- `collection` (required)
+- `id` (required)
+
+**Returns:** `{ "dislikesCount": number }`
+
+#### `GET /api/lfrs/dislikes-users`
+
+Retrieves an array of user IDs who disliked a specific document.
+
+**Query Parameters:**
+- `collection` (required)
+- `id` (required)
+- `limit` (optional, default: 1000)
+
+**Returns:** `{ "userIds": string[] }`
+
 - `GET /api/lfrs/user-reviews` - Get all reviews submitted by a specific user for a document.
 
 _Authentication is required for `POST` and `DELETE` endpoints._

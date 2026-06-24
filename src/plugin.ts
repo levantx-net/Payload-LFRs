@@ -15,12 +15,14 @@ import { createFavouriteEndpoint } from './endpoints/favourite.js'
 import { createInteractionsEndpoint } from './endpoints/interactions.js'
 import { createLikeEndpoint } from './endpoints/like.js'
 import { createLikesCountEndpoint } from './endpoints/likesCount.js'
+import { createLikesUsersEndpoint } from './endpoints/likesUsers.js'
 import { createRateEndpoint } from './endpoints/rate.js'
 import { createReplyEndpoint, deleteReplyEndpoint } from './endpoints/reply.js'
 import { createReviewEndpoint } from './endpoints/review.js'
 import { createStatusEndpoint } from './endpoints/status.js'
 import { createUserFavouritesEndpoint } from './endpoints/userFavourites.js'
 import { createUserReviewsEndpoint } from './endpoints/userReviews.js'
+import { createDislikesUsersEndpoint } from './endpoints/dislikesUsers.js'
 import { createDislikesCountEndpoint } from './endpoints/dislikesCount.js'
 import { createAggregateFields } from './fields/aggregateFields.js'
 import { createJoinFields } from './fields/joinFields.js'
@@ -174,9 +176,19 @@ export const payloadLfRs =
         path: '/lfrs/likes-count',
       },
       {
+        handler: createLikesUsersEndpoint(sanitized),
+        method: 'get',
+        path: '/lfrs/likes-users',
+      },
+      {
         handler: createDislikesCountEndpoint(sanitized),
         method: 'get',
         path: '/lfrs/dislikes-count',
+      },
+      {
+        handler: createDislikesUsersEndpoint(sanitized),
+        method: 'get',
+        path: '/lfrs/dislikes-users',
       },
       {
         handler: createUserReviewsEndpoint(sanitized),
