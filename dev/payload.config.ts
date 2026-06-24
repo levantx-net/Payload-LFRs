@@ -97,11 +97,13 @@ const buildConfigWithMemoryDB = async () => {
             likes: ['employee', 'admin'],
           },
           posts: {
+            allowMultipleReviews: true, // Can leave multiple reviews
             dislikes: true, // test mutual exclusivity
+            enableReviewRating: false, // Ratings disabled inside reviews, acts like standard comments
             favourites: true,
             likes: true,
             ratings: true,
-            replies: true,
+            replies: ['admin'], // Only admin can reply
             reviews: true,
           },
           products: {

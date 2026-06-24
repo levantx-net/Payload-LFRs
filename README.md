@@ -80,7 +80,9 @@ collections: {
     favourites: ['admin', 'subscriber'], // Only specific roles can favourite
     ratings: true,
     reviews: true,
-    replies: true, // Enable replies to reviews
+    allowMultipleReviews: true, // Allow users to leave multiple reviews (default: false)
+    enableReviewRating: false, // Make review ratings optional for comment-style reviews (default: true)
+    replies: ['admin'], // Enable replies, but only admins can respond
   }
 }
 ```
@@ -91,7 +93,7 @@ For each feature (`likes`, `dislikes`, `favourites`, `ratings`, `reviews`, `repl
 
 - `true`: Any authenticated user can use the feature (default if the feature key is omitted but the feature is mentioned, depending on implementation/type defaults).
 - `false`: Feature disabled for this collection.
-- `string[]`: Only users whose `roles` array includes at least one of these roles can use the feature.
+- `string[]`: Only users whose `roles` array includes at least one of these roles can use the feature. For example, `replies: ['admin']` restricts replying to administrators.
 - `Function`: A custom async function receiving the request and target document. Return `true` to allow, `false` to deny.
 
 ```typescript
@@ -175,6 +177,7 @@ The plugin exposes several endpoints for interacting with the LFRs features from
 - `GET /api/lfrs/status` - Get the current user's interaction status for a document.
 - `GET /api/lfrs/interactions` - Get paginated lists of interactions.
 - `GET /api/lfrs/distribution` - Get the rating distribution for a document.
+- `GET /api/lfrs/user-favourites` - Get an array of document IDs favourited by the user for a collection.
 
 _Authentication is required for `POST` and `DELETE` endpoints._
 

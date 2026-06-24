@@ -99,7 +99,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
     <div className={`${styles.reviewsSection} ${className}`}>
       <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
         <h2>Reviews</h2>
-        {!hasMyReview && !showCompose && status && (
+        {(!hasMyReview || status?.allowMultipleReviews) && !showCompose && status && (
           <button
             className={`${styles.button} ${styles.buttonPrimary}`}
             onClick={() => setShowCompose(true)}
@@ -135,7 +135,8 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
         <div style={{ marginBottom: '24px' }}>
           <LfrsComposeReview
             apiBase={apiBase}
-            initialData={status.review}
+            enableReviewRating={status.enableReviewRating}
+            initialData={hasMyReview && !status?.allowMultipleReviews ? status.review : undefined}
             mediaEnabled={status.mediaEnabled}
             onAuthError={onAuthError}
             onCancel={() => setShowCompose(false)}

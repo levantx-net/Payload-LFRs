@@ -14,6 +14,7 @@ export interface LfrsComposeReviewProps {
     score?: number
     title?: string
   }
+  enableReviewRating?: boolean
   mediaEnabled?: boolean
   onAuthError?: () => void
   onCancel?: () => void
@@ -26,6 +27,7 @@ export interface LfrsComposeReviewProps {
 export const LfrsComposeReview: React.FC<LfrsComposeReviewProps> = ({
   apiBase = '/api',
   className = '',
+  enableReviewRating = true,
   initialData,
   mediaEnabled = false,
   onAuthError,
@@ -44,7 +46,7 @@ export const LfrsComposeReview: React.FC<LfrsComposeReviewProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (score === 0) {
+    if (enableReviewRating && score === 0) {
       setError('Please select a rating')
       return
     }
@@ -61,7 +63,7 @@ export const LfrsComposeReview: React.FC<LfrsComposeReviewProps> = ({
           id: targetDoc,
           body,
           collection: targetCollection,
-          score,
+          score: enableReviewRating ? score : undefined,
           title,
           // media arrays would go here if we implemented the upload flow
         }),
@@ -92,16 +94,18 @@ export const LfrsComposeReview: React.FC<LfrsComposeReviewProps> = ({
       
       {error && <div style={{ color: 'var(--lfrs-dislike-active)', fontSize: '14px' }}>{error}</div>}
 
-      <div style={{ alignItems: 'center', display: 'flex', gap: '8px' }}>
-        <span>Rating:</span>
-        <LfrsRating
-          icon={ratingConfig.icon}
-          max={ratingConfig.max}
-          onChange={setScore}
-          step={ratingConfig.step}
-          value={score}
-        />
-      </div>
+      {enableReviewRating && (
+        <div style={{ alignItems: 'center', display: 'flex', gap: '8px' }}>
+          <span>Rating:</span>
+          <LfrsRating
+            icon={ratingConfig.icon}
+            max={ratingConfig.max}
+            onChange={setScore}
+            step={ratingConfig.step}
+            value={score}
+          />
+        </div>
+      )}
 
       <input
         aria-label="Review title"
@@ -140,7 +144,7 @@ export const LfrsComposeReview: React.FC<LfrsComposeReviewProps> = ({
         )}
         <button
           className={`${styles.button} ${styles.buttonPrimary}`}
-          disabled={loading || score === 0 || !body.trim()}
+          disabled={loading || (enableReviewRating && score === 0) || !body.trim()}
           type="submit"
         >
           {loading ? 'Submitting...' : 'Submit Review'}

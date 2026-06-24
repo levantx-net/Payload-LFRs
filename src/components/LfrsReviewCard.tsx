@@ -42,15 +42,17 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = ({
       <div className={styles.reviewHeader}>
         <div>
           <div className={styles.reviewAuthor}>{authorName}</div>
-          <div style={{ marginTop: '4px' }}>
-            <LfrsRating
-              icon={ratingConfig.icon}
-              max={ratingConfig.max}
-              readonly
-              step={ratingConfig.step}
-              value={review.score}
-            />
-          </div>
+          {typeof review.score === 'number' && (
+            <div style={{ marginTop: '4px' }}>
+              <LfrsRating
+                icon={ratingConfig.icon}
+                max={ratingConfig.max}
+                readonly
+                step={ratingConfig.step}
+                value={review.score}
+              />
+            </div>
+          )}
         </div>
         <div className={styles.reviewDate}>{dateStr}</div>
       </div>

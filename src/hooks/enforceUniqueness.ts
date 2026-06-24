@@ -12,9 +12,14 @@ import { APIError } from 'payload'
  */
 export function createEnforceUniqueness(
   interactionCollectionSlug: string,
+  skipFn?: (data: any) => boolean,
 ): CollectionBeforeChangeHook {
   return async ({ data, operation, req }) => {
     if (operation !== 'create') {
+      return data
+    }
+
+    if (skipFn && skipFn(data)) {
       return data
     }
 

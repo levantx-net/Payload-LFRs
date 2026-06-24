@@ -40,8 +40,10 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = {
+        allowMultipleReviews: collectionOptions.allowMultipleReviews,
         dislikesCount,
         dislikesEnabled: enabledFeatures.has('dislikes'),
+        enableReviewRating: collectionOptions.enableReviewRating,
         favouritesEnabled: enabledFeatures.has('favourites'),
         likesCount,
         likesEnabled: enabledFeatures.has('likes'),

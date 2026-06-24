@@ -87,7 +87,6 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
       type: 'number',
       max: config.rating.max,
       min: config.rating.step,
-      required: true,
     },
   ]
 
@@ -128,8 +127,17 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
   // Build hooks
   const beforeChangeHooks: CollectionBeforeChangeHook[] = [
     enforceUser,
-    createEnforceUniqueness(config.collectionSlugs.reviews),
+    createEnforceUniqueness(config.collectionSlugs.reviews, (data) => {
+      return !!config.collections[data.targetCollection]?.allowMultipleReviews
+    }),
     createValidateTarget(config),
+    ({ data }) => {
+      const isRatingEnabled = config.collections[data.targetCollection]?.enableReviewRating ?? true
+      if (isRatingEnabled && (data.score === undefined || data.score === null)) {
+        throw new Error('A rating score is required for this review.')
+      }
+      return data
+    },
     createValidateScore(config.rating),
   ]
 

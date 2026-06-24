@@ -73,6 +73,19 @@ export interface LfrsCollectionOptions {
    * Default: true (any authenticated user)
    */
   reviews?: LfrsFeatureAccess
+
+  /**
+   * Whether to allow users to leave multiple reviews on the same document.
+   * Default: false
+   */
+  allowMultipleReviews?: boolean
+
+  /**
+   * Whether reviews must include a rating score.
+   * If false, users can leave comments without rating.
+   * Default: true
+   */
+  enableReviewRating?: boolean
 }
 
 // ─── Rating Config ─────────────────────────────────────────────────────────────
@@ -251,6 +264,8 @@ export interface SanitizedCollectionOptions {
   ratings: LfrsFeatureAccess
   replies: LfrsFeatureAccess
   reviews: LfrsFeatureAccess
+  allowMultipleReviews: boolean
+  enableReviewRating: boolean
 }
 
 export interface SanitizedRatingConfig {

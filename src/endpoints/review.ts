@@ -11,13 +11,18 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       const body = req.json ? await req.json() : req.body
       const { id, body: reviewBody, collection, media, score, title } = body || {}
 
-      if (!collection || !id || !reviewBody || typeof score !== 'number') {
-        throw new APIError('Missing collection, id, body, or valid score', 400)
+      if (!collection || !id || !reviewBody) {
+        throw new APIError('Missing collection, id, or body', 400)
       }
 
       const collectionOptions = sanitized.collections[collection]
       if (!collectionOptions) {
         throw new APIError('LFRs is not enabled for this collection', 404)
+      }
+
+      const enableReviewRating = collectionOptions.enableReviewRating ?? true
+      if (enableReviewRating && typeof score !== 'number') {
+        throw new APIError('Missing valid score', 400)
       }
 
       const enabledFeatures = getEnabledFeatures(collectionOptions)
@@ -86,7 +91,7 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let reviewDoc: any
 
-      if (existingReviews.docs.length > 0) {
+      if (existingReviews.docs.length > 0 && !collectionOptions.allowMultipleReviews) {
         // Update existing review
         reviewDoc = await req.payload.update({
           id: existingReviews.docs[0].id as string,
