@@ -68,11 +68,8 @@ export const LfrsRating: React.FC<LfrsRatingProps> = ({
             key={item}
             onClick={() => !readonly && onChange?.(item)}
             onMouseEnter={() => !readonly && setHoverValue(item)}
-            // eslint-disable-next-line perfectionist/sort-objects
-            // eslint-disable-next-line perfectionist/sort-objects
             style={{ cursor: readonly ? 'default' : 'pointer', display: 'flex', border: 'none', background: 'transparent', padding: 0 }}
             type="button"
-            // eslint-disable-next-line perfectionist/sort-jsx-props
             aria-label={`Rate ${item} out of ${max}`}
           >
             {renderIcon(isActive)}

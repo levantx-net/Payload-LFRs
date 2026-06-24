@@ -27,6 +27,9 @@ export default [
   {
     rules: {
       'no-restricted-exports': 'off',
+      'perfectionist/sort-objects': 'off',
+      'perfectionist/sort-jsx-props': 'off',
+      'perfectionist/sort-imports': 'off',
     },
   },
   {
