@@ -6,6 +6,7 @@ import { LfrsComposeReply } from './LfrsComposeReply.js'
 import { LfrsRating } from './LfrsRating.js'
 import { LfrsReplyCard } from './LfrsReplyCard.js'
 import styles from './styles/lfrs.module.css'
+import { formatRelativeTime } from '../utilities/formatRelativeTime.js'
 
 export interface LfrsReviewCardProps {
   apiBase?: string
@@ -30,7 +31,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
     const [isReplying, setIsReplying] = useState(false)
 
     const authorName = review.user?.name || review.user?.email || 'Anonymous'
-    const dateStr = new Date(review.createdAt).toLocaleDateString()
+    const dateStr = formatRelativeTime(review.createdAt)
 
     const handleReplySuccess = () => {
       setIsReplying(false)

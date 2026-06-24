@@ -3,6 +3,7 @@
 import React from 'react'
 
 import styles from './styles/lfrs.module.css'
+import { formatRelativeTime } from '../utilities/formatRelativeTime.js'
 
 export interface LfrsReplyCardProps {
   className?: string
@@ -12,7 +13,7 @@ export interface LfrsReplyCardProps {
 export const LfrsReplyCard: React.FC<LfrsReplyCardProps> = React.memo(
   ({ className = '', reply }) => {
     const authorName = reply.user?.name || reply.user?.email || 'Anonymous'
-    const dateStr = new Date(reply.createdAt).toLocaleDateString()
+    const dateStr = formatRelativeTime(reply.createdAt)
 
     return (
       <div className={`${styles.replyCard} ${className}`}>
