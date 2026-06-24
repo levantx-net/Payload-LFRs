@@ -23,6 +23,21 @@ pnpm add payload-lfrs
 yarn add payload-lfrs
 ```
 
+## Example Project
+
+This repository includes a fully functioning Next.js example project located in the `dev` folder. It demonstrates how to integrate the plugin into a Payload configuration and how to use the provided React components in a frontend application.
+
+To run the example project locally:
+
+```bash
+git clone https://github.com/Talaween/Payload-LFRs.git
+cd Payload-LFRs
+pnpm install
+pnpm dev
+```
+
+The example application will be available at `http://localhost:3000`.
+
 ## Basic Usage
 
 Add the plugin to your Payload configuration:
@@ -253,6 +268,14 @@ If you are reviewing, contributing to, or debugging the plugin, here's an overvi
 - `src/hooks/`: Contains Payload lifecycle hooks. E.g., `cascadeDelete.ts` ensures that when a target document is deleted, all associated interactions are also removed to prevent orphaned records.
 - `src/admin/`: React components for Payload's Admin panel. Includes status widgets and the Review Moderation view.
 - `src/types.ts`: TypeScript interfaces and types for configuration, internal sanitized config, and feature access.
+
+### Aggregate Count Logic (Endpoint-Driven)
+
+To ensure high reliability and avoid transaction context poisoning within Payload CMS, the aggregation logic (e.g., updating a post's `likesCount` or `dislikesCount`) is primarily **Endpoint-Driven**:
+
+1. **Endpoints Suppress Hooks**: When a user interacts via the API endpoints (e.g., `/api/lfrs/like`), the endpoints perform the necessary database mutations (`create`, `delete`) while passing `context: { skipLfrsHooks: true }`. This suppresses the automatic hook-based recalculation.
+2. **Explicit Updates**: After all mutations complete successfully, the endpoint explicitly counts the interactions directly from the database (serving as the source of truth) and performs a single atomic update to the target document's aggregate fields.
+3. **Admin Panel Fallback**: The `afterChange` and `afterDelete` hooks in `src/hooks/recalculateAggregates.ts` are still kept as fallbacks. They will automatically recalculate the counts if an administrator creates or deletes an interaction manually from the Payload Admin UI, maintaining data consistency.
 
 ## License
 

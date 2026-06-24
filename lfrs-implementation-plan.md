@@ -643,7 +643,7 @@ Response: { liked: boolean, likesCount: number, dislikesCount?: number }
 - Toggles: if already liked → delete → return `liked: false`
 - If not liked → create → return `liked: true`
 - **Mutual exclusivity**: If dislikes are enabled and user has an existing dislike, the dislike is automatically removed when liking
-- Updates target doc `lfrs.likesCount` (and `lfrs.dislikesCount` if applicable)
+- **Performance Optimization**: Suppresses the hook-based full recalculation via `skipLfrsHooks: true` and updates the target doc's `lfrs.likesCount` (and `lfrs.dislikesCount` if applicable) directly.
 
 ### 7.2 Dislike / Un-dislike (Toggle)
 
@@ -655,7 +655,7 @@ Response: { disliked: boolean, dislikesCount: number, likesCount: number }
 
 - **Feature access check**: resolves `dislikes` access for `collection`
 - Only available if dislikes are enabled for this collection
-- Same toggle pattern as likes
+- Same toggle pattern as likes, including the `skipLfrsHooks: true` performance optimization.
 - **Mutual exclusivity**: If user has an existing like, it is automatically removed when disliking
 - Returns `404` if dislikes are not enabled for this collection
 
@@ -668,7 +668,7 @@ Response: { favourited: boolean, favouritesCount: number }
 ```
 
 - **Feature access check**: resolves `favourites` access for `collection`
-- Same toggle pattern as likes.
+- Same toggle pattern as likes, including the `skipLfrsHooks: true` performance optimization.
 
 ### 7.4 Rate
 
@@ -854,7 +854,7 @@ Response: {
 
 #### `afterChange` (on likes, dislikes, favourites, ratings, reviews)
 
-- **Recalculate aggregates**: Count all interactions for `targetCollection` + `targetDoc`, then update the target doc's `lfrs` group fields
+- **Recalculate aggregates**: Count all interactions for `targetCollection` + `targetDoc`, then update the target doc's `lfrs` group fields. *Note: The `like`, `dislike`, and `favourite` endpoints bypass this hook by passing `skipLfrsHooks: true` and update their specific counts directly for better performance.*
 - **Use `req`** for transaction safety
 - **Use `context.skipLfrsHooks`** to prevent infinite loops when updating target doc
 
@@ -1109,6 +1109,8 @@ For **replies**, we provide create/delete endpoints (no upsert) since a user can
 ### 11.3 Aggregate Caching Strategy
 
 Cached counts on the target document avoid N+1 queries. The tradeoff is eventual consistency during concurrent writes, but this is acceptable for social features. The aggregates are recalculated from the source of truth (the interaction collections) on every write, not incremented/decremented, avoiding drift.
+
+**Performance Optimization**: For toggle-based actions (likes, dislikes, favourites), the endpoint skips the full hook-based recalculation (using `context.skipLfrsHooks = true`) and directly counts and updates its specific field. For score-based actions (ratings, reviews) where averages must be computed, the hook performs a full recalculation.
 
 ### 11.4 Review Moderation
 

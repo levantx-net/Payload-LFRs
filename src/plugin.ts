@@ -18,6 +18,7 @@ import { createRateEndpoint } from './endpoints/rate.js'
 import { createReplyEndpoint, deleteReplyEndpoint } from './endpoints/reply.js'
 import { createReviewEndpoint } from './endpoints/review.js'
 import { createStatusEndpoint } from './endpoints/status.js'
+import { createUserFavouritesEndpoint } from './endpoints/userFavourites.js'
 import { createAggregateFields } from './fields/aggregateFields.js'
 import { createJoinFields } from './fields/joinFields.js'
 import { createCascadeDelete } from './hooks/cascadeDelete.js'
@@ -158,6 +159,11 @@ export const payloadLfRs =
         handler: createDistributionEndpoint(sanitized),
         method: 'get',
         path: '/lfrs/distribution',
+      },
+      {
+        handler: createUserFavouritesEndpoint(sanitized),
+        method: 'get',
+        path: '/lfrs/user-favourites',
       },
     )
 

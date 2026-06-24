@@ -20,18 +20,45 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       }
 
       const userId = req.user?.id
-      if (!userId) {
-        throw new APIError('Authentication required', 401)
+
+      let likesCount = 0
+      let dislikesCount = 0
+      try {
+        const targetDoc = await req.payload.findByID({
+          id,
+          collection,
+          overrideAccess: true,
+          req,
+        })
+        likesCount = targetDoc?.lfrs?.likesCount || 0
+        dislikesCount = targetDoc?.lfrs?.dislikesCount || 0
+      } catch (e) {
+        // Ignore
       }
 
       const enabledFeatures = getEnabledFeatures(collectionOptions)
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = {
+        dislikesCount,
         dislikesEnabled: enabledFeatures.has('dislikes'),
+        favouritesEnabled: enabledFeatures.has('favourites'),
+        likesCount,
+        likesEnabled: enabledFeatures.has('likes'),
         mediaEnabled: sanitized.mediaEnabled,
         ratingConfig: sanitized.rating,
+        ratingsEnabled: enabledFeatures.has('ratings'),
         repliesEnabled: enabledFeatures.has('replies'),
+        reviewsEnabled: enabledFeatures.has('reviews'),
+      }
+
+      if (!userId) {
+        response.liked = false
+        response.disliked = false
+        response.favourited = false
+        response.rating = null
+        response.review = null
+        return Response.json(response)
       }
 
       // Check if liked

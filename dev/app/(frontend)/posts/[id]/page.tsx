@@ -23,12 +23,6 @@ export default async function SinglePostPage({ params }: { params: { id: string 
     notFound()
   }
 
-  // To properly render LfrsLikeDislike and LfrsFavourite initial states,
-  // we would typically fetch the current user's interaction status.
-  // We'll rely on the optimistic updates and API endpoint data for now.
-  const likesCount = post?.lfrs?.likesCount || 0
-  const dislikesCount = post?.lfrs?.dislikesCount || 0
-
   return (
     <div className="post-container">
       <div className="post-header">
@@ -39,9 +33,6 @@ export default async function SinglePostPage({ params }: { params: { id: string 
 
         <div className="lfrs-actions">
           <LfrsLikeDislike
-            dislikesEnabled={true}
-            initialDislikesCount={dislikesCount}
-            initialLikesCount={likesCount}
             targetCollection="posts"
             targetDoc={id}
           />

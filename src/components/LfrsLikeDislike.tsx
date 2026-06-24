@@ -7,7 +7,6 @@ import styles from './styles/lfrs.module.css'
 export interface LfrsLikeDislikeProps {
   apiBase?: string
   className?: string
-  dislikesEnabled?: boolean
   initialDisliked?: boolean
   initialDislikesCount?: number
   initialLiked?: boolean
@@ -52,7 +51,6 @@ const ThumbsDownIcon = () => (
 export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   apiBase = '/api',
   className = '',
-  dislikesEnabled = false,
   initialDisliked,
   initialDislikesCount,
   initialLiked,
@@ -68,27 +66,40 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   const [likesCount, setLikesCount] = useState(initialLikesCount ?? 0)
   const [dislikesCount, setDislikesCount] = useState(initialDislikesCount ?? 0)
 
+  const [likesEnabled, setLikesEnabled] = useState<boolean>(true)
+  const [dislikesEnabledState, setDislikesEnabledState] = useState<boolean>(false)
+
   useEffect(() => {
-    if (initialLiked === undefined || initialDisliked === undefined) {
-      fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
-        .then((res) => {
-          if (res.ok) {
-            return res.json()
+    fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        }
+        return null
+      })
+      .then((data) => {
+        if (data) {
+          if (initialLiked === undefined && typeof data.liked === 'boolean') {
+            setLiked(data.liked)
           }
-          return null
-        })
-        .then((data) => {
-          if (data) {
-            if (initialLiked === undefined && typeof data.liked === 'boolean') {
-              setLiked(data.liked)
-            }
-            if (initialDisliked === undefined && typeof data.disliked === 'boolean') {
-              setDisliked(data.disliked)
-            }
+          if (initialDisliked === undefined && typeof data.disliked === 'boolean') {
+            setDisliked(data.disliked)
           }
-        })
-        .catch(() => {})
-    }
+          if (typeof data.likesEnabled === 'boolean') {
+            setLikesEnabled(data.likesEnabled)
+          }
+          if (typeof data.dislikesEnabled === 'boolean') {
+            setDislikesEnabledState(data.dislikesEnabled)
+          }
+          if (initialLikesCount === undefined && typeof data.likesCount === 'number') {
+            setLikesCount(data.likesCount)
+          }
+          if (initialDislikesCount === undefined && typeof data.dislikesCount === 'number') {
+            setDislikesCount(data.dislikesCount)
+          }
+        }
+      })
+      .catch(() => {})
   }, [apiBase, initialLiked, initialDisliked, targetCollection, targetDoc])
 
   const handleToggle = async (type: 'dislike' | 'like') => {
@@ -173,18 +184,20 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       className={`${styles.likeDislikeGroup} ${className}`}
       style={{ display: 'flex', gap: '8px' }}
     >
-      <button
-        aria-label={liked ? 'Unlike' : 'Like'}
-        className={`${styles.toggleButton} ${liked ? styles.likeActive : ''}`}
-        disabled={loading}
-        onClick={() => handleToggle('like')}
-        type="button"
-      >
-        <ThumbsUpIcon />
-        <span>{likesCount}</span>
-      </button>
+      {likesEnabled && (
+        <button
+          aria-label={liked ? 'Unlike' : 'Like'}
+          className={`${styles.toggleButton} ${liked ? styles.likeActive : ''}`}
+          disabled={loading}
+          onClick={() => handleToggle('like')}
+          type="button"
+        >
+          <ThumbsUpIcon />
+          <span>{likesCount}</span>
+        </button>
+      )}
 
-      {dislikesEnabled && (
+      {dislikesEnabledState && (
         <button
           aria-label={disliked ? 'Remove dislike' : 'Dislike'}
           className={`${styles.toggleButton} ${disliked ? styles.dislikeActive : ''}`}
