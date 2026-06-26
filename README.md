@@ -191,9 +191,10 @@ Override the default slugs for the internal collections created by the plugin (`
 
 ### Admin UI Runtime Controls (`LfrsSettings`)
 
-The plugin automatically generates a **Payload Global** named `LFRs Settings` in the admin panel. This allows administrators to temporarily enable/disable features on the fly without changing code or restarting the server. 
+The plugin automatically generates a **Payload Global** named `LFRs Settings` in the admin panel. This allows administrators to temporarily enable/disable features on the fly without changing code or restarting the server.
 
 **Important:** The admin controls are strictly generated based on the developer's static config (`payload.config.ts`).
+
 - An admin **cannot** turn on a feature (like `Reviews`) if the developer explicitly set it to `false` in the code.
 - Admin overrides (e.g., turning off Moderation or disabling Likes during a spam attack) are instantly synced with the frontend UI and the REST API securely blocks all associated mutations.
 
@@ -219,12 +220,13 @@ plugins: [
       onLiked: async ({ req, like }) => {
         // Example: Award points to the target document's author
       },
-    }
-  })
+    },
+  }),
 ]
 ```
 
 **Available Callbacks (all receive the `PayloadRequest` object along with relevant context):**
+
 - **`onReviewSubmitted`**: `{ req, review }` — Triggered when a user creates or updates a review.
 - **`onReviewDeleted`**: `{ req, reviewId, targetCollection, targetDoc }` — Triggered when a user deletes their review.
 - **`onReplySubmitted`**: `{ req, reply }` — Triggered when a user creates or updates a reply.
@@ -255,67 +257,59 @@ If `reviewModeration: true` is enabled in your configuration, the plugin provide
 
 The plugin exposes several endpoints for interacting with the LFRs features from your frontend:
 
-- `POST /api/lfrs/like`
-- `POST /api/lfrs/dislike`
-- `POST /api/lfrs/favourite`
-- `POST /api/lfrs/rate`
-- `POST /api/lfrs/review`
-- `POST /api/lfrs/reply`
-- `DELETE /api/lfrs/reply`
-- `GET /api/lfrs/status` - Get the current user's interaction status for a document.
-- `GET /api/lfrs/interactions` - Get paginated lists of interactions.
-- `GET /api/lfrs/distribution` - Get the rating distribution for a document.
-- `GET /api/lfrs/user-favourites` - Get an array of document IDs favourited by the user for a collection.
+- `POST /api/lfrs/like` — Toggles a user's like on a document.
+  - **Body:** `{ collection: string, id: string }`
+  - **Returns:** `{ liked: boolean, likesCount: number, disliked?: boolean, dislikesCount?: number }`
+- `POST /api/lfrs/dislike` — Toggles a user's dislike on a document.
+  - **Body:** `{ collection: string, id: string }`
+  - **Returns:** `{ disliked: boolean, dislikesCount: number, liked?: boolean, likesCount?: number }`
+- `POST /api/lfrs/favourite` — Toggles a user's favorite on a document.
+  - **Body:** `{ collection: string, id: string }`
+  - **Returns:** `{ favourited: boolean, favouritesCount: number }`
+- `POST /api/lfrs/rate` — Submits or updates a user rating score.
+  - **Body:** `{ collection: string, id: string, score: number }`
+  - **Returns:** `{ rating: object, ratingConfig: object, ratingsAverage: number, ratingsCount: number }`
+- `POST /api/lfrs/review` — Submits or updates a user review.
+  - **Body:** `{ collection: string, id: string, body: string, title?: string, score?: number, media?: string[], reviewId?: string }`
+  - **Returns:** `{ review: object, reviewsCount: number }`
+- `DELETE /api/lfrs/review` — Deletes a user's review.
+  - **Body:** `{ reviewId: string }`
+  - **Returns:** `{ deleted: true, reviewsCount: number }`
+- `POST /api/lfrs/reply` — Submits or updates a reply to a review.
+  - **Body:** `{ body: string, reviewId: string, replyId?: string }`
+  - **Returns:** `{ reply: object, repliesCount: number }`
+- `DELETE /api/lfrs/reply` — Deletes a reply.
+  - **Body:** `{ replyId: string }`
+  - **Returns:** `{ deleted: true, repliesCount: number }`
+- `GET /api/lfrs/status` — Returns feature configuration flags and the current user's interaction states.
+  - **Query:** `collection` (required), `id` (required)
+  - **Returns:** `{ likesCount: number, dislikesCount: number, liked: boolean, favourited: boolean, rating: number | null, review: object | null, ... }`
+- `GET /api/lfrs/interactions` — Fetches paginated lists of ratings or reviews.
+  - **Query:** `collection` (required), `id` (required), `type` (optional: `'reviews'` | `'ratings'`, default: `'reviews'`), `page` (optional), `limit` (optional), `sort` (optional: `'newest'` | `'oldest'` | `'highest'` | `'lowest'`)
+  - **Returns:** `{ docs: Array, page: number, totalDocs: number, totalPages: number }`
+- `GET /api/lfrs/distribution` — Returns rating score distribution frequencies.
+  - **Query:** `collection` (required), `id` (required)
+  - **Returns:** `{ averageScore: number, totalRatings: number, distribution: Array<{ score: number, count: number, percentage: number }> }`
+- `GET /api/lfrs/user-favourites` — Returns document IDs favorited by a user.
+  - **Query:** `collection` (required), `userId` (required), `limit` (optional)
+  - **Returns:** `{ ids: string[] }`
+- `GET /api/lfrs/user-reviews` — Gets a specific user's reviews for a document.
+  - **Query:** `collection` (required), `id` (required), `userId` (required)
+  - **Returns:** `{ reviews: Array }`
+- `GET /api/lfrs/likes-count` — Gets the total likes count.
+  - **Query:** `collection` (required), `id` (required)
+  - **Returns:** `{ likesCount: number }`
+- `GET /api/lfrs/dislikes-count` — Gets the total dislikes count.
+  - **Query:** `collection` (required), `id` (required)
+  - **Returns:** `{ dislikesCount: number }`
+- `GET /api/lfrs/likes-users` — Gets user IDs who liked a document.
+  - **Query:** `collection` (required), `id` (required), `limit` (optional)
+  - **Returns:** `{ userIds: string[] }`
+- `GET /api/lfrs/dislikes-users` — Gets user IDs who disliked a document.
+  - **Query:** `collection` (required), `id` (required), `limit` (optional)
+  - **Returns:** `{ userIds: string[] }`
 
-#### `GET /api/lfrs/likes-count`
-
-Retrieves the total count of likes for a specific document.
-
-**Query Parameters:**
-
-- `collection` (required)
-- `id` (required)
-
-**Returns:** `{ "likesCount": number }`
-
-#### `GET /api/lfrs/likes-users`
-
-Retrieves an array of user IDs who liked a specific document.
-
-**Query Parameters:**
-
-- `collection` (required)
-- `id` (required)
-- `limit` (optional, default: 1000)
-
-**Returns:** `{ "userIds": string[] }`
-
-#### `GET /api/lfrs/dislikes-count`
-
-Retrieves the total count of dislikes for a specific document.
-
-**Query Parameters:**
-
-- `collection` (required)
-- `id` (required)
-
-**Returns:** `{ "dislikesCount": number }`
-
-#### `GET /api/lfrs/dislikes-users`
-
-Retrieves an array of user IDs who disliked a specific document.
-
-**Query Parameters:**
-
-- `collection` (required)
-- `id` (required)
-- `limit` (optional, default: 1000)
-
-**Returns:** `{ "userIds": string[] }`
-
-- `GET /api/lfrs/user-reviews` - Get all reviews submitted by a specific user for a document.
-
-_Authentication is required for `POST` and `DELETE` endpoints._
+- **Authentication (with user context) is required for all `POST` and `DELETE` endpoints.**
 
 ## Frontend UI Components
 
