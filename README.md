@@ -93,7 +93,7 @@ export default buildConfig({
         maxFileSize: 5 * 1024 * 1024, // 5MB
       },
       reviewModeration: true,  // Require reviews to be approved before they are public (default: false)
-      adminControls: true,     // Set to false to hide plugin collections and globals from Admin UI
+      adminControls: true,     // Set to false to hide the Global Settings from the Admin UI
       adminGroup: 'LFRs',      // Navigation group name in the Admin panel (default: 'LFRs')
       usersCollectionSlug: 'users', // Slug of your auth collection (default: 'users')
     }),
@@ -200,7 +200,7 @@ The group name under which the LFRs collections will appear in the Admin UI (def
 
 ### `adminControls`
 
-Set to `false` to completely hide the plugin's collections, global settings, and moderation views from the Payload Admin panel (default: `true`). This is useful if you want to handle all interactions purely via the API or your own custom interfaces.
+Set to `false` to hide the dynamic Global Settings page (`LFRs Settings`) from the Payload Admin panel (default: `true`). This prevents administrators from dynamically overriding the plugin's configuration at runtime, while keeping interaction collections accessible.
 
 ### `disabled`
 

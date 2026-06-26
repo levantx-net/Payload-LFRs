@@ -93,22 +93,6 @@ export const payloadLFRs =
       }
     })
 
-    if (!sanitized.adminControls) {
-      const pluginSlugs = Object.values(sanitized.collectionSlugs)
-      config.collections = config.collections.map((collection) => {
-        if (pluginSlugs.includes(collection.slug as any)) {
-          return {
-            ...collection,
-            admin: {
-              ...(collection.admin || {}),
-              hidden: true,
-            },
-          }
-        }
-        return collection
-      })
-    }
-
     /**
      * If the plugin is disabled, we still keep added collections/fields
      * so the database schema is consistent (important for migrations).
@@ -234,24 +218,22 @@ export const payloadLFRs =
     }
 
     // ── Phase 7: Admin UI components will be wired here ──────────────────────
-    if (sanitized.adminControls) {
-      if (!config.admin) {
-        config.admin = {}
-      }
-      if (!config.admin.components) {
-        config.admin.components = {}
-      }
-      if (!config.admin.components.views) {
-        config.admin.components.views = {}
-      }
+    if (!config.admin) {
+      config.admin = {}
+    }
+    if (!config.admin.components) {
+      config.admin.components = {}
+    }
+    if (!config.admin.components.views) {
+      config.admin.components.views = {}
+    }
 
-      if (sanitized.reviewModeration) {
-        config.admin.components.views.lfrsModeration = {
-          Component: 'payload-lfrs/admin#ReviewModerationView',
-          exact: true,
-          path: '/lfrs-moderation',
-        } as any
-      }
+    if (sanitized.reviewModeration) {
+      config.admin.components.views.lfrsModeration = {
+        Component: 'payload-lfrs/admin#ReviewModerationView',
+        exact: true,
+        path: '/lfrs-moderation',
+      } as any
     }
 
     return config
