@@ -55,7 +55,7 @@ The example application will be available at `http://localhost:3000`.
 
 ## Basic Usage
 
-Add the plugin to your Payload configuration:
+Add the plugin to your Payload configuration. Below is a comprehensive example showcasing all available configuration options:
 
 ```typescript
 import { buildConfig } from 'payload'
@@ -66,14 +66,36 @@ export default buildConfig({
   plugins: [
     payloadLFRs({
       collections: {
-        // Enable LFRs features on the 'posts' collection
+        // Target collection slug
         posts: {
-          likes: true,
-          favourites: true,
-          ratings: true,
-          reviews: true,
+          likes: true,                 // Enable likes for authenticated users
+          dislikes: true,              // Enable dislikes (mutually exclusive with likes)
+          favourites: true,            // Enable favourites
+          ratings: true,               // Enable ratings
+          reviews: true,               // Enable reviews
+          replies: ['admin'],          // Enable replies, but restrict to admin roles
+          readReviews: 'public',       // Access control for reading reviews ('public', true, or roles array)
+          allowMultipleReviews: false, // Prevent users from submitting multiple reviews on the same doc
+          enableReviewRating: true,    // Force users to choose a rating score when reviewing
         },
       },
+      // Configure global rating options
+      rating: {
+        max: 5,        // Max rating scale value (default: 5)
+        step: 0.5,     // Value increment steps (default: 1)
+        icon: 'star',  // Icon identifier hint for frontend (default: 'star')
+      },
+      // Enable review media uploads (requires an existing upload-enabled collection)
+      reviewMedia: {
+        uploadCollection: 'media',
+        allowedMimeTypes: ['image/*'],
+        maxFiles: 5,
+        maxFileSize: 5 * 1024 * 1024, // 5MB
+      },
+      reviewModeration: true,  // Require reviews to be approved before they are public (default: false)
+      adminControls: true,     // Set to false to hide plugin collections and globals from Admin UI
+      adminGroup: 'LFRs',      // Navigation group name in the Admin panel (default: 'LFRs')
+      usersCollectionSlug: 'users', // Slug of your auth collection (default: 'users')
     }),
   ],
 })
