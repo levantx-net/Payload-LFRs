@@ -165,7 +165,20 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
     },
     fields,
     hooks: {
-      afterChange: [createRecalculateAfterChange(config)],
+      afterChange: [
+        createRecalculateAfterChange(config),
+        async ({ doc, previousDoc, req, operation }) => {
+          if (operation === 'update' && previousDoc?.status !== doc?.status) {
+            if (config.callbacks?.onReviewStateChanged) {
+              await config.callbacks.onReviewStateChanged({
+                previousStatus: previousDoc?.status,
+                req,
+                review: doc,
+              })
+            }
+          }
+        },
+      ],
       afterDelete: [createRecalculateAfterDelete(config)],
       beforeChange: beforeChangeHooks,
     },

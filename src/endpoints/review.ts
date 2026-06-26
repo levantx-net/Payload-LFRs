@@ -131,6 +131,10 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         req,
       })
 
+      if (sanitized.callbacks?.onReviewSubmitted) {
+        await sanitized.callbacks.onReviewSubmitted({ req, review: reviewDoc })
+      }
+
       return Response.json({
         review: reviewDoc,
         reviewsCount: updatedDoc.lfrs?.reviewsCount || 0,
@@ -199,6 +203,15 @@ export const deleteReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         overrideAccess: true,
         req,
       })
+
+      if (sanitized.callbacks?.onReviewDeleted) {
+        await sanitized.callbacks.onReviewDeleted({
+          req,
+          reviewId,
+          targetCollection: targetCollection as string,
+          targetDoc: targetDocId as string,
+        })
+      }
 
       return Response.json({
         deleted: true,

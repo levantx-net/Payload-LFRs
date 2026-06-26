@@ -185,6 +185,45 @@ When `disabled: true`, the plugin will continue to register its collections and 
 
 Override the default slugs for the internal collections created by the plugin (`likes`, `dislikes`, `favourites`, `ratings`, `reviews`, `replies`).
 
+### `callbacks`
+
+Hook into user interactions and moderation state changes to trigger custom business logic (e.g., sending email notifications, awarding points, syncing with external systems). All callbacks can be asynchronous.
+
+```typescript
+plugins: [
+  payloadLFRs({
+    // ...
+    callbacks: {
+      onReviewSubmitted: async ({ req, review }) => {
+        // Triggered when a user creates or edits a review
+        console.log(`Review submitted by user ${req.user.id}`)
+      },
+      onReviewStateChanged: async ({ req, review, previousStatus }) => {
+        // Triggered when an admin changes a review's moderation status
+        if (review.status === 'approved' && previousStatus !== 'approved') {
+          // Send a notification email to the author
+        }
+      },
+      onLiked: async ({ req, like }) => {
+        // Example: Award points to the target document's author
+      },
+    }
+  })
+]
+```
+
+**Available Callbacks (all receive the `PayloadRequest` object along with relevant context):**
+- **`onReviewSubmitted`**: `{ req, review }` — Triggered when a user creates or updates a review.
+- **`onReviewDeleted`**: `{ req, reviewId, targetCollection, targetDoc }` — Triggered when a user deletes their review.
+- **`onReplySubmitted`**: `{ req, reply }` — Triggered when a user creates or updates a reply.
+- **`onReviewStateChanged`**: `{ req, review, previousStatus }` — Triggered when an admin changes a review's `status` via the Admin panel.
+- **`onRatingSubmitted`**: `{ req, rating }` — Triggered when a user submits a net-new standalone rating.
+- **`onRatingUpdated`**: `{ req, rating }` — Triggered when a user updates their existing rating.
+- **`onLiked`**: `{ req, like }` — Triggered when a user likes a document.
+- **`onUnliked`**: `{ req, targetCollection, targetDoc }` — Triggered when a user removes their like.
+- **`onDisliked`**: `{ req, dislike }` — Triggered when a user dislikes a document.
+- **`onUndisliked`**: `{ req, targetCollection, targetDoc }` — Triggered when a user removes their dislike.
+
 ## How It Works
 
 1. **Collections Added**: The plugin automatically creates collections to store interactions (e.g. `lfrs_likes`, `lfrs_reviews`).

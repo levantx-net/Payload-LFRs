@@ -178,6 +178,21 @@ export interface LfrsReviewMediaConfig {
   uploadCollection: string
 }
 
+// ─── Callbacks ─────────────────────────────────────────────────────────────────
+
+export interface LfrsCallbacks {
+  onReviewSubmitted?: (args: { req: PayloadRequest; review: any }) => void | Promise<void>
+  onReplySubmitted?: (args: { req: PayloadRequest; reply: any }) => void | Promise<void>
+  onRatingSubmitted?: (args: { req: PayloadRequest; rating: any }) => void | Promise<void>
+  onReviewStateChanged?: (args: { previousStatus?: string; req: PayloadRequest; review: any }) => void | Promise<void>
+  onLiked?: (args: { like: any; req: PayloadRequest }) => void | Promise<void>
+  onDisliked?: (args: { dislike: any; req: PayloadRequest }) => void | Promise<void>
+  onUnliked?: (args: { req: PayloadRequest; targetCollection: string; targetDoc: string }) => void | Promise<void>
+  onUndisliked?: (args: { req: PayloadRequest; targetCollection: string; targetDoc: string }) => void | Promise<void>
+  onReviewDeleted?: (args: { req: PayloadRequest; reviewId: string; targetCollection: string; targetDoc: string }) => void | Promise<void>
+  onRatingUpdated?: (args: { rating: any; req: PayloadRequest }) => void | Promise<void>
+}
+
 // ─── Plugin Config ─────────────────────────────────────────────────────────────
 
 export interface LfrsPluginConfig {
@@ -239,6 +254,11 @@ export interface LfrsPluginConfig {
    * The slug of the users collection for auth (default: 'users')
    */
   usersCollectionSlug?: string
+
+  /**
+   * Optional callbacks to hook into user interactions and state changes
+   */
+  callbacks?: LfrsCallbacks
 }
 
 // ─── Sanitized Internal Config ─────────────────────────────────────────────────
@@ -262,6 +282,7 @@ export interface SanitizedLfrsConfig {
   reviewMedia: null | SanitizedReviewMediaConfig
   reviewModeration: boolean
   usersCollectionSlug: string
+  callbacks?: LfrsCallbacks
 }
 
 export interface SanitizedCollectionOptions {

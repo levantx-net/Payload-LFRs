@@ -150,5 +150,6 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     reviewMedia,
     reviewModeration: input.reviewModeration ?? false,
     usersCollectionSlug: input.usersCollectionSlug ?? DEFAULT_USERS_COLLECTION_SLUG,
+    callbacks: input.callbacks,
   }
 }

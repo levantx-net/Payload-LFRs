@@ -84,6 +84,10 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
           req,
         })
         disliked = false
+
+        if (sanitized.callbacks?.onUndisliked) {
+          await sanitized.callbacks.onUndisliked({ req, targetCollection: collection, targetDoc: id })
+        }
       } else {
         // Check mutual exclusivity with likes
         if (enabledFeatures.has('likes')) {
@@ -111,7 +115,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
         }
 
         // Create new dislike
-        await req.payload.create({
+        const dislikeDoc = await req.payload.create({
           collection: sanitized.collectionSlugs.dislikes,
           context: mutationContext,
           data: {
@@ -123,6 +127,10 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
           req,
         })
         disliked = true
+
+        if (sanitized.callbacks?.onDisliked) {
+          await sanitized.callbacks.onDisliked({ req, dislike: dislikeDoc })
+        }
       }
 
       // --- Count interactions directly (source of truth) ---

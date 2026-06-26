@@ -78,6 +78,9 @@ export const createRateEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
           overrideAccess: true,
           req,
         })
+        if (sanitized.callbacks?.onRatingUpdated) {
+          await sanitized.callbacks.onRatingUpdated({ req, rating: ratingDoc })
+        }
       } else {
         // Create new rating
         ratingDoc = await req.payload.create({
@@ -91,6 +94,9 @@ export const createRateEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
           overrideAccess: true,
           req,
         })
+        if (sanitized.callbacks?.onRatingSubmitted) {
+          await sanitized.callbacks.onRatingSubmitted({ req, rating: ratingDoc })
+        }
       }
 
       // Re-fetch target doc to get updated counts

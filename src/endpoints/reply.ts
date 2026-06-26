@@ -125,6 +125,10 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
         req,
       })
 
+      if (sanitized.callbacks?.onReplySubmitted) {
+        await sanitized.callbacks.onReplySubmitted({ req, reply: replyDoc })
+      }
+
       return Response.json({
         repliesCount: updatedReview.repliesCount || 0,
         reply: replyDoc,
