@@ -1,9 +1,9 @@
-import type { CheckboxField, GlobalConfig, GroupField } from 'payload'
+import type { CheckboxField, GlobalConfig } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
 import { isFeatureEnabled } from '../defaults.js'
-import { LfrsFeatureKey } from '../utilities/getEnabledFeatures.js'
+import { type LfrsFeatureKey } from '../utilities/getEnabledFeatures.js'
 import { invalidateLfrsSettingsCache } from '../utilities/lfrsSettingsCache.js'
 
 export const lfrsSettingsSlug = 'lfrs-settings'

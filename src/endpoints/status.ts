@@ -36,7 +36,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         })
         likesCount = targetDoc?.lfrs?.likesCount || 0
         dislikesCount = targetDoc?.lfrs?.dislikesCount || 0
-      } catch (e) {
+      } catch (_) {
         // Ignore
       }
 
@@ -163,7 +163,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         })
         if (reviews.docs.length > 0) {
           const review = reviews.docs[0]
-          
+
           if (enabledFeatures.has('replies')) {
             const replies = await req.payload.find({
               collection: sanitized.collectionSlugs.replies,
@@ -176,7 +176,14 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
                   { review: { equals: review.id } },
                   ...(sanitized.reviewModeration
                     ? req.user
-                      ? [{ or: [{ status: { equals: 'approved' } }, { user: { equals: req.user.id } }] }]
+                      ? [
+                          {
+                            or: [
+                              { status: { equals: 'approved' } },
+                              { user: { equals: req.user.id } },
+                            ],
+                          },
+                        ]
                       : [{ status: { equals: 'approved' } }]
                     : []),
                 ],
@@ -186,7 +193,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
           } else {
             review.replies = []
           }
-          
+
           response.review = review
         } else {
           response.review = null

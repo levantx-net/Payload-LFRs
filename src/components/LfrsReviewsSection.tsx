@@ -26,14 +26,14 @@ export interface LfrsReviewsSectionProps {
 
 /**
  * `LfrsReviewsSection` is the primary orchestrator for displaying, writing, and listing reviews for an item.
- * 
+ *
  * **Component Purpose:**
  * - Fetches user interaction status and existing reviews from the backend.
  * - Separates and highlights the current user's review as "Your Review" with editing options.
  * - Coordinates toggling the `LfrsComposeReview` form for creating/editing reviews.
  * - Handles paginated review list fetching with a "Load More" action.
  * - Dispatches a window-level custom `lfrs-review-added` event when a review is submitted.
- * 
+ *
  * **User Interaction:**
  * - **Writing/Editing:** Clicking "Write a Review" or "Edit Review" opens the creation/edit form.
  * - **Pagination:** Clicking "Load More" appends the next page of reviews to the list.
@@ -127,38 +127,52 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
   }, [])
   const handleWriteReview = useCallback(() => setComposeMode('create'), [])
 
-  const handleDeleteReview = useCallback(async (review: any) => {
-    try {
-      const res = await fetch(`${apiBase}/lfrs/review`, {
-        body: JSON.stringify({ reviewId: review.id }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'DELETE',
-      })
-      if (!res.ok) {
-        if (res.status === 401 && onAuthError) onAuthError()
-        return
+  const handleDeleteReview = useCallback(
+    async (review: any) => {
+      try {
+        const res = await fetch(`${apiBase}/lfrs/review`, {
+          body: JSON.stringify({ reviewId: review.id }),
+          headers: { 'Content-Type': 'application/json' },
+          method: 'DELETE',
+        })
+        if (!res.ok) {
+          if (res.status === 401 && onAuthError) {
+            onAuthError()
+          }
+          return
+        }
+        void fetchStatus()
+        void fetchReviews(page)
+        window.dispatchEvent(new Event('lfrs-review-added'))
+      } catch (_) {
+        // Ignore
       }
-      void fetchStatus()
-      void fetchReviews(page)
-      window.dispatchEvent(new Event('lfrs-review-added'))
-    } catch (_) {}
-  }, [apiBase, fetchStatus, fetchReviews, page, onAuthError])
+    },
+    [apiBase, fetchStatus, fetchReviews, page, onAuthError],
+  )
 
-  const handleDeleteReply = useCallback(async (reply: any) => {
-    try {
-      const res = await fetch(`${apiBase}/lfrs/reply`, {
-        body: JSON.stringify({ replyId: reply.id }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'DELETE',
-      })
-      if (!res.ok) {
-        if (res.status === 401 && onAuthError) onAuthError()
-        return
+  const handleDeleteReply = useCallback(
+    async (reply: any) => {
+      try {
+        const res = await fetch(`${apiBase}/lfrs/reply`, {
+          body: JSON.stringify({ replyId: reply.id }),
+          headers: { 'Content-Type': 'application/json' },
+          method: 'DELETE',
+        })
+        if (!res.ok) {
+          if (res.status === 401 && onAuthError) {
+            onAuthError()
+          }
+          return
+        }
+        void fetchStatus()
+        void fetchReviews(page)
+      } catch (_) {
+        // Ignore
       }
-      void fetchStatus()
-      void fetchReviews(page)
-    } catch (_) {}
-  }, [apiBase, fetchStatus, fetchReviews, page, onAuthError])
+    },
+    [apiBase, fetchStatus, fetchReviews, page, onAuthError],
+  )
 
   if (statusLoading && reviewsLoading) {
     return (

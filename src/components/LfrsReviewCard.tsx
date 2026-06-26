@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-
 import { LfrsComposeReply } from './LfrsComposeReply.js'
 import { LfrsRating } from './LfrsRating.js'
 import { LfrsReplyCard } from './LfrsReplyCard.js'
@@ -40,13 +39,13 @@ export interface LfrsReviewCardProps {
 
 /**
  * `LfrsReviewCard` displays a review including user metadata, body, score rating, and media attachments.
- * 
+ *
  * **Component Purpose:**
  * - Formats and displays a review's rating score (via `LfrsRating`), title, description, and relative timestamp.
  * - Renders a grid of attached media images (if any).
  * - Renders a list of nested replies (via `LfrsReplyCard`).
  * - Manages an inline reply form toggle.
- * 
+ *
  * **User Interaction:**
  * - **Toggling Reply Form:** Click the "Reply" action link (if `repliesEnabled` is true) to toggle the compose form (`LfrsComposeReply`).
  * - **Composing Reply:** Interact with the inline text input and buttons to submit a reply.
@@ -72,7 +71,8 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
 
     const authorName = review.user?.name || review.user?.email || 'Anonymous'
     const dateStr = formatRelativeTime(review.createdAt)
-    const isOwner = currentUserId && (review.user === currentUserId || review.user?.id === currentUserId)
+    const isOwner =
+      currentUserId && (review.user === currentUserId || review.user?.id === currentUserId)
     const canEdit = isOwner && review.status !== 'approved'
 
     const handleReplySuccess = () => {
@@ -140,11 +140,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
               </button>
             )}
             {canEdit && onEdit && (
-              <button
-                className={styles.buttonText}
-                onClick={() => onEdit(review)}
-                type="button"
-              >
+              <button className={styles.buttonText} onClick={() => onEdit(review)} type="button">
                 Edit
               </button>
             )}
@@ -175,7 +171,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
 
         {review.replies && review.replies.length > 0 && (
           <div style={{ marginTop: '16px' }}>
-            {review.replies.map((reply: any) => (
+            {review.replies.map((reply: any) =>
               editingReply?.id === reply.id ? (
                 <LfrsComposeReply
                   apiBase={apiBase}
@@ -190,15 +186,15 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
                   reviewId={review.id}
                 />
               ) : (
-                <LfrsReplyCard 
+                <LfrsReplyCard
                   currentUserId={currentUserId}
-                  key={reply.id} 
+                  key={reply.id}
                   onDelete={onDeleteReply}
                   onEdit={() => setEditingReply(reply)}
-                  reply={reply} 
+                  reply={reply}
                 />
-              )
-            ))}
+              ),
+            )}
           </div>
         )}
 
@@ -206,7 +202,9 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
           <div className={styles.modalOverlay}>
             <div className={styles.modalDialog}>
               <h3 className={styles.modalTitle}>Delete Review</h3>
-              <p className={styles.modalMessage}>Are you sure you want to delete this review? This action cannot be undone.</p>
+              <p className={styles.modalMessage}>
+                Are you sure you want to delete this review? This action cannot be undone.
+              </p>
               <div className={styles.modalActions}>
                 <button
                   className={`${styles.button} ${styles.modalCancelButton}`}

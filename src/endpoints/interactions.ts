@@ -47,7 +47,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
           overrideAccess: true,
           req,
         })
-      } catch (err: any) {
+      } catch (_: any) {
         throw new APIError('Target document not found', 404)
       }
 
@@ -70,10 +70,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         if (sanitized.reviewModeration) {
           if (req.user) {
             where.and.push({
-              or: [
-                { status: { equals: 'approved' } },
-                { user: { equals: req.user.id } },
-              ],
+              or: [{ status: { equals: 'approved' } }, { user: { equals: req.user.id } }],
             })
           } else {
             where.and.push({ status: { equals: 'approved' } })
@@ -104,7 +101,14 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
                   { review: { equals: review.id } },
                   ...(sanitized.reviewModeration
                     ? req.user
-                      ? [{ or: [{ status: { equals: 'approved' } }, { user: { equals: req.user.id } }] }]
+                      ? [
+                          {
+                            or: [
+                              { status: { equals: 'approved' } },
+                              { user: { equals: req.user.id } },
+                            ],
+                          },
+                        ]
                       : [{ status: { equals: 'approved' } }]
                     : []),
                 ],

@@ -30,6 +30,7 @@ export default [
       'perfectionist/sort-objects': 'off',
       'perfectionist/sort-jsx-props': 'off',
       'perfectionist/sort-imports': 'off',
+      'perfectionist/sort-interfaces': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },

@@ -65,12 +65,12 @@ const ThumbsDownIcon = () => (
 
 /**
  * `LfrsLikeDislike` is a component for liking or disliking items.
- * 
+ *
  * **Component Purpose:**
  * - Manages and renders a dual-state (Like and Dislike) rating widget.
  * - Dynamically shows/hides likes or dislikes based on the server-provided configuration.
  * - Handles optimistic updates and syncs counts and states with the backend.
- * 
+ *
  * **User Interaction:**
  * - **Liking:** Clicking the Like thumb button increments the count (or decrements if already liked). If disliked previously, it clears the dislike.
  * - **Disliking:** Clicking the Dislike thumb button toggles the dislike state, resetting the like state if active.
@@ -182,6 +182,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       })
 
       if (!res.ok) {
+        // eslint-disable-next-line no-console
         console.error('[LFRS-CLIENT] API error, status:', res.status)
         if (res.status === 401 && onAuthError) {
           onAuthError()
