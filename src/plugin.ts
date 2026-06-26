@@ -26,6 +26,7 @@ import { createDislikesUsersEndpoint } from './endpoints/dislikesUsers.js'
 import { createDislikesCountEndpoint } from './endpoints/dislikesCount.js'
 import { createAggregateFields } from './fields/aggregateFields.js'
 import { createJoinFields } from './fields/joinFields.js'
+import { createLfrsSettingsGlobal } from './globals/lfrsSettings.js'
 import { createCascadeDelete } from './hooks/cascadeDelete.js'
 import { resolveReviewMedia } from './utilities/resolveReviewMedia.js'
 
@@ -49,6 +50,12 @@ export const payloadLFRs =
     if (!config.collections) {
       config.collections = []
     }
+
+    if (!config.globals) {
+      config.globals = []
+    }
+    
+    config.globals.push(createLfrsSettingsGlobal(sanitized))
 
     // ── Add plugin-managed interaction collections ──────────────────────────
     config.collections.push(createLikesCollection(sanitized))

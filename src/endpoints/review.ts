@@ -25,7 +25,7 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         throw new APIError('Missing valid score', 400)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('reviews')) {
         throw new APIError('Reviews are not enabled for this collection', 404)
       }

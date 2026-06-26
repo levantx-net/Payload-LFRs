@@ -19,7 +19,7 @@ export const createDistributionEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       const distribution: Record<string, number> = {}
       let totalScore = 0
       let count = 0

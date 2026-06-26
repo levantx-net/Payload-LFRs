@@ -20,7 +20,7 @@ export const createRateEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('ratings')) {
         throw new APIError('Ratings are not enabled for this collection', 404)
       }

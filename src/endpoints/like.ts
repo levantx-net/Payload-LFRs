@@ -20,7 +20,7 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('likes')) {
         throw new APIError('Likes are not enabled for this collection', 404)
       }

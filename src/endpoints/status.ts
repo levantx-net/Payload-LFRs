@@ -36,7 +36,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         // Ignore
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
 
       const response: any = {
         allowMultipleReviews: collectionOptions.allowMultipleReviews,

@@ -20,7 +20,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('favourites')) {
         throw new APIError('Favourites are not enabled for this collection', 404)
       }

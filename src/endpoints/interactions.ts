@@ -24,7 +24,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
 
       let sort = '-createdAt'
       if (sortParam === 'oldest') {

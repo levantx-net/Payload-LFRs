@@ -1,22 +1,44 @@
+import type { PayloadRequest } from 'payload'
+
 import type { SanitizedCollectionOptions } from '../types.js'
 
 import { isFeatureEnabled } from '../defaults.js'
+import { getCachedLfrsSettings } from './lfrsSettingsCache.js'
 
 export type LfrsFeatureKey = 'dislikes' | 'favourites' | 'likes' | 'ratings' | 'replies' | 'reviews'
 
 /**
- * Resolves which features are enabled for a given collection.
+ * Resolves which features are enabled for a given collection by
+ * intersecting the developer's static configuration with the admin's
+ * runtime Global overrides.
  * Returns a set of enabled feature keys.
  */
-export function getEnabledFeatures(options: SanitizedCollectionOptions): Set<LfrsFeatureKey> {
+export async function getEnabledFeatures(
+  options: SanitizedCollectionOptions,
+  collectionSlug: string,
+  req: PayloadRequest,
+): Promise<Set<LfrsFeatureKey>> {
   const features = new Set<LfrsFeatureKey>()
 
-  if (isFeatureEnabled(options.likes)) {features.add('likes')}
-  if (isFeatureEnabled(options.dislikes)) {features.add('dislikes')}
-  if (isFeatureEnabled(options.favourites)) {features.add('favourites')}
-  if (isFeatureEnabled(options.ratings)) {features.add('ratings')}
-  if (isFeatureEnabled(options.reviews)) {features.add('reviews')}
-  if (isFeatureEnabled(options.replies)) {features.add('replies')}
+  const adminSettings = await getCachedLfrsSettings(req.payload, req)
+
+  const checkFeature = (key: LfrsFeatureKey) => {
+    if (isFeatureEnabled(options[key])) {
+      const collectionAdminSettings = adminSettings?.[collectionSlug]
+      // If the admin specifically toggled this off, do not add it
+      if (collectionAdminSettings && collectionAdminSettings[key] === false) {
+        return
+      }
+      features.add(key)
+    }
+  }
+
+  checkFeature('likes')
+  checkFeature('dislikes')
+  checkFeature('favourites')
+  checkFeature('ratings')
+  checkFeature('reviews')
+  checkFeature('replies')
 
   return features
 }

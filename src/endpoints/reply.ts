@@ -34,7 +34,7 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      const enabledFeatures = getEnabledFeatures(collectionOptions)
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('replies')) {
         throw new APIError('Replies are not enabled for this collection', 404)
       }
