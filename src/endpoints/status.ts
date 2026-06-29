@@ -50,45 +50,13 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       )
       const mergedGlobalSettings = await getMergedGlobalSettings(sanitized, req)
 
-      let likesEnabled = false
-      if (enabledFeatures.has('likes')) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.likes, req, targetCollection: collection, targetDoc })
-        likesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-      }
-
-      let dislikesEnabled = false
-      if (enabledFeatures.has('dislikes')) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.dislikes, req, targetCollection: collection, targetDoc })
-        dislikesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-      }
-
-      let favouritesEnabled = false
-      if (enabledFeatures.has('favourites')) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.favourites, req, targetCollection: collection, targetDoc })
-        favouritesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-      }
-
-      let ratingsEnabled = false
-      if (enabledFeatures.has('ratings')) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.ratings, req, targetCollection: collection, targetDoc })
-        ratingsEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-      }
-
+      const likesEnabled = enabledFeatures.has('likes')
+      const dislikesEnabled = enabledFeatures.has('dislikes')
+      const favouritesEnabled = enabledFeatures.has('favourites')
+      const ratingsEnabled = enabledFeatures.has('ratings')
       const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
-
-      let repliesEnabled = false
-      if (enabledFeatures.has('replies') || isAdmin) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.replies, req, targetCollection: collection, targetDoc })
-        console.log('[DEBUG] replies access:', collectionOptions.replies, 'user roles:', req.user?.roles, 'accessResult:', accessResult)
-        repliesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-        console.log('[DEBUG] repliesEnabled set to:', repliesEnabled)
-      }
-
-      let reviewsEnabled = false
-      if (enabledFeatures.has('reviews')) {
-        const accessResult = await resolveFeatureAccess({ access: collectionOptions.reviews, req, targetCollection: collection, targetDoc })
-        reviewsEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
-      }
+      const repliesEnabled = enabledFeatures.has('replies') || isAdmin
+      const reviewsEnabled = enabledFeatures.has('reviews')
 
       const response: any = {
         allowMultipleReviews: mergedCollectionSettings.allowMultipleReviews,

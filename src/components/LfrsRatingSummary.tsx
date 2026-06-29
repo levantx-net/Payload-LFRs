@@ -64,6 +64,11 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
       try {
         setLoading(true)
         const res = await fetch(`${apiBase}/lfrs/distribution?collection=${targetCollection}&id=${targetDoc}`)
+        if (res.status === 404) {
+          setData(null)
+          setError('Disabled')
+          return
+        }
         if (!res.ok) {throw new Error('Failed to fetch rating summary')}
         const json = await res.json()
         setData(json)
@@ -87,6 +92,7 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
   }, [apiBase, targetCollection, targetDoc])
 
   if (loading) {return <div className={`${styles.summary} ${className}`}>Loading...</div>}
+  if (error === 'Disabled') {return null}
   if (error || !data) {return <div className={`${styles.summary} ${className}`}>Error: {error}</div>}
 
   // Sort distribution descending by score

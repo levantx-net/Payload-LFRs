@@ -32,11 +32,7 @@ export default async function SinglePostPage({ params }: { params: { id: string 
         </div>
 
         <div className="lfrs-actions">
-          <LfrsLikeDislike
-            targetCollection="posts"
-            targetDoc={id}
-          />
-          <span style={{ color: 'var(--text-muted)' }}>Like or Dislike this post</span>
+          <LfrsLikeDislike targetCollection="posts" targetDoc={id} />
         </div>
       </div>
 

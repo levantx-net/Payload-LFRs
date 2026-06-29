@@ -56,6 +56,7 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
 }) => {
   const [loading, setLoading] = useState(false)
   const [favourited, setFavourited] = useState(initialFavourited ?? false)
+  const [favouritesEnabled, setFavouritesEnabled] = useState<boolean>(true)
 
   useEffect(() => {
     if (initialFavourited === undefined) {
@@ -65,8 +66,13 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
           return null
         })
         .then((data) => {
-          if (data && typeof data.favourited === 'boolean') {
-            setFavourited(data.favourited)
+          if (data) {
+            if (typeof data.favourited === 'boolean') {
+              setFavourited(data.favourited)
+            }
+            if (typeof data.favouritesEnabled === 'boolean') {
+              setFavouritesEnabled(data.favouritesEnabled)
+            }
           }
         })
         .catch(() => {})
@@ -107,6 +113,10 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!favouritesEnabled) {
+    return null
   }
 
   return (

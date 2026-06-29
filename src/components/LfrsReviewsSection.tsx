@@ -184,6 +184,10 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
 
   const hasMyReview = !!status?.review
 
+  if (status && status.reviewsEnabled === false) {
+    return null
+  }
+
   return (
     <div className={`${styles.reviewsSection} ${className}`} style={style}>
       <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
