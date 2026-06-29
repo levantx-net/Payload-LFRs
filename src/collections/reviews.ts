@@ -127,6 +127,16 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
     defaultValue: 0,
   })
 
+  // Add join field so replies are visible in the Admin Panel
+  if (config.repliesEnabled) {
+    fields.push({
+      name: 'replies',
+      type: 'join',
+      collection: config.collectionSlugs.replies,
+      on: 'review',
+    })
+  }
+
   // Build hooks
   const beforeChangeHooks: CollectionBeforeChangeHook[] = [
     enforceUser,
@@ -156,10 +166,10 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
       create: isAuthenticated,
       delete: isOwnerOrAdmin,
       read: isOwnerOrAdmin,
-      update: isOwner,
+      update: isOwnerOrAdmin,
     },
     admin: {
-      defaultColumns: ['user', 'targetCollection', 'targetDoc', 'score', 'createdAt'],
+      defaultColumns: ['title', 'user', 'targetCollection', 'targetDoc', 'score', 'createdAt'],
       group: config.adminGroup,
       useAsTitle: 'title',
     },

@@ -36,7 +36,8 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
       }
 
       const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
-      if (!enabledFeatures.has('replies')) {
+      const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+      if (!enabledFeatures.has('replies') && !isAdmin) {
         throw new APIError('Replies are not enabled for this collection', 404)
       }
 
@@ -60,7 +61,8 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
       })
 
       if (!accessResult.allowed) {
-        throw new APIError(accessResult.reason || 'Forbidden', 403)
+        const status = accessResult.reason === 'Authentication required' ? 401 : 403
+        throw new APIError(accessResult.reason || 'Forbidden', status)
       }
 
       const userId = req.user?.id

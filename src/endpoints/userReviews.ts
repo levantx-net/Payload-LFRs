@@ -39,7 +39,8 @@ export const createUserReviewsEndpoint = (sanitized: SanitizedLfrsConfig): Paylo
       })
 
       if (!readAccess.allowed) {
-        throw new APIError(readAccess.reason || 'Forbidden', 403)
+        const status = readAccess.reason === 'Authentication required' ? 401 : 403
+        throw new APIError(readAccess.reason || 'Forbidden', status)
       }
 
       const reviews = await req.payload.find({

@@ -64,7 +64,8 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         })
 
         if (!readAccess.allowed) {
-          throw new APIError(readAccess.reason || 'Forbidden', 403)
+          const status = readAccess.reason === 'Authentication required' ? 401 : 403
+          throw new APIError(readAccess.reason || 'Forbidden', status)
         }
 
         if (sanitized.reviewModeration) {
@@ -87,8 +88,10 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
           where,
         })
 
-        // Fetch replies if replies are enabled
-        if (enabledFeatures.has('replies')) {
+        const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+
+        // Fetch replies if replies are enabled or user is admin
+        if (enabledFeatures.has('replies') || isAdmin) {
           for (const review of reviews.docs as any[]) {
             const replies = await req.payload.find({
               collection: sanitized.collectionSlugs.replies,

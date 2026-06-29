@@ -78,7 +78,7 @@ const buildConfigWithMemoryDB = async () => {
             favourites: true,
             likes: true,
             ratings: true,
-            replies: ['admin'], // Only admin can reply
+            replies: true, // Any logged in user can reply
             reviews: true,
           },
         },

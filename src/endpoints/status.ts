@@ -7,6 +7,7 @@ import {
   getMergedCollectionSettings,
   getMergedGlobalSettings,
 } from '../utilities/getMergedSettings.js'
+import { resolveFeatureAccess } from '../utilities/resolveFeatureAccess.js'
 
 export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
@@ -27,8 +28,9 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
 
       let likesCount = 0
       let dislikesCount = 0
+      let targetDoc: any
       try {
-        const targetDoc = await req.payload.findByID({
+        targetDoc = await req.payload.findByID({
           id,
           collection,
           overrideAccess: true,
@@ -48,19 +50,59 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       )
       const mergedGlobalSettings = await getMergedGlobalSettings(sanitized, req)
 
+      let likesEnabled = false
+      if (enabledFeatures.has('likes')) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.likes, req, targetCollection: collection, targetDoc })
+        likesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+      }
+
+      let dislikesEnabled = false
+      if (enabledFeatures.has('dislikes')) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.dislikes, req, targetCollection: collection, targetDoc })
+        dislikesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+      }
+
+      let favouritesEnabled = false
+      if (enabledFeatures.has('favourites')) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.favourites, req, targetCollection: collection, targetDoc })
+        favouritesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+      }
+
+      let ratingsEnabled = false
+      if (enabledFeatures.has('ratings')) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.ratings, req, targetCollection: collection, targetDoc })
+        ratingsEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+      }
+
+      const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+
+      let repliesEnabled = false
+      if (enabledFeatures.has('replies') || isAdmin) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.replies, req, targetCollection: collection, targetDoc })
+        console.log('[DEBUG] replies access:', collectionOptions.replies, 'user roles:', req.user?.roles, 'accessResult:', accessResult)
+        repliesEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+        console.log('[DEBUG] repliesEnabled set to:', repliesEnabled)
+      }
+
+      let reviewsEnabled = false
+      if (enabledFeatures.has('reviews')) {
+        const accessResult = await resolveFeatureAccess({ access: collectionOptions.reviews, req, targetCollection: collection, targetDoc })
+        reviewsEnabled = accessResult.allowed || accessResult.reason === 'Authentication required'
+      }
+
       const response: any = {
         allowMultipleReviews: mergedCollectionSettings.allowMultipleReviews,
         dislikesCount,
-        dislikesEnabled: enabledFeatures.has('dislikes'),
+        dislikesEnabled,
         enableReviewRating: mergedCollectionSettings.enableReviewRating,
-        favouritesEnabled: enabledFeatures.has('favourites'),
+        favouritesEnabled,
         likesCount,
-        likesEnabled: enabledFeatures.has('likes'),
+        likesEnabled,
         mediaEnabled: mergedGlobalSettings.mediaEnabled,
         ratingConfig: sanitized.rating,
-        ratingsEnabled: enabledFeatures.has('ratings'),
-        repliesEnabled: enabledFeatures.has('replies'),
-        reviewsEnabled: enabledFeatures.has('reviews'),
+        ratingsEnabled,
+        repliesEnabled,
+        reviewsEnabled,
         currentUserId: userId,
       }
 
@@ -164,7 +206,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         if (reviews.docs.length > 0) {
           const review = reviews.docs[0]
 
-          if (enabledFeatures.has('replies')) {
+          if (enabledFeatures.has('replies') || isAdmin) {
             const replies = await req.payload.find({
               collection: sanitized.collectionSlugs.replies,
               limit: 100,

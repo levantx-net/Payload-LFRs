@@ -45,7 +45,8 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
       })
 
       if (!accessResult.allowed) {
-        throw new APIError(accessResult.reason || 'Forbidden', 403)
+        const status = accessResult.reason === 'Authentication required' ? 401 : 403
+        throw new APIError(accessResult.reason || 'Forbidden', status)
       }
 
       const userId = req.user?.id

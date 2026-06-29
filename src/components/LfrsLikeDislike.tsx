@@ -182,8 +182,6 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       })
 
       if (!res.ok) {
-        // eslint-disable-next-line no-console
-        console.error('[LFRS-CLIENT] API error, status:', res.status)
         if (res.status === 401 && onAuthError) {
           onAuthError()
         }

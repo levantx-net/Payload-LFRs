@@ -67,6 +67,7 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
       create: isAuthenticated,
       delete: isOwnerOrAdmin,
       read: isOwnerOrAdmin,
+      update: isOwnerOrAdmin,
     },
     admin: {
       defaultColumns: ['user', 'review', 'body', 'createdAt'],
