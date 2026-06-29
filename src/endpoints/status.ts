@@ -70,6 +70,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         ratingConfig: sanitized.rating,
         ratingsEnabled,
         repliesEnabled,
+        reviewModeration: mergedGlobalSettings.reviewModeration,
         reviewsEnabled,
         currentUserId: userId,
       }

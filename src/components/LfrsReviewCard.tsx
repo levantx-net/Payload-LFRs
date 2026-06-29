@@ -29,6 +29,8 @@ export interface LfrsReviewCardProps {
   style?: React.CSSProperties
   /** The currently logged-in user's ID, to determine ownership */
   currentUserId?: string
+  /** Whether moderation is enabled */
+  reviewModeration?: boolean
   /** Callback triggered when the edit button is clicked */
   onEdit?: (review: any) => void
   /** Callback triggered when the delete button is clicked */
@@ -61,6 +63,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
     review,
     style,
     currentUserId,
+    reviewModeration = true,
     onEdit,
     onDelete,
     onDeleteReply,
@@ -73,7 +76,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
     const dateStr = formatRelativeTime(review.createdAt)
     const isOwner =
       currentUserId && (review.user === currentUserId || review.user?.id === currentUserId)
-    const canEdit = isOwner && review.status !== 'approved'
+    const canEdit = isOwner && (!reviewModeration || review.status !== 'approved')
 
     const handleReplySuccess = () => {
       setIsReplying(false)
@@ -192,6 +195,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
                   onDelete={onDeleteReply}
                   onEdit={() => setEditingReply(reply)}
                   reply={reply}
+                  reviewModeration={reviewModeration}
                 />
               ),
             )}

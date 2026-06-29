@@ -17,6 +17,8 @@ export interface LfrsReplyCardProps {
   style?: React.CSSProperties
   /** The currently logged-in user's ID, to determine ownership */
   currentUserId?: string
+  /** Whether moderation is enabled */
+  reviewModeration?: boolean
   /** Callback triggered when the edit button is clicked */
   onEdit?: (reply: any) => void
   /** Callback triggered when the delete button is clicked */
@@ -34,12 +36,12 @@ export interface LfrsReplyCardProps {
  * - This component is **read-only** and does not support user interactions.
  */
 export const LfrsReplyCard: React.FC<LfrsReplyCardProps> = React.memo(
-  ({ className = '', currentUserId, onDelete, onEdit, reply, style }) => {
+  ({ className = '', currentUserId, onDelete, onEdit, reply, style, reviewModeration = true }) => {
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
     const authorName = reply.user?.name || reply.user?.email || 'Anonymous'
     const dateStr = formatRelativeTime(reply.createdAt)
     const isOwner = currentUserId && (reply.user === currentUserId || reply.user?.id === currentUserId)
-    const canEdit = isOwner && reply.status !== 'approved'
+    const canEdit = isOwner && (!reviewModeration || reply.status !== 'approved')
 
     return (
       <div className={`${styles.replyCard} ${className}`} style={style}>

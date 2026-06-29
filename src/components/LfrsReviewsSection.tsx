@@ -216,6 +216,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
             ratingConfig={status.ratingConfig}
             repliesEnabled={status.repliesEnabled}
             review={status.review}
+            reviewModeration={status.reviewModeration}
           />
         </div>
       )}
@@ -253,6 +254,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
               ratingConfig={status?.ratingConfig || { icon: 'star', max: 5, step: 1 }}
               repliesEnabled={status?.repliesEnabled}
               review={review}
+              reviewModeration={status?.reviewModeration}
             />
           ))}
 
