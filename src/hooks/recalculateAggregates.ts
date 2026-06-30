@@ -53,11 +53,13 @@ async function recalculate(args: {
     dislikesResult,
     favouritesResult,
     reviewsResult,
+    sharesResult,
   ] = await Promise.all([
     req.payload.find({ collection: config.collectionSlugs.likes, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }),
     config.dislikesEnabled ? req.payload.find({ collection: config.collectionSlugs.dislikes, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }) : Promise.resolve(null),
     req.payload.find({ collection: config.collectionSlugs.favourites, overrideAccess: true, req, where: baseWhere, limit: 1, depth: 0 }),
     req.payload.find({ collection: config.collectionSlugs.reviews, overrideAccess: true, depth: 0, limit: 0, req, where: reviewsWhere }),
+    config.sharesEnabled ? req.payload.count({ collection: config.collectionSlugs.shares, overrideAccess: true, req, where: baseWhere }) : Promise.resolve(null),
   ])
 
   lfrs.likesCount = likesResult.totalDocs
@@ -87,6 +89,11 @@ async function recalculate(args: {
 
   // Count reviews (only approved ones if moderation enabled)
   lfrs.reviewsCount = reviewsResult.totalDocs
+
+  // Count shares (if enabled for any collection)
+  if (sharesResult) {
+    lfrs.sharesCount = sharesResult.totalDocs
+  }
 
   // Update the target document with the new aggregate values
   await req.payload.update({

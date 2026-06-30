@@ -29,6 +29,7 @@ export const DEFAULT_COLLECTION_SLUGS = {
   ratings: 'lfrs-ratings',
   replies: 'lfrs-replies',
   reviews: 'lfrs-reviews',
+  shares: 'lfrs-shares',
 } as const
 
 // ─── Sanitization ──────────────────────────────────────────────────────────────
@@ -97,6 +98,7 @@ export function sanitizeCollectionOptions(
     replies: input.replies ?? true,
     reviews: input.reviews ?? true,
     readReviews: input.readReviews ?? 'public',
+    shares: input.shares ?? false,
   }
 }
 
@@ -123,6 +125,7 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     ratings: input.collectionSlugs?.ratings ?? DEFAULT_COLLECTION_SLUGS.ratings,
     replies: input.collectionSlugs?.replies ?? DEFAULT_COLLECTION_SLUGS.replies,
     reviews: input.collectionSlugs?.reviews ?? DEFAULT_COLLECTION_SLUGS.reviews,
+    shares: input.collectionSlugs?.shares ?? DEFAULT_COLLECTION_SLUGS.shares,
   }
 
   // Sanitize each collection's options
@@ -145,14 +148,16 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
       readReviews: 'public',
       replies: false,
       reviews: false,
+      shares: false,
     }
     collections[collectionSlugs.reviews] = reactionOptions
     collections[collectionSlugs.replies] = reactionOptions
   }
 
-  // Check if any collection has dislikes or replies enabled
+  // Check if any collection has dislikes, replies, or shares enabled
   const dislikesEnabled = Object.values(collections).some((c) => isFeatureEnabled(c.dislikes))
   const repliesEnabled = Object.values(collections).some((c) => isFeatureEnabled(c.replies))
+  const sharesEnabled = Object.values(collections).some((c) => isFeatureEnabled(c.shares))
 
   return {
     adminControls: input.adminControls ?? true,
@@ -167,6 +172,7 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     repliesEnabled,
     reviewMedia,
     reviewModeration: input.reviewModeration ?? false,
+    sharesEnabled,
     usersCollectionSlug: input.usersCollectionSlug ?? DEFAULT_USERS_COLLECTION_SLUG,
     callbacks: input.callbacks,
   }

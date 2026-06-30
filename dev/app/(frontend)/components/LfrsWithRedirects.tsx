@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import {
   LfrsFavourite as BaseLfrsFavourite,
   LfrsLikeDislike as BaseLfrsLikeDislike,
-  LfrsReviewsSection as BaseLfrsReviewsSection
+  LfrsReviewsSection as BaseLfrsReviewsSection,
+  LfrsShare as BaseLfrsShare,
 } from 'payload-lfrs/client'
 
 export const LfrsFavourite = (props: React.ComponentProps<typeof BaseLfrsFavourite>) => {
@@ -21,4 +22,9 @@ export const LfrsLikeDislike = (props: React.ComponentProps<typeof BaseLfrsLikeD
 export const LfrsReviewsSection = (props: React.ComponentProps<typeof BaseLfrsReviewsSection>) => {
   const router = useRouter()
   return <BaseLfrsReviewsSection {...props} onAuthError={() => router.push('/login')} />
+}
+
+export const LfrsShare = (props: React.ComponentProps<typeof BaseLfrsShare>) => {
+  const router = useRouter()
+  return <BaseLfrsShare {...props} onAuthError={() => router.push('/login')} />
 }
