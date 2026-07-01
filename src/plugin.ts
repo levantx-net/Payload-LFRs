@@ -7,6 +7,7 @@ import { createFavouritesCollection } from './collections/favourites.js'
 import { createLikesCollection } from './collections/likes.js'
 import { createRepliesCollection } from './collections/replies.js'
 import { createReviewsCollection } from './collections/reviews.js'
+import { createSharesCollection } from './collections/shares.js'
 import { sanitizePluginConfig } from './defaults.js'
 import { createDislikeEndpoint } from './endpoints/dislike.js'
 import { createDistributionEndpoint } from './endpoints/distribution.js'
@@ -17,6 +18,8 @@ import { createLikesCountEndpoint } from './endpoints/likesCount.js'
 import { createLikesUsersEndpoint } from './endpoints/likesUsers.js'
 import { createReplyEndpoint, deleteReplyEndpoint } from './endpoints/reply.js'
 import { createReviewEndpoint, deleteReviewEndpoint } from './endpoints/review.js'
+import { createShareEndpoint } from './endpoints/share.js'
+import { createSharesCountEndpoint } from './endpoints/sharesCount.js'
 import { createStatusEndpoint } from './endpoints/status.js'
 import { createUserFavouritesEndpoint } from './endpoints/userFavourites.js'
 import { createUserReviewsEndpoint } from './endpoints/userReviews.js'
@@ -66,6 +69,10 @@ export const payloadLFRs =
 
     if (sanitized.repliesEnabled) {
       config.collections.push(createRepliesCollection(sanitized))
+    }
+
+    if (sanitized.sharesEnabled) {
+      config.collections.push(createSharesCollection(sanitized))
     }
 
     // ── Inject aggregate fields and join fields into target collections ─────
@@ -206,6 +213,21 @@ export const payloadLFRs =
         method: 'post',
         path: '/lfrs/dislike',
       })
+    }
+
+    if (sanitized.sharesEnabled) {
+      config.endpoints.push(
+        {
+          handler: createShareEndpoint(sanitized),
+          method: 'post',
+          path: '/lfrs/share',
+        },
+        {
+          handler: createSharesCountEndpoint(sanitized),
+          method: 'get',
+          path: '/lfrs/shares-count',
+        },
+      )
     }
 
     // ── Phase 7: Admin UI components will be wired here ──────────────────────

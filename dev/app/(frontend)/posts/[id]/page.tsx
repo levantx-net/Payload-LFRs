@@ -7,7 +7,8 @@ import {
   LfrsFavourite,
   LfrsLikeDislike,
   LfrsReviewsSection,
-} from '../../components/LfrsWithRedirects'
+  LfrsShare,
+} from '../../components/LfrsWithRedirects.js'
 
 export default async function SinglePostPage({ params }: { params: { id: string } }) {
   const { id } = await params
@@ -33,6 +34,7 @@ export default async function SinglePostPage({ params }: { params: { id: string 
 
         <div className="lfrs-actions">
           <LfrsLikeDislike targetCollection="posts" targetDoc={id} />
+          <LfrsShare targetCollection="posts" targetDoc={id} title={post?.title} />
         </div>
       </div>
 

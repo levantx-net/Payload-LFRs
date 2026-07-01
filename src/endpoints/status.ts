@@ -57,6 +57,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
       const repliesEnabled = enabledFeatures.has('replies') || isAdmin
       const reviewsEnabled = enabledFeatures.has('reviews')
+      const sharesEnabled = enabledFeatures.has('shares')
 
       const response: any = {
         allowMultipleReviews: mergedCollectionSettings.allowMultipleReviews,
@@ -71,6 +72,8 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         repliesEnabled,
         reviewModeration: mergedGlobalSettings.reviewModeration,
         reviewsEnabled,
+        sharesEnabled,
+        sharesCount: targetDoc?.lfrs?.sharesCount || 0,
         currentUserId: userId,
         enableReviewReactions: mergedGlobalSettings.enableReviewReactions,
         reviewsCollectionSlug: sanitized.collectionSlugs.reviews,

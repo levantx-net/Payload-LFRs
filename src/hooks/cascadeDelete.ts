@@ -60,6 +60,16 @@ export function createCascadeDelete(
       where: baseWhere,
     })
 
+    // Delete shares (if enabled)
+    if (config.sharesEnabled) {
+      await req.payload.delete({
+        collection: config.collectionSlugs.shares,
+        context: deleteContext,
+        req,
+        where: baseWhere,
+      })
+    }
+
 
 
     // Find reviews to delete (we need their IDs to cascade-delete replies)

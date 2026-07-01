@@ -5,7 +5,7 @@ import type { SanitizedCollectionOptions } from '../types.js'
 import { isFeatureEnabled } from '../defaults.js'
 import { getCachedLfrsSettings } from './lfrsSettingsCache.js'
 
-export type LfrsFeatureKey = 'dislikes' | 'favourites' | 'likes' | 'ratings' | 'replies' | 'reviews'
+export type LfrsFeatureKey = 'dislikes' | 'favourites' | 'likes' | 'ratings' | 'replies' | 'reviews' | 'shares'
 
 /**
  * Resolves which features are enabled for a given collection by
@@ -39,6 +39,7 @@ export async function getEnabledFeatures(
   checkFeature('ratings')
   checkFeature('reviews')
   checkFeature('replies')
+  checkFeature('shares')
 
   return features
 }
