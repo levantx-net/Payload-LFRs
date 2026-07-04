@@ -60,6 +60,9 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     checkAndAdd('dislikes', 'Dislikes')
     checkAndAdd('favourites', 'Favourites')
     checkAndAdd('ratings', 'Ratings')
+    checkAndAdd('reviews', 'Reviews')
+    checkAndAdd('replies', 'Replies')
+    checkAndAdd('shares', 'Shares')
 
     // Add 'reviews' checkbox, then immediately add dependent options after it
     // so they stay visually grouped — and hide them all when reviews are off.

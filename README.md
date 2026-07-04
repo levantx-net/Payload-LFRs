@@ -9,6 +9,7 @@ A comprehensive plugin for [Payload CMS 3.x](https://payloadcms.com) that adds *
 - **Ratings**: Add customizable rating systems (e.g., 5-star, 10-point scale, half-stars).
 - **Reviews & Replies**: Let users write reviews and others to reply to them.
 - **Review Media**: Users can attach images or videos to their reviews
+- **Sharing**: Allow users to share documents across multiple platforms (Facebook, X/Twitter, WhatsApp, etc.) and track share counts.
 - **Admin Moderation**: Moderation view to approve or delete reviews and replies
 - **Extensible API**: Headless REST API for full frontend flexibility
 
@@ -27,6 +28,10 @@ Here are examples of what you can build on the frontend using this plugin:
 ### Reviews & Threaded Replies
 
 ![Reviews UI](./docs/assets/reviews.png)
+
+### Social Sharing
+
+![Sharing UI](./docs/assets/sharing.png)
 
 ## Installation
 
@@ -68,23 +73,24 @@ export default buildConfig({
       collections: {
         // Target collection slug
         posts: {
-          likes: true,                 // Enable likes for authenticated users
-          dislikes: true,              // Enable dislikes (mutually exclusive with likes)
-          favourites: true,            // Enable favourites
-          ratings: true,               // Enable ratings (stored directly in reviews)
-          reviews: true,               // Enable reviews
-          replies: ['admin'],          // Enable replies, but restrict to admin roles
-          readReviews: 'public',       // Access control for reading reviews ('public', true, or roles array)
+          likes: true, // Enable likes for authenticated users
+          dislikes: true, // Enable dislikes (mutually exclusive with likes)
+          favourites: true, // Enable favourites
+          ratings: true, // Enable ratings (stored directly in reviews)
+          reviews: true, // Enable reviews
+          replies: ['admin'], // Enable replies, but restrict to admin roles
+          readReviews: 'public', // Access control for reading reviews ('public', true, or roles array)
           allowMultipleReviews: false, // Prevent users from submitting multiple reviews on the same doc
+          shares: true, // Enable social sharing and track share counts
         },
       },
       // Allow users to like/dislike reviews and replies
       enableReviewReactions: true,
       // Configure global rating options
       rating: {
-        max: 5,        // Max rating scale value (default: 5)
-        step: 0.5,     // Value increment steps (default: 1)
-        icon: 'star',  // Icon identifier hint for frontend (default: 'star')
+        max: 5, // Max rating scale value (default: 5)
+        step: 0.5, // Value increment steps (default: 1)
+        icon: 'star', // Icon identifier hint for frontend (default: 'star')
       },
       // Enable review media uploads (requires an existing upload-enabled collection)
       reviewMedia: {
@@ -93,9 +99,9 @@ export default buildConfig({
         maxFiles: 5,
         maxFileSize: 5 * 1024 * 1024, // 5MB
       },
-      reviewModeration: true,  // Require reviews to be approved before they are public (default: false)
-      adminControls: true,     // Set to false to hide the Global Settings from the Admin UI
-      adminGroup: 'LFRs',      // Navigation group name in the Admin panel (default: 'LFRs')
+      reviewModeration: true, // Require reviews to be approved before they are public (default: false)
+      adminControls: true, // Set to false to hide the Global Settings from the Admin UI
+      adminGroup: 'LFRs', // Navigation group name in the Admin panel (default: 'LFRs')
       usersCollectionSlug: 'users', // Slug of your auth collection (default: 'users')
       // Custom callback to check if a user is an admin
       isAdmin: ({ req }) => {
@@ -147,7 +153,7 @@ _(Default: `false`)_
 
 #### Access Control
 
-For each feature (`likes`, `dislikes`, `favourites`, `ratings`, `reviews`, `replies`), you can provide:
+For each feature (`likes`, `dislikes`, `favourites`, `ratings`, `reviews`, `replies`, `shares`), you can provide:
 
 - `true`: Any authenticated user can use the feature (default if the feature key is omitted but the feature is mentioned, depending on implementation/type defaults).
 - `false`: Feature disabled for this collection.
@@ -344,6 +350,12 @@ The plugin exposes several endpoints for interacting with the LFRs features from
 - `GET /api/lfrs/dislikes-users` — Gets user IDs who disliked a document.
   - **Query:** `collection` (required), `id` (required), `limit` (optional)
   - **Returns:** `{ userIds: string[] }`
+- `POST /api/lfrs/share` — Records a share event for a document to a specific platform.
+  - **Body:** `{ collection: string, id: string, platform: string, url: string }`
+  - **Returns:** `{ shared: true, sharesCount: number }`
+- `GET /api/lfrs/shares-count` — Gets the total share count for a document.
+  - **Query:** `collection` (required), `id` (required)
+  - **Returns:** `{ sharesCount: number }`
 
 - **Authentication (with user context) is required for all `POST` and `DELETE` endpoints.**
 
@@ -360,16 +372,25 @@ The plugin provides a suite of ready-to-use React components for your frontend a
 - **`LfrsComposeReview` / `LfrsComposeReply`**: Forms for submitting text reviews and nested replies.
 - **`LfrsReviewCard` / `LfrsReplyCard`**: Display components for rendering individual reviews and replies.
 - **`LfrsReviewsSection`**: A complete, integrated reviews area combining the summary, compose form, and a list of reviews.
+- **`LfrsShare`**: A share button that opens an inline panel to share the document across social platforms or copy the link, while tracking share counts.
 
 ### Example Usage
 
 ```tsx
-import { LfrsLikeDislike, LfrsRating } from 'payload-lfrs/client'
+import { LfrsLikeDislike, LfrsRating, LfrsShare } from 'payload-lfrs/client'
 
 export function PostDetails({ post }) {
   return (
     <div>
       <h1>{post.title}</h1>
+
+      {/* Share Button */}
+      <LfrsShare
+        targetCollection="posts"
+        targetDoc={post.id}
+        title={post.title}
+        url="https://example.com/post/1"
+      />
 
       {/* Like / Dislike Toggle */}
       <LfrsLikeDislike
