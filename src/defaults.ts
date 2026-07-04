@@ -169,5 +169,11 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     reviewModeration: input.reviewModeration ?? false,
     usersCollectionSlug: input.usersCollectionSlug ?? DEFAULT_USERS_COLLECTION_SLUG,
     callbacks: input.callbacks,
+    isAdmin: input.isAdmin ?? (({ req }) => {
+      if (!req.user) return false
+      const user = req.user as Record<string, unknown>
+      const roles = (user.roles as string[]) ?? []
+      return roles.includes('admin')
+    }),
   }
 }

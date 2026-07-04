@@ -27,8 +27,8 @@ export function createLikesCollection(config: SanitizedLfrsConfig): CollectionCo
     slug: config.collectionSlugs.likes,
     access: {
       create: isAuthenticated,
-      delete: isOwnerOrAdmin,
-      read: isOwnerOrAdmin,
+      delete: isOwnerOrAdmin(config),
+      read: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'createdAt'],

@@ -89,6 +89,12 @@ const buildConfigWithMemoryDB = async () => {
         },
         reviewModeration: true,
         usersCollectionSlug: 'users',
+        isAdmin: ({ req }) => {
+          if (!req.user) {
+            return false
+          }
+          return (req.user.roles as string[])?.includes('admin')
+        },
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',

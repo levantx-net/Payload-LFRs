@@ -54,7 +54,7 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       const dislikesEnabled = enabledFeatures.has('dislikes')
       const favouritesEnabled = enabledFeatures.has('favourites')
       const ratingsEnabled = enabledFeatures.has('ratings')
-      const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+      const isAdmin = await sanitized.isAdmin({ req })
       const repliesEnabled = enabledFeatures.has('replies') || isAdmin
       const reviewsEnabled = enabledFeatures.has('reviews')
 

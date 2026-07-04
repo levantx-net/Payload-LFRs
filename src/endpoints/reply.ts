@@ -36,7 +36,7 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
       }
 
       const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
-      const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+      const isAdmin = await sanitized.isAdmin({ req })
       if (!enabledFeatures.has('replies') && !isAdmin) {
         throw new APIError('Replies are not enabled for this collection', 404)
       }

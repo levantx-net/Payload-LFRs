@@ -67,9 +67,9 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
     slug: config.collectionSlugs.replies,
     access: {
       create: isAuthenticated,
-      delete: isOwnerOrAdmin,
-      read: isOwnerOrAdmin,
-      update: isOwnerOrAdmin,
+      delete: isOwnerOrAdmin(config),
+      read: isOwnerOrAdmin(config),
+      update: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['user', 'review', 'body', 'createdAt'],

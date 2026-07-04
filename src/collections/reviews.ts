@@ -177,9 +177,9 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
     slug: config.collectionSlugs.reviews,
     access: {
       create: isAuthenticated,
-      delete: isOwnerOrAdmin,
-      read: isOwnerOrAdmin,
-      update: isOwnerOrAdmin,
+      delete: isOwnerOrAdmin(config),
+      read: isOwnerOrAdmin(config),
+      update: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['title', 'user', 'targetCollection', 'targetDoc', 'score', 'createdAt'],

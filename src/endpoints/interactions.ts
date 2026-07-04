@@ -88,7 +88,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
           where,
         })
 
-        const isAdmin = Boolean(req.user?.roles && Array.isArray(req.user.roles) && req.user.roles.includes('admin'))
+        const isAdmin = await sanitized.isAdmin({ req })
 
         // Fetch replies if replies are enabled or user is admin
         if (enabledFeatures.has('replies') || isAdmin) {
