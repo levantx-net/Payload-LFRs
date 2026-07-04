@@ -3,13 +3,13 @@ import type { CollectionConfig } from 'payload'
 import type { SanitizedLfrsConfig } from '../types.js'
 
 import { isAuthenticated } from '../access/isAuthenticated.js'
-import { isAdmin } from '../access/isAdmin.js'
 import { enforceUser } from '../hooks/enforceUser.js'
 import {
   createRecalculateAfterChange,
   createRecalculateAfterDelete,
 } from '../hooks/recalculateAggregates.js'
 import { createValidateTarget } from '../hooks/validateTarget.js'
+import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
 
 /**
  * Creates the `lfrs-shares` collection config.
@@ -33,9 +33,9 @@ export function createSharesCollection(config: SanitizedLfrsConfig): CollectionC
       // Authenticated users (or public if configured) can create shares
       create: isAuthenticated,
       // Only admins can delete shares — they are append-only events
-      delete: isAdmin,
+      delete: isOwnerOrAdmin(config),
       // Admins can read all shares; users cannot browse others' shares
-      read: isAdmin,
+      read: isOwnerOrAdmin(config),
       // Shares are immutable — no updates allowed
       update: () => false,
     },

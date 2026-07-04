@@ -73,7 +73,6 @@ export interface Config {
     'lfrs-likes': LfrsLike;
     'lfrs-dislikes': LfrsDislike;
     'lfrs-favourites': LfrsFavourite;
-    'lfrs-ratings': LfrsRating;
     'lfrs-reviews': LfrsReview;
     'lfrs-replies': LfrsReply;
     'payload-kv': PayloadKv;
@@ -81,7 +80,11 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'lfrs-reviews': {
+      replies: 'lfrs-replies';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -89,7 +92,6 @@ export interface Config {
     'lfrs-likes': LfrsLikesSelect<false> | LfrsLikesSelect<true>;
     'lfrs-dislikes': LfrsDislikesSelect<false> | LfrsDislikesSelect<true>;
     'lfrs-favourites': LfrsFavouritesSelect<false> | LfrsFavouritesSelect<true>;
-    'lfrs-ratings': LfrsRatingsSelect<false> | LfrsRatingsSelect<true>;
     'lfrs-reviews': LfrsReviewsSelect<false> | LfrsReviewsSelect<true>;
     'lfrs-replies': LfrsRepliesSelect<false> | LfrsRepliesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -238,19 +240,6 @@ export interface LfrsFavourite {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lfrs-ratings".
- */
-export interface LfrsRating {
-  id: string;
-  user: string | User;
-  targetCollection: string;
-  targetDoc: string;
-  score: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "lfrs-reviews".
  */
 export interface LfrsReview {
@@ -259,7 +248,7 @@ export interface LfrsReview {
   targetCollection: string;
   targetDoc: string;
   title?: string | null;
-  body: string;
+  body?: string | null;
   score?: number | null;
   media?:
     | {
@@ -269,6 +258,15 @@ export interface LfrsReview {
     | null;
   status?: ('pending' | 'approved' | 'rejected') | null;
   repliesCount?: number | null;
+  replies?: {
+    docs?: (string | LfrsReply)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  lfrs?: {
+    likesCount?: number | null;
+    dislikesCount?: number | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -282,6 +280,10 @@ export interface LfrsReply {
   review: string | LfrsReview;
   body: string;
   status?: ('pending' | 'approved' | 'rejected') | null;
+  lfrs?: {
+    likesCount?: number | null;
+    dislikesCount?: number | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -332,10 +334,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'lfrs-favourites';
         value: string | LfrsFavourite;
-      } | null)
-    | ({
-        relationTo: 'lfrs-ratings';
-        value: string | LfrsRating;
       } | null)
     | ({
         relationTo: 'lfrs-reviews';
@@ -484,18 +482,6 @@ export interface LfrsFavouritesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "lfrs-ratings_select".
- */
-export interface LfrsRatingsSelect<T extends boolean = true> {
-  user?: T;
-  targetCollection?: T;
-  targetDoc?: T;
-  score?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "lfrs-reviews_select".
  */
 export interface LfrsReviewsSelect<T extends boolean = true> {
@@ -513,6 +499,13 @@ export interface LfrsReviewsSelect<T extends boolean = true> {
       };
   status?: T;
   repliesCount?: T;
+  replies?: T;
+  lfrs?:
+    | T
+    | {
+        likesCount?: T;
+        dislikesCount?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -525,6 +518,12 @@ export interface LfrsRepliesSelect<T extends boolean = true> {
   review?: T;
   body?: T;
   status?: T;
+  lfrs?:
+    | T
+    | {
+        likesCount?: T;
+        dislikesCount?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -576,6 +575,7 @@ export interface LfrsSetting {
   id: string;
   reviewModeration?: boolean | null;
   enableReviewMedia?: boolean | null;
+  enableReviewReactions?: boolean | null;
   /**
    * Manage active LFRs features for the posts collection.
    */
@@ -587,7 +587,6 @@ export interface LfrsSetting {
     reviews?: boolean | null;
     replies?: boolean | null;
     allowMultipleReviews?: boolean | null;
-    enableReviewRating?: boolean | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -599,6 +598,7 @@ export interface LfrsSetting {
 export interface LfrsSettingsSelect<T extends boolean = true> {
   reviewModeration?: T;
   enableReviewMedia?: T;
+  enableReviewReactions?: T;
   posts?:
     | T
     | {
@@ -609,7 +609,6 @@ export interface LfrsSettingsSelect<T extends boolean = true> {
         reviews?: T;
         replies?: T;
         allowMultipleReviews?: T;
-        enableReviewRating?: T;
       };
   updatedAt?: T;
   createdAt?: T;
