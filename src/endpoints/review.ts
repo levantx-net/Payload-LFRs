@@ -15,8 +15,8 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
       const body = req.json ? await req.json() : req.body
       const { id, body: reviewBody, collection, media, score, title, reviewId } = body || {}
 
-      if (!collection || !id || !reviewBody) {
-        throw new APIError('Missing collection, id, or body', 400)
+      if (!collection || !id) {
+        throw new APIError('Missing collection or id', 400)
       }
 
       const collectionOptions = sanitized.collections[collection]
@@ -40,18 +40,23 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         throw new APIError('Reviews and ratings are not enabled for this collection', 404)
       }
 
+      // Score is required only when ratings are enabled (respecting admin override)
       if (isRatingsEnabled && typeof score !== 'number') {
         throw new APIError('Missing valid score', 400)
       }
-      
-      // If reviews are disabled but ratings are enabled, allow the submission but strip body
+
+      // Body is required only when reviews are enabled (respecting admin override)
+      // If only ratings are enabled, body may be omitted.
+      if (isReviewsEnabled && !reviewBody) {
+        throw new APIError('Missing review body', 400)
+      }
+
+      // Strip body/title when reviews are disabled (admin may have turned them off)
       let finalBody = reviewBody
       let finalTitle = title
       if (!isReviewsEnabled) {
         finalBody = null
         finalTitle = null
-      } else if (!isRatingsEnabled && !finalBody) {
-        throw new APIError('Missing review body', 400)
       }
 
       let targetDoc: any

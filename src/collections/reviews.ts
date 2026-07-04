@@ -142,22 +142,23 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
       return !!config.collections[data.targetCollection]?.allowMultipleReviews
     }),
     createValidateTarget(config),
-    ({ data, req }) => {
-      const isRatingEnabled = config.collections[data.targetCollection]?.ratings !== false
+    ({ data }) => {
+      // NOTE: We intentionally do NOT check whether ratings/reviews are "enabled"
+      // here, because this hook only has access to the static developer config
+      // (not the runtime admin overrides). The /api/lfrs/review endpoint already
+      // validates score presence and review body against the fully merged settings
+      // (developer config + admin panel overrides) before the document ever reaches
+      // this hook. Duplicating that check here would cause false validation errors
+      // when an admin disables ratings at runtime via the admin panel.
+
       const isReviewEnabled = config.collections[data.targetCollection]?.reviews !== false
 
-      if (isRatingEnabled && (data.score === undefined || data.score === null)) {
-        throw new Error('A rating score is required.')
-      }
-
-      // If reviews are enabled and the user provided a body, it's fine.
-      // If reviews are disabled, we might want to clear the body/title just in case.
+      // Strip body/title when reviews are disabled at the static config level.
+      // (If enabled at the static level but disabled via admin override, the
+      // endpoint already nulls them out before calling payload.create/update.)
       if (!isReviewEnabled) {
         data.body = null
         data.title = null
-      } else if (!isRatingEnabled && !data.body) {
-        // If ratings are disabled, a review must have a body
-        throw new Error('Review body is required.')
       }
 
       return data
