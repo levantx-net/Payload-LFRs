@@ -41,5 +41,12 @@ export async function getEnabledFeatures(
   checkFeature('replies')
   checkFeature('shares')
 
+  // Replies are only meaningful when reviews exist to reply to.
+  // If reviews are disabled (by either developer config or admin override),
+  // suppress replies regardless of their own setting.
+  if (!features.has('reviews')) {
+    features.delete('replies')
+  }
+
   return features
 }

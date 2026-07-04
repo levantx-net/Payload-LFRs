@@ -61,8 +61,8 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     checkAndAdd('favourites', 'Favourites')
     checkAndAdd('ratings', 'Ratings')
 
-    // Add 'reviews' checkbox, then immediately add 'allowMultipleReviews' after it
-    // so they stay visually grouped — and hide the latter when reviews are off.
+    // Add 'reviews' checkbox, then immediately add dependent options after it
+    // so they stay visually grouped — and hide them all when reviews are off.
     if (isFeatureEnabled(options.reviews)) {
       collectionFields.push({
         name: 'reviews',
@@ -83,9 +83,22 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
           },
         })
       }
+
+      // Replies depend on reviews — only show the toggle when reviews are enabled
+      if (isFeatureEnabled(options.replies)) {
+        collectionFields.push({
+          name: 'replies',
+          type: 'checkbox',
+          label: 'Enable Replies',
+          defaultValue: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.reviews !== false,
+            description: 'Replies let users respond to reviews. Requires Reviews to be enabled.',
+          },
+        })
+      }
     }
 
-    checkAndAdd('replies', 'Replies')
     checkAndAdd('shares', 'Shares')
 
     if (collectionFields.length > 0) {
