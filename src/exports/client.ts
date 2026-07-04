@@ -9,3 +9,4 @@ export { LfrsRatingSummary, type LfrsRatingSummaryProps } from '../components/Lf
 export { LfrsReplyCard, type LfrsReplyCardProps } from '../components/LfrsReplyCard.js'
 export { LfrsReviewCard, type LfrsReviewCardProps } from '../components/LfrsReviewCard.js'
 export { LfrsReviewsSection, type LfrsReviewsSectionProps } from '../components/LfrsReviewsSection.js'
+export { LfrsShare, type LfrsShareProps } from '../components/LfrsShare.js'

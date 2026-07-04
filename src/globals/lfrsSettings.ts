@@ -62,6 +62,7 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     checkAndAdd('ratings', 'Ratings')
     checkAndAdd('reviews', 'Reviews')
     checkAndAdd('replies', 'Replies')
+    checkAndAdd('shares', 'Shares')
 
     if (options.allowMultipleReviews) {
       collectionFields.push({

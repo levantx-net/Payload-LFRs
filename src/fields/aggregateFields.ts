@@ -74,6 +74,16 @@ export function createAggregateFields(
     })
   }
 
+  // Add sharesCount when shares are enabled
+  if (isFeatureEnabled(collectionOptions.shares)) {
+    aggregateSubFields.push({
+      name: 'sharesCount',
+      type: 'number',
+      admin: { readOnly: true },
+      defaultValue: 0,
+    })
+  }
+
   return {
     name: 'lfrs',
     type: 'group',

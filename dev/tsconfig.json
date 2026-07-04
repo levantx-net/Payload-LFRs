@@ -11,6 +11,7 @@
     "../src/**/*.ts",
     "../src/**/*.tsx",
     "next.config.mjs",
+    "next-env.d.ts",
     ".next/types/**/*.ts"
   ],
   "compilerOptions": {
@@ -22,6 +23,11 @@
       "payload-lfrs/rsc": ["../src/exports/rsc.ts"]
     },
     "noEmit": true,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   }
 }

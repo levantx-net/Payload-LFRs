@@ -82,6 +82,19 @@ export interface LfrsCollectionOptions {
   readReviews?: LfrsFeatureAccess
 
   /**
+   * Enable/control shares.
+   * Default: false (disabled).
+   *
+   * Shares are append-only events — a user can share the same document
+   * multiple times (once per platform per session). There is no "un-share".
+   * The aggregate count (`sharesCount`) is stored on the target document's
+   * `lfrs` group field and incremented on every share.
+   *
+   * Set to `'public'` to allow guest (unauthenticated) shares.
+   */
+  shares?: LfrsFeatureAccess
+
+  /**
    * Whether to allow users to leave multiple reviews on the same document.
    * Default: false
    */
@@ -185,6 +198,7 @@ export interface LfrsCallbacks {
   onUndisliked?: (args: { req: PayloadRequest; targetCollection: string; targetDoc: string }) => void | Promise<void>
   onReviewDeleted?: (args: { req: PayloadRequest; reviewId: string; targetCollection: string; targetDoc: string }) => void | Promise<void>
   onRatingUpdated?: (args: { rating: any; req: PayloadRequest }) => void | Promise<void>
+  onShared?: (args: { req: PayloadRequest; share: any }) => void | Promise<void>
 }
 
 // ─── Plugin Config ─────────────────────────────────────────────────────────────
@@ -218,6 +232,7 @@ export interface LfrsPluginConfig {
     ratings?: string
     replies?: string
     reviews?: string
+    shares?: string
   }
 
   /**
@@ -295,6 +310,8 @@ export interface SanitizedLfrsConfig {
   reviewMedia: null | SanitizedReviewMediaConfig
   reviewModeration: boolean
   enableReviewReactions: boolean
+  /** Whether any collection has shares enabled */
+  sharesEnabled: boolean
   usersCollectionSlug: string
   callbacks?: LfrsCallbacks
   isAdmin: (args: { req: PayloadRequest }) => boolean | Promise<boolean>
@@ -308,6 +325,7 @@ export interface SanitizedCollectionOptions {
   replies: LfrsFeatureAccess
   reviews: LfrsFeatureAccess
   readReviews: LfrsFeatureAccess
+  shares: LfrsFeatureAccess
   allowMultipleReviews: boolean
 }
 

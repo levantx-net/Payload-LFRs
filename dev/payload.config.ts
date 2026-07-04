@@ -80,6 +80,7 @@ const buildConfigWithMemoryDB = async () => {
             ratings: true,
             replies: true, // Any logged in user can reply
             reviews: true,
+            shares: true, // test sharing
           },
         },
         enableReviewReactions: true,

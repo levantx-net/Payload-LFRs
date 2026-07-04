@@ -70,6 +70,12 @@
   background: rgba(255, 0, 85, 0.05);
 }
 
+.shareActive {
+  color: var(--lfrs-share-active, #0077b5);
+  border-color: var(--lfrs-share-active, #0077b5);
+  background: rgba(0, 119, 181, 0.08);
+}
+
 /* Rating Summary */
 .summary {
   display: flex;
