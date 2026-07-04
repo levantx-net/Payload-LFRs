@@ -35,6 +35,14 @@ This release introduces significant performance optimizations, highly requested 
   - Nested "Allow Multiple Reviews" and "Enable Replies" under the "Enable Reviews" toggle.
   - Used Payload's conditional visibility (`admin.condition`) so these dependent toggles are only visible when reviews are checked.
 
+### 5. Document Sharing to Social Media
+- **Problem**: Users had no native way to share documents to popular social networks or track how many times a document has been shared.
+- **Solution**: Added a complete document sharing system containing both REST API endpoints and client-side UI buttons.
+- **Details**:
+  - Includes a pre-built `LfrsShare` client component with native support for Facebook, Twitter/X, WhatsApp, Telegram, LinkedIn, and Clipboard Copy (Web Share API).
+  - Tracks and stores events via the `/api/lfrs/share` POST endpoint.
+  - Automatically aggregates share events and updates the target document's `sharesCount` counter (part of the `lfrs` field group).
+
 ---
 
 ## 🛠️ Bug Fixes & Improvements
