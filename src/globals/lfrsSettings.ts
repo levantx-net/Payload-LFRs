@@ -15,7 +15,7 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     fields.push({
       name: 'reviewModeration',
       type: 'checkbox',
-      label: 'Enable Review Moderation',
+      label: 'Enable Reviews, Replies & Ratings Moderation',
       defaultValue: true,
     })
   }
@@ -87,8 +87,6 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
 
     checkAndAdd('replies', 'Replies')
     checkAndAdd('shares', 'Shares')
-
-
 
     if (collectionFields.length > 0) {
       fields.push({

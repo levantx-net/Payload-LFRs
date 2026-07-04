@@ -63,6 +63,7 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
     const fetchDistribution = async () => {
       try {
         setLoading(true)
+        setError(null)
         const res = await fetch(`${apiBase}/lfrs/distribution?collection=${targetCollection}&id=${targetDoc}`)
         if (res.status === 404) {
           setData(null)
@@ -72,6 +73,7 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
         if (!res.ok) {throw new Error('Failed to fetch rating summary')}
         const json = await res.json()
         setData(json)
+        setError(null)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Unknown error')
       } finally {

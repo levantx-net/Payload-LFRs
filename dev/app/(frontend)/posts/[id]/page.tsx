@@ -1,7 +1,7 @@
 import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
-import { LfrsRatingSummary } from 'payload-lfrs/client'
+import { LfrsRating, LfrsRatingSummary } from 'payload-lfrs/client'
 
 import {
   LfrsFavourite,
@@ -56,6 +56,9 @@ export default async function SinglePostPage({ params }: { params: { id: string 
         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
           Please rate this post out of 5 and leave a review below.
         </p>
+
+        {/* This component allows the user to rate the post out of 5 stars */}
+        <LfrsRating targetCollection="posts" targetDoc={id} />
 
         {/* This component shows the distribution of 5, 4, 3, 2, 1 stars */}
         <LfrsRatingSummary targetCollection="posts" targetDoc={id} />

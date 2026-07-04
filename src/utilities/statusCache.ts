@@ -63,7 +63,9 @@ export async function fetchStatus(
   // 3. Start a new request
   const promise = fetch(`${apiBase}/lfrs/status?collection=${collection}&id=${id}`)
     .then((res) => {
-      if (res.ok) return res.json() as Promise<unknown>
+      if (res.ok) {
+        return res.json() as Promise<unknown>
+      }
       return null
     })
     .then((data) => {
