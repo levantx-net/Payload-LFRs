@@ -2,6 +2,8 @@ import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { getEnabledFeatures } from '../utilities/getEnabledFeatures.js'
+
 export const createDislikesCountEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
     try {
@@ -15,6 +17,11 @@ export const createDislikesCountEndpoint = (sanitized: SanitizedLfrsConfig): Pay
       const collectionOptions = sanitized.collections[collection]
       if (!collectionOptions) {
         throw new APIError('LFRs is not enabled for this collection', 404)
+      }
+
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
+      if (!enabledFeatures.has('dislikes')) {
+        throw new APIError('Dislikes are not enabled for this collection', 404)
       }
 
       const { totalDocs } = await req.payload.count({

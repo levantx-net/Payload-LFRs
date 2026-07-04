@@ -2,6 +2,8 @@ import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { getEnabledFeatures } from '../utilities/getEnabledFeatures.js'
+
 export const createLikesUsersEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
     try {
@@ -15,6 +17,11 @@ export const createLikesUsersEndpoint = (sanitized: SanitizedLfrsConfig): Payloa
       const collectionOptions = sanitized.collections[collection]
       if (!collectionOptions) {
         throw new APIError('LFRs is not enabled for this collection', 404)
+      }
+
+      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
+      if (!enabledFeatures.has('likes')) {
+        throw new APIError('Likes are not enabled for this collection', 404)
       }
 
       const limit = Number(req.query?.limit) || 1000
