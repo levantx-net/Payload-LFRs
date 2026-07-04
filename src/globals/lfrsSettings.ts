@@ -60,18 +60,33 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     checkAndAdd('dislikes', 'Dislikes')
     checkAndAdd('favourites', 'Favourites')
     checkAndAdd('ratings', 'Ratings')
-    checkAndAdd('reviews', 'Reviews')
-    checkAndAdd('replies', 'Replies')
-    checkAndAdd('shares', 'Shares')
 
-    if (options.allowMultipleReviews) {
+    // Add 'reviews' checkbox, then immediately add 'allowMultipleReviews' after it
+    // so they stay visually grouped — and hide the latter when reviews are off.
+    if (isFeatureEnabled(options.reviews)) {
       collectionFields.push({
-        name: 'allowMultipleReviews',
+        name: 'reviews',
         type: 'checkbox',
-        label: 'Allow Multiple Reviews',
+        label: 'Enable Reviews',
         defaultValue: true,
       })
+
+      if (options.allowMultipleReviews) {
+        collectionFields.push({
+          name: 'allowMultipleReviews',
+          type: 'checkbox',
+          label: 'Allow Multiple Reviews',
+          defaultValue: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.reviews !== false,
+            description: 'When enabled, users can submit more than one review per document.',
+          },
+        })
+      }
     }
+
+    checkAndAdd('replies', 'Replies')
+    checkAndAdd('shares', 'Shares')
 
 
 
