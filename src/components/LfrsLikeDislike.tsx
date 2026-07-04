@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 
+import { fetchStatus, invalidateStatus } from '../utilities/statusCache.js'
 import styles from './styles/lfrs.module.css'
 
 /**
@@ -99,14 +100,8 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
   const [dislikesEnabledState, setDislikesEnabledState] = useState<boolean>(false)
 
   useEffect(() => {
-    fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
-      .then((res) => {
-        if (res.ok) {
-          return res.json()
-        }
-        return null
-      })
-      .then((data) => {
+    fetchStatus(apiBase, targetCollection, targetDoc)
+      .then((data: any) => {
         if (data) {
           if (initialLiked === undefined && typeof data.liked === 'boolean') {
             setLiked(data.liked)
@@ -189,6 +184,9 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       }
 
       const data = await res.json()
+
+      // Invalidate the status cache so any re-fetch gets fresh data
+      invalidateStatus(apiBase, targetCollection, targetDoc)
 
       // Sync with real data
       setLiked(data.liked ?? false)

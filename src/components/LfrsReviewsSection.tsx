@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { fetchStatus as fetchCachedStatus, invalidateStatus } from '../utilities/statusCache.js'
 import { LfrsComposeReview } from './LfrsComposeReview.js'
 import { LfrsReviewCard } from './LfrsReviewCard.js'
 import styles from './styles/lfrs.module.css'
@@ -62,11 +63,8 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
 
   const fetchStatus = useCallback(async () => {
     try {
-      const res = await fetch(
-        `${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`,
-      )
-      if (res.ok) {
-        const data = await res.json()
+      const data = await fetchCachedStatus(apiBase, targetCollection, targetDoc)
+      if (data) {
         setStatus(data)
       }
     } catch (_) {
@@ -109,11 +107,12 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
 
   const handleReviewSuccess = useCallback(() => {
     setComposeMode(null)
+    invalidateStatus(apiBase, targetCollection, targetDoc)
     void fetchStatus()
     void fetchReviews(1)
     // Dispatch an event so other components (like LfrsRatingSummary) know to refetch
     window.dispatchEvent(new Event('lfrs-review-added'))
-  }, [fetchStatus, fetchReviews])
+  }, [apiBase, fetchStatus, fetchReviews, targetCollection, targetDoc])
 
   const handleCancelCompose = useCallback(() => setComposeMode(null), [])
 
@@ -141,6 +140,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
           }
           return
         }
+        invalidateStatus(apiBase, targetCollection, targetDoc)
         void fetchStatus()
         void fetchReviews(page)
         window.dispatchEvent(new Event('lfrs-review-added'))
@@ -165,6 +165,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
           }
           return
         }
+        invalidateStatus(apiBase, targetCollection, targetDoc)
         void fetchStatus()
         void fetchReviews(page)
       } catch (_) {
