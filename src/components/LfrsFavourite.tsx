@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 
+import { fetchStatus, invalidateStatus } from '../utilities/statusCache.js'
 import styles from './styles/lfrs.module.css'
 
 /**
@@ -60,12 +61,8 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
 
   useEffect(() => {
     if (initialFavourited === undefined) {
-      fetch(`${apiBase}/lfrs/status?collection=${targetCollection}&id=${targetDoc}`)
-        .then((res) => {
-          if (res.ok) {return res.json()}
-          return null
-        })
-        .then((data) => {
+      fetchStatus(apiBase, targetCollection, targetDoc)
+        .then((data: any) => {
           if (data) {
             if (typeof data.favourited === 'boolean') {
               setFavourited(data.favourited)
@@ -103,6 +100,9 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
       
       const data = await res.json()
       
+      // Invalidate the status cache so any re-fetch gets fresh data
+      invalidateStatus(apiBase, targetCollection, targetDoc)
+
       // Sync with real data
       setFavourited(data.favourited ?? false)
       onToggle?.(data.favourited ?? false)

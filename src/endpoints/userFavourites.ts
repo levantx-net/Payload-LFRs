@@ -16,8 +16,7 @@ export const createUserFavouritesEndpoint = (sanitized: SanitizedLfrsConfig): Pa
         throw new APIError('Authentication required', 401)
       }
 
-      const roles = (req.user.roles as string[]) || []
-      const isAdmin = roles.includes('admin')
+      const isAdmin = await sanitized.isAdmin({ req })
 
       // Allow only the user themselves, or an admin, to fetch this data
       if (req.user.id !== userId && !isAdmin) {

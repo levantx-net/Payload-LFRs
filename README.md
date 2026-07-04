@@ -103,6 +103,10 @@ export default buildConfig({
       adminControls: true, // Set to false to hide the Global Settings from the Admin UI
       adminGroup: 'LFRs', // Navigation group name in the Admin panel (default: 'LFRs')
       usersCollectionSlug: 'users', // Slug of your auth collection (default: 'users')
+      // Custom callback to check if a user is an admin
+      isAdmin: ({ req }) => {
+        return (req.user?.roles as string[])?.includes('admin')
+      },
     }),
   ],
 })
@@ -207,6 +211,19 @@ The group name under which the LFRs collections will appear in the Admin UI (def
 ### `adminControls`
 
 Set to `false` to hide the dynamic Global Settings page (`LFRs Settings`) from the Payload Admin panel (default: `true`). This prevents administrators from dynamically overriding the plugin's configuration at runtime, while keeping interaction collections accessible.
+
+### `isAdmin`
+
+A custom callback to check if a user is an administrator. This is useful if different applications have different ways of identifying administrators (e.g., checking custom role fields, specific email domains, or database permissions).
+
+By default, it checks if `req.user.roles` contains the role `'admin'`.
+
+```typescript
+isAdmin: async ({ req }) => {
+  // Custom check for admin logic...
+  return req.user?.customRole === 'superadmin'
+}
+```
 
 ### `disabled`
 

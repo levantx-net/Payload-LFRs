@@ -15,7 +15,7 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     fields.push({
       name: 'reviewModeration',
       type: 'checkbox',
-      label: 'Enable Review Moderation',
+      label: 'Enable Reviews, Replies & Ratings Moderation',
       defaultValue: true,
     })
   }
@@ -64,16 +64,45 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
     checkAndAdd('replies', 'Replies')
     checkAndAdd('shares', 'Shares')
 
-    if (options.allowMultipleReviews) {
+    // Add 'reviews' checkbox, then immediately add dependent options after it
+    // so they stay visually grouped — and hide them all when reviews are off.
+    if (isFeatureEnabled(options.reviews)) {
       collectionFields.push({
-        name: 'allowMultipleReviews',
+        name: 'reviews',
         type: 'checkbox',
-        label: 'Allow Multiple Reviews',
+        label: 'Enable Reviews',
         defaultValue: true,
       })
+
+      if (options.allowMultipleReviews) {
+        collectionFields.push({
+          name: 'allowMultipleReviews',
+          type: 'checkbox',
+          label: 'Allow Multiple Reviews',
+          defaultValue: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.reviews !== false,
+            description: 'When enabled, users can submit more than one review per document.',
+          },
+        })
+      }
+
+      // Replies depend on reviews — only show the toggle when reviews are enabled
+      if (isFeatureEnabled(options.replies)) {
+        collectionFields.push({
+          name: 'replies',
+          type: 'checkbox',
+          label: 'Enable Replies',
+          defaultValue: true,
+          admin: {
+            condition: (_, siblingData) => siblingData?.reviews !== false,
+            description: 'Replies let users respond to reviews. Requires Reviews to be enabled.',
+          },
+        })
+      }
     }
 
-
+    checkAndAdd('shares', 'Shares')
 
     if (collectionFields.length > 0) {
       fields.push({

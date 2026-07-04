@@ -3,6 +3,7 @@ import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
 import type { SanitizedLfrsConfig } from '../types.js'
 
 import { getEnabledFeatures } from '../utilities/getEnabledFeatures.js'
+import { getMergedGlobalSettings } from '../utilities/getMergedSettings.js'
 
 export const createDistributionEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
@@ -20,6 +21,15 @@ export const createDistributionEndpoint = (sanitized: SanitizedLfrsConfig): Payl
       }
 
       const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
+
+      // Return 404 if neither ratings nor reviews are enabled (respects admin override)
+      if (!enabledFeatures.has('ratings') && !enabledFeatures.has('reviews')) {
+        throw new APIError('Ratings are not enabled for this collection', 404)
+      }
+
+      // Use merged settings so admin runtime changes to reviewModeration are respected
+      const mergedGlobalSettings = await getMergedGlobalSettings(sanitized, req)
+
       const distribution: Record<string, number> = {}
       let totalScore = 0
       let count = 0
@@ -37,24 +47,22 @@ export const createDistributionEndpoint = (sanitized: SanitizedLfrsConfig): Payl
 
       // We use limit: 100000 which is effectively all for most realistic scenarios.
       // A more optimized approach would use DB aggregation, but this works cross-database.
-      if (enabledFeatures.has('ratings') || enabledFeatures.has('reviews')) {
-        const where: any = {
-          and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
-        }
-
-        if (sanitized.reviewModeration) {
-          where.and.push({ status: { equals: 'approved' } })
-        }
-
-        const reviews = await req.payload.find({
-          collection: sanitized.collectionSlugs.reviews,
-          limit: 100000,
-          overrideAccess: true,
-          req,
-          where,
-        })
-        processScores(reviews.docs)
+      const where: any = {
+        and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
       }
+
+      if (mergedGlobalSettings.reviewModeration) {
+        where.and.push({ status: { equals: 'approved' } })
+      }
+
+      const reviews = await req.payload.find({
+        collection: sanitized.collectionSlugs.reviews,
+        limit: 100000,
+        overrideAccess: true,
+        req,
+        where,
+      })
+      processScores(reviews.docs)
 
       const average = count > 0 ? Number((totalScore / count).toFixed(2)) : 0
 

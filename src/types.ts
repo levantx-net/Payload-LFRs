@@ -280,6 +280,12 @@ export interface LfrsPluginConfig {
    * Optional callbacks to hook into user interactions and state changes
    */
   callbacks?: LfrsCallbacks
+
+  /**
+   * Custom callback to check if a user is an admin.
+   * If not provided, defaults to checking if `req.user.roles` includes 'admin'.
+   */
+  isAdmin?: (args: { req: PayloadRequest }) => boolean | Promise<boolean>
 }
 
 // ─── Sanitized Internal Config ─────────────────────────────────────────────────
@@ -308,6 +314,7 @@ export interface SanitizedLfrsConfig {
   sharesEnabled: boolean
   usersCollectionSlug: string
   callbacks?: LfrsCallbacks
+  isAdmin: (args: { req: PayloadRequest }) => boolean | Promise<boolean>
 }
 
 export interface SanitizedCollectionOptions {
