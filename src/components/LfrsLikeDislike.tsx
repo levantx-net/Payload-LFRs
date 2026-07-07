@@ -221,7 +221,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       {likesEnabled && (
         <button
           aria-label={liked ? 'Unlike' : 'Like'}
-          className={`${styles.toggleButton} ${liked ? styles.likeActive : ''}`}
+          className={`${styles.toggleButton} ${liked ? styles.likeActive : styles.likeInactive}`}
           disabled={loading}
           onClick={() => handleToggle('like')}
           type="button"
@@ -234,7 +234,7 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
       {dislikesEnabledState && (
         <button
           aria-label={disliked ? 'Remove dislike' : 'Dislike'}
-          className={`${styles.toggleButton} ${disliked ? styles.dislikeActive : ''}`}
+          className={`${styles.toggleButton} ${disliked ? styles.dislikeActive : styles.dislikeInactive}`}
           disabled={loading}
           onClick={() => handleToggle('dislike')}
           type="button"

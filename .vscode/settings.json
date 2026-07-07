@@ -37,5 +37,7 @@
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit"
     }
-  }
+  },
+  "snyk.advanced.organization": "e622df14-893a-4008-b9bd-ab425c82baae",
+  "snyk.advanced.autoSelectOrganization": true
 }

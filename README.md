@@ -429,6 +429,9 @@ Here are the available variables and their default fallback values:
   --lfrs-dislike-active: #cc0000; /* Active state for Dislike button */
   --lfrs-favourite-active: #ff0055; /* Active state for Favourite button */
 
+  --lfrs-like-inactive: #0066cc; /* InActive state for Like button */
+  --lfrs-dislike-inactive: #cc0000; /* InActive state for Dislike button */
+
   --lfrs-radius: 6px; /* Border radius for buttons, inputs, and cards */
   --lfrs-font: inherit; /* Font family inherited from your app by default */
 }

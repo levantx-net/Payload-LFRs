@@ -58,10 +58,20 @@
   background: rgba(96, 165, 250, 0.1);
 }
 
+.likeInactive {
+  color: var(--lfrs-like-inactive, #e0e0e0);
+  border-color: transparent;
+}
+
 .dislikeActive {
   color: var(--lfrs-dislike-active, #cc0000);
   border-color: var(--lfrs-dislike-active, #cc0000);
   background: rgba(248, 113, 113, 0.1);
+}
+
+.dislikeInactive {
+  color: var(--lfrs-dislike-inactive, #e0e0e0);
+  border-color: transparent;
 }
 
 .favouriteActive {
