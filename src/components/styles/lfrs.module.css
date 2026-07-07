@@ -60,7 +60,7 @@
 
 .likeInactive {
   color: var(--lfrs-like-inactive, #e0e0e0);
-  border-color: transparent;
+  border-color: var(--lfrs-like-inactive, #e0e0e0);
 }
 
 .dislikeActive {
@@ -71,7 +71,7 @@
 
 .dislikeInactive {
   color: var(--lfrs-dislike-inactive, #e0e0e0);
-  border-color: transparent;
+  border-color: var(--lfrs-dislike-inactive, #e0e0e0);
 }
 
 .favouriteActive {
