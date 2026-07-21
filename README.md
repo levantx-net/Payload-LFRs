@@ -431,6 +431,7 @@ Here are the available variables and their default fallback values:
   --lfrs-like-active: #0066cc; /* Active state for Like button */
   --lfrs-dislike-active: #cc0000; /* Active state for Dislike button */
   --lfrs-favourite-active: #ff0055; /* Active state for Favourite button */
+  --lfrs-share-active: #0077b5; /* Active state for Share button */
 
   --lfrs-like-inactive: #0066cc; /* InActive state for Like button */
   --lfrs-dislike-inactive: #cc0000; /* InActive state for Dislike button */
@@ -438,6 +439,27 @@ Here are the available variables and their default fallback values:
   --lfrs-radius: 6px; /* Border radius for buttons, inputs, and cards */
   --lfrs-font: inherit; /* Font family inherited from your app by default */
 }
+```
+
+#### Customizing `LfrsShare` Styles & Buttons
+
+`LfrsShare` allows detailed customization for all sub-elements (outer container, trigger button, dropdown panel, platform buttons, and copy link button) via specific `className` and `style` props:
+
+```tsx
+<LfrsShare
+  targetCollection="posts"
+  targetDoc={post.id}
+  containerClassName="custom-share-container"
+  containerStyle={{ margin: '10px 0' }}
+  buttonClassName="custom-share-trigger"
+  buttonStyle={{ backgroundColor: '#10b981', color: '#ffffff' }}
+  panelClassName="custom-share-panel"
+  panelStyle={{ borderRadius: '12px' }}
+  platformButtonClassName="custom-platform-btn"
+  platformButtonStyle={{ fontSize: '12px' }}
+  copyButtonClassName="custom-copy-btn"
+  copyButtonStyle={{ backgroundColor: '#3b82f6' }}
+/>
 ```
 
 #### Example: Inline Scoped Customization
@@ -457,6 +479,7 @@ If you want to style a single component, you can pass the variables via the `sty
   }
 />
 ```
+
 
 ## Building Custom UIs (Headless Usage)
 
