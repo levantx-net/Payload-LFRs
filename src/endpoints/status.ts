@@ -147,7 +147,11 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
 
 
       // Check review / rating
-      if (enabledFeatures.has('reviews') || enabledFeatures.has('ratings')) {
+      // Always fetch the user's own review/rating, even if reviews/ratings are
+      // currently disabled. This ensures the "Your Review" section in the UI
+      // can still display existing reviews (e.g. after an admin re-enables
+      // reviews, or to show the user their previous submission).
+      if (enabledFeatures.has('reviews') || enabledFeatures.has('ratings') || userId) {
         const reviews = await req.payload.find({
           collection: sanitized.collectionSlugs.reviews,
           overrideAccess: true,

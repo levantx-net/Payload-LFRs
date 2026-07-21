@@ -47,8 +47,15 @@ const buildConfigWithMemoryDB = async () => {
             defaultValue: ['subscriber'],
             hasMany: true,
             options: ['admin', 'subscriber'],
+            access: {
+              update: () => false,
+              create: () => true,
+            },
           },
         ],
+        admin: {
+          defaultColumns: ['id', 'email', 'roles'],
+        },
       },
       Posts,
       {
@@ -74,7 +81,6 @@ const buildConfigWithMemoryDB = async () => {
           posts: {
             allowMultipleReviews: true, // Can leave multiple reviews
             dislikes: true, // test mutual exclusivity
-
             favourites: true,
             likes: true,
             ratings: true,

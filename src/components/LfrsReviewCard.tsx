@@ -84,8 +84,11 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
 
     const authorName = review.user?.name || review.user?.email || 'Anonymous'
     const dateStr = formatRelativeTime(review.createdAt)
-    const isOwner =
-      currentUserId && (review.user === currentUserId || review.user?.id === currentUserId)
+    const reviewUserId =
+      typeof review.user === 'object' && review.user !== null
+        ? review.user.id
+        : review.user
+    const isOwner = !!currentUserId && String(reviewUserId ?? '') === String(currentUserId)
     const canEdit = isOwner && (!reviewModeration || review.status !== 'approved')
 
     const handleReplySuccess = () => {
@@ -141,7 +144,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
           </div>
         )}
 
-        {(repliesEnabled || isOwner || enableReviewReactions) && (
+        {(repliesEnabled || isOwner || enableReviewReactions || currentUserId) && (
           <div className={styles.reviewActions}>
             {enableReviewReactions && reviewsCollectionSlug && (
               <div style={{ display: 'inline-flex', marginRight: '16px' }}>
@@ -153,7 +156,10 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
                 />
               </div>
             )}
-            {repliesEnabled && (
+            {/* Show Reply button for any authenticated user.
+                The endpoint enforces access — if replies are disabled,
+                the API will reject and the user gets an error message. */}
+            {currentUserId && (
               <button
                 className={styles.buttonText}
                 onClick={() => setIsReplying(!isReplying)}
@@ -162,7 +168,7 @@ export const LfrsReviewCard: React.FC<LfrsReviewCardProps> = React.memo(
                 Reply
               </button>
             )}
-            {canEdit && onEdit && (
+            {isOwner && canEdit && onEdit && (
               <button className={styles.buttonText} onClick={() => onEdit(review)} type="button">
                 Edit
               </button>

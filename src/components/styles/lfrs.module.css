@@ -34,6 +34,9 @@
   font-weight: 500;
   transition: all 0.2s ease;
   color: var(--lfrs-text, #333333);
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .toggleButton:hover {

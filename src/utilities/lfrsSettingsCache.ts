@@ -4,12 +4,14 @@ import { lfrsSettingsSlug } from '../globals/lfrsSettings.js'
 
 let cachedSettings: any = null
 let cacheTimestamp = 0
-const CACHE_TTL = 1000 * 60 * 5 // 5 minutes TTL fallback
+const CACHE_TTL = 1000 * 2 // 2 seconds TTL — short enough to avoid stale settings
+// in multi-process deployments, but long enough to avoid hammering the DB
+// when many requests arrive simultaneously.
 
 export async function getCachedLfrsSettings(payload: Payload, req?: PayloadRequest) {
   const now = Date.now()
 
-  // Return cached settings if valid
+  // Return cached settings if still valid
   if (cachedSettings && now - cacheTimestamp < CACHE_TTL) {
     return cachedSettings
   }

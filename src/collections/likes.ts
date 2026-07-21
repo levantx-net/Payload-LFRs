@@ -29,6 +29,7 @@ export function createLikesCollection(config: SanitizedLfrsConfig): CollectionCo
       create: isAuthenticated,
       delete: isOwnerOrAdmin(config),
       read: isOwnerOrAdmin(config),
+      update: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'createdAt'],
