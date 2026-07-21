@@ -10,6 +10,7 @@
   height: 24px;
   fill: var(--lfrs-star-inactive, #e0e0e0);
   transition: fill 0.2s ease;
+  filter: drop-shadow(0 0 1px rgba(128, 128, 128, 0.4));
 }
 
 .ratingIcon.active {
@@ -37,6 +38,7 @@
   pointer-events: auto;
   position: relative;
   z-index: 1;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .toggleButton:hover {
@@ -53,6 +55,7 @@
   height: 18px;
   stroke: currentColor;
   fill: none;
+  filter: drop-shadow(0 0 1px rgba(128, 128, 128, 0.4));
 }
 
 .likeActive {
@@ -262,11 +265,12 @@
   cursor: pointer;
   font-weight: 500;
   font-size: 14px;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .buttonPrimary {
   background: var(--lfrs-primary, #000000);
-  color: white;
+  color: var(--lfrs-primary-text, #ffffff);
 }
 
 .buttonSecondary {
@@ -330,6 +334,7 @@
 .modalCancelButton {
   background: var(--lfrs-modal-cancel-bg, var(--lfrs-border, #e0e0e0));
   color: var(--lfrs-modal-cancel-text, var(--lfrs-text, #333333));
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .modalCancelButton:hover {
@@ -339,6 +344,7 @@
 .modalDeleteButton {
   background: var(--lfrs-modal-delete-bg, var(--lfrs-dislike-active, #dc3545));
   color: var(--lfrs-modal-delete-text, #ffffff);
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .modalDeleteButton:hover {
@@ -355,6 +361,7 @@
   font-weight: 600;
   text-transform: uppercase;
   vertical-align: middle;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .status_pending {
@@ -371,3 +378,4 @@
   background: var(--lfrs-status-rejected-bg, #f8d7da);
   color: var(--lfrs-status-rejected-text, #721c24);
 }
+
