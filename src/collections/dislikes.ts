@@ -26,6 +26,7 @@ export function createDislikesCollection(config: SanitizedLfrsConfig): Collectio
       create: isAuthenticated,
       delete: isOwnerOrAdmin(config),
       read: isOwnerOrAdmin(config),
+      update: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'createdAt'],

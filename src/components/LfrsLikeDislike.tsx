@@ -180,7 +180,12 @@ export const LfrsLikeDislike: React.FC<LfrsLikeDislikeProps> = ({
         if (res.status === 401 && onAuthError) {
           onAuthError()
         }
-        throw new Error('API Error')
+        // Always revert on non-ok response
+        setLiked(previousState.liked)
+        setDisliked(previousState.disliked)
+        setLikesCount(previousState.likesCount)
+        setDislikesCount(previousState.dislikesCount)
+        return
       }
 
       const data = await res.json()

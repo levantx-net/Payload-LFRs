@@ -10,6 +10,7 @@
   height: 24px;
   fill: var(--lfrs-star-inactive, #e0e0e0);
   transition: fill 0.2s ease;
+  filter: drop-shadow(0 0 1px rgba(128, 128, 128, 0.4));
 }
 
 .ratingIcon.active {
@@ -34,6 +35,10 @@
   font-weight: 500;
   transition: all 0.2s ease;
   color: var(--lfrs-text, #333333);
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .toggleButton:hover {
@@ -50,6 +55,7 @@
   height: 18px;
   stroke: currentColor;
   fill: none;
+  filter: drop-shadow(0 0 1px rgba(128, 128, 128, 0.4));
 }
 
 .likeActive {
@@ -80,11 +86,127 @@
   background: rgba(255, 0, 85, 0.05);
 }
 
+.shareContainer {
+  position: relative;
+  display: inline-block;
+}
+
 .shareActive {
   color: var(--lfrs-share-active, #0077b5);
   border-color: var(--lfrs-share-active, #0077b5);
   background: rgba(0, 119, 181, 0.08);
 }
+
+.sharePanel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 260px;
+  padding: 12px;
+  background: var(--lfrs-bg, #ffffff);
+  border: 1px solid var(--lfrs-border, #e0e0e0);
+  border-radius: var(--lfrs-radius, 6px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 999;
+}
+
+.shareBackdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 998;
+}
+
+.sharePlatforms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sharePlatformButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: transparent;
+  border: 1px solid var(--lfrs-border, #e0e0e0);
+  border-radius: var(--lfrs-radius, 6px);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
+}
+
+.sharePlatformButton:hover:not(:disabled) {
+  background: var(--lfrs-bg-muted, #f5f5f5);
+}
+
+.sharePlatformButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.sharePlatformIcon {
+  display: block;
+  width: 22px;
+  height: 22px;
+}
+
+.shareCopyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--lfrs-bg-muted, #f5f5f5);
+  border-radius: var(--lfrs-radius, 6px);
+}
+
+.shareCopyUrl {
+  flex: 1;
+  font-size: 12px;
+  color: var(--lfrs-text-muted, #666666);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.shareCopyButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  border-radius: calc(var(--lfrs-radius, 6px) - 2px);
+  background: var(--lfrs-primary, #000000);
+  color: var(--lfrs-primary-text, #ffffff);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
+}
+
+.shareCopyButtonCopied {
+  background: var(--lfrs-like-active, #0066cc);
+}
+
+.shareCopyButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shareCopyIcon {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
 
 /* Rating Summary */
 .summary {
@@ -259,11 +381,12 @@
   cursor: pointer;
   font-weight: 500;
   font-size: 14px;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .buttonPrimary {
   background: var(--lfrs-primary, #000000);
-  color: white;
+  color: var(--lfrs-primary-text, #ffffff);
 }
 
 .buttonSecondary {
@@ -327,6 +450,7 @@
 .modalCancelButton {
   background: var(--lfrs-modal-cancel-bg, var(--lfrs-border, #e0e0e0));
   color: var(--lfrs-modal-cancel-text, var(--lfrs-text, #333333));
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .modalCancelButton:hover {
@@ -336,6 +460,7 @@
 .modalDeleteButton {
   background: var(--lfrs-modal-delete-bg, var(--lfrs-dislike-active, #dc3545));
   color: var(--lfrs-modal-delete-text, #ffffff);
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .modalDeleteButton:hover {
@@ -352,6 +477,7 @@
   font-weight: 600;
   text-transform: uppercase;
   vertical-align: middle;
+  text-shadow: 0 0 1px rgba(128, 128, 128, 0.4);
 }
 
 .status_pending {
@@ -368,3 +494,4 @@
   background: var(--lfrs-status-rejected-bg, #f8d7da);
   color: var(--lfrs-status-rejected-text, #721c24);
 }
+

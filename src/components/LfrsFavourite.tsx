@@ -78,11 +78,11 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
 
   const handleToggle = async () => {
     if (loading) {return}
-    
+
     // Optimistic update
     const previousState = favourited
     setFavourited(!favourited)
-    
+
     try {
       setLoading(true)
       const res = await fetch(`${apiBase}/lfrs/favourite`, {
@@ -90,23 +90,25 @@ export const LfrsFavourite: React.FC<LfrsFavouriteProps> = ({
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
       })
-      
+
       if (!res.ok) {
         if (res.status === 401 && onAuthError) {
           onAuthError()
         }
-        throw new Error('API Error')
+        // Always revert on non-ok response
+        setFavourited(previousState)
+        return
       }
-      
+
       const data = await res.json()
-      
+
       // Invalidate the status cache so any re-fetch gets fresh data
       invalidateStatus(apiBase, targetCollection, targetDoc)
 
       // Sync with real data
       setFavourited(data.favourited ?? false)
       onToggle?.(data.favourited ?? false)
-      
+
     } catch (_e) {
       // Revert on error
       setFavourited(previousState)

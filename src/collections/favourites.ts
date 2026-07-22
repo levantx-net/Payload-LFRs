@@ -24,6 +24,7 @@ export function createFavouritesCollection(config: SanitizedLfrsConfig): Collect
       create: isAuthenticated,
       delete: isOwnerOrAdmin(config),
       read: isOwnerOrAdmin(config),
+      update: isOwnerOrAdmin(config),
     },
     admin: {
       defaultColumns: ['user', 'targetCollection', 'targetDoc', 'createdAt'],

@@ -50,7 +50,11 @@ export const LfrsReplyCard: React.FC<LfrsReplyCardProps> = React.memo(
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
     const authorName = reply.user?.name || reply.user?.email || 'Anonymous'
     const dateStr = formatRelativeTime(reply.createdAt)
-    const isOwner = currentUserId && (reply.user === currentUserId || reply.user?.id === currentUserId)
+    const replyUserId =
+      typeof reply.user === 'object' && reply.user !== null
+        ? reply.user.id
+        : reply.user
+    const isOwner = !!currentUserId && String(replyUserId ?? '') === String(currentUserId)
     const canEdit = isOwner && (!reviewModeration || reply.status !== 'approved')
 
     return (

@@ -105,6 +105,32 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
     void fetchReviews(1)
   }, [fetchStatus, fetchReviews])
 
+  // Listen for settings changes (e.g. admin toggles reviews on/off) and re-fetch
+  useEffect(() => {
+    const handleSettingsChange = () => {
+      invalidateStatus(apiBase, targetCollection, targetDoc)
+      void fetchStatus()
+      void fetchReviews(1)
+    }
+
+    // Re-fetch when the window regains focus (e.g. after admin toggles settings)
+    const handleFocus = () => {
+      invalidateStatus(apiBase, targetCollection, targetDoc)
+      void fetchStatus()
+    }
+
+    // Listen for custom events that signal settings or interaction changes
+    window.addEventListener('lfrs-settings-changed', handleSettingsChange)
+    window.addEventListener('lfrs-review-added', handleSettingsChange)
+    window.addEventListener('focus', handleFocus)
+
+    return () => {
+      window.removeEventListener('lfrs-settings-changed', handleSettingsChange)
+      window.removeEventListener('lfrs-review-added', handleSettingsChange)
+      window.removeEventListener('focus', handleFocus)
+    }
+  }, [apiBase, fetchStatus, fetchReviews, targetCollection, targetDoc])
+
   const handleReviewSuccess = useCallback(() => {
     setComposeMode(null)
     invalidateStatus(apiBase, targetCollection, targetDoc)
@@ -185,7 +211,10 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
 
   const hasMyReview = !!status?.review
 
-  if (status && status.reviewsEnabled === false && status.ratingsEnabled === false) {
+  // Only return null if both reviews AND ratings are completely disabled at the
+  // static (developer) config level. An admin toggle in the panel should only
+  // block NEW submissions, not hide existing approved reviews/ratings.
+  if (status && status.reviewsEnabled === false && status.ratingsEnabled === false && !hasMyReview) {
     return null
   }
 

@@ -2,6 +2,7 @@ import type { CheckboxField, GlobalConfig } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { isAdmin } from '../access/isAdmin.js'
 import { isFeatureEnabled } from '../defaults.js'
 import { type LfrsFeatureKey } from '../utilities/getEnabledFeatures.js'
 import { invalidateLfrsSettingsCache } from '../utilities/lfrsSettingsCache.js'
@@ -117,7 +118,8 @@ export function createLfrsSettingsGlobal(sanitized: SanitizedLfrsConfig): Global
   return {
     slug: lfrsSettingsSlug,
     access: {
-      read: () => true,
+      read: isAdmin(sanitized),
+      update: isAdmin(sanitized),
     },
     admin: {
       group: sanitized.adminGroup,

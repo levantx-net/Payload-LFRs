@@ -214,7 +214,7 @@ Set to `false` to hide the dynamic Global Settings page (`LFRs Settings`) from t
 
 ### `isAdmin`
 
-A custom callback to check if a user is an administrator. This is useful if different applications have different ways of identifying administrators (e.g., checking custom role fields, specific email domains, or database permissions).
+A custom callback to check if a user is an administrator. This is used throughout the plugin to determine administrative permissions, such as deleting interactions, viewing moderation workflows, and accessing the runtime settings.
 
 By default, it checks if `req.user.roles` contains the role `'admin'`.
 
@@ -240,9 +240,9 @@ The plugin automatically generates a **Payload Global** named `LFRs Settings` in
 
 There is also a checkbox option for **Enable Like/Dislike on Reviews and Replies** which allows admins to toggle review reactions dynamically.
 
-**Important:** The admin controls are strictly generated based on the developer's static config (`payload.config.ts`).
-
-- An admin **cannot** turn on a feature (like `Reviews`) if the developer explicitly set it to `false` in the code.
+**Security & Access Control:**
+- Read and edit permissions on the `LFRs Settings` global are strictly restricted to administrators via the configured `isAdmin` callback. Non-admin users cannot view or modify plugin settings via the API or Admin UI.
+- The admin controls are strictly bounded by the developer's static config (`payload.config.ts`). An admin **cannot** turn on a feature (like `Reviews`) if the developer explicitly set it to `false` in the code.
 - Admin overrides (e.g., turning off Moderation or disabling Likes during a spam attack) are instantly synced with the frontend UI and the REST API securely blocks all associated mutations.
 
 ### `callbacks`
@@ -411,11 +411,14 @@ export function PostDetails({ post }) {
 
 The UI components are built to seamlessly integrate with your existing site. They use **CSS Variables** which can be overridden globally in your app (e.g. in your `:root` or `body` block), or scoped directly to the components using the `style` prop!
 
+Components also include built-in fallback shadows (`text-shadow` and `drop-shadow`) on text, buttons, badges, and icon outlines to ensure visual contrast and readability across light and dark modes, even if custom background and foreground colors match.
+
 Here are the available variables and their default fallback values:
 
 ```css
 :root {
   --lfrs-primary: #000000; /* Used for primary buttons (e.g. "Write a Review") */
+  --lfrs-primary-text: #ffffff; /* Text color for primary buttons */
   --lfrs-text: #333333; /* Main text color */
   --lfrs-text-muted: #666666; /* Dates, secondary text, placeholders */
   --lfrs-bg: #ffffff; /* Main background color for cards */
@@ -428,6 +431,7 @@ Here are the available variables and their default fallback values:
   --lfrs-like-active: #0066cc; /* Active state for Like button */
   --lfrs-dislike-active: #cc0000; /* Active state for Dislike button */
   --lfrs-favourite-active: #ff0055; /* Active state for Favourite button */
+  --lfrs-share-active: #0077b5; /* Active state for Share button */
 
   --lfrs-like-inactive: #0066cc; /* InActive state for Like button */
   --lfrs-dislike-inactive: #cc0000; /* InActive state for Dislike button */
@@ -435,6 +439,27 @@ Here are the available variables and their default fallback values:
   --lfrs-radius: 6px; /* Border radius for buttons, inputs, and cards */
   --lfrs-font: inherit; /* Font family inherited from your app by default */
 }
+```
+
+#### Customizing `LfrsShare` Styles & Buttons
+
+`LfrsShare` allows detailed customization for all sub-elements (outer container, trigger button, dropdown panel, platform buttons, and copy link button) via specific `className` and `style` props:
+
+```tsx
+<LfrsShare
+  targetCollection="posts"
+  targetDoc={post.id}
+  containerClassName="custom-share-container"
+  containerStyle={{ margin: '10px 0' }}
+  buttonClassName="custom-share-trigger"
+  buttonStyle={{ backgroundColor: '#10b981', color: '#ffffff' }}
+  panelClassName="custom-share-panel"
+  panelStyle={{ borderRadius: '12px' }}
+  platformButtonClassName="custom-platform-btn"
+  platformButtonStyle={{ fontSize: '12px' }}
+  copyButtonClassName="custom-copy-btn"
+  copyButtonStyle={{ backgroundColor: '#3b82f6' }}
+/>
 ```
 
 #### Example: Inline Scoped Customization
@@ -454,6 +479,7 @@ If you want to style a single component, you can pass the variables via the `sty
   }
 />
 ```
+
 
 ## Building Custom UIs (Headless Usage)
 
