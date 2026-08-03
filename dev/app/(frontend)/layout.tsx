@@ -23,10 +23,13 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <header className="header">
-          <Link href="/posts" className="header-logo">
-            PostsApp
+          <Link href="/" className="header-logo">
+            LFRs Demo
           </Link>
           <nav className="header-nav">
+            <Link href="/" className="nav-link">
+              Home
+            </Link>
             <Link href="/posts" className="nav-link">
               All Posts
             </Link>

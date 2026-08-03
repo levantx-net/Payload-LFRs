@@ -95,6 +95,7 @@ const buildConfigWithMemoryDB = async () => {
           uploadCollection: 'media',
         },
         reviewModeration: true,
+        testimonialFormUrl: 'http://localhost:3000/testimonial-form',
         usersCollectionSlug: 'users',
         isAdmin: ({ req }) => {
           if (!req.user) {
