@@ -41,6 +41,23 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
       defaultValue: false,
     },
     {
+      name: 'status',
+      type: 'select',
+      admin: {
+        position: 'sidebar',
+      },
+      defaultValue: 'pending',
+      index: true,
+      options: [
+        { label: 'Pending', value: 'pending' },
+        { label: 'Accepted', value: 'accepted' },
+        { label: 'Rejected', value: 'rejected' },
+      ],
+      access: {
+        update: ({ req }) => sanitized.isAdmin({ req }),
+      },
+    },
+    {
       name: 'invitationSentDate',
       type: 'date',
       admin: {
@@ -72,6 +89,7 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
       defaultColumns: [
         'invitedEmail',
         'firstName',
+        'status',
         'featured',
         'rating',
         'invitationSentDate',

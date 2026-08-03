@@ -4,7 +4,7 @@ import type { SanitizedLfrsConfig } from '../types.js'
 export const submitTestimonialEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
     try {
-      const { uniqueCode, firstName, rating, testimonial, photo } = await req.json()
+      const { uniqueCode, firstName, rating, testimonial, photo } = (await req?.json?.()) ?? {}
 
       if (!uniqueCode || !firstName || !rating || !testimonial) {
         throw new APIError('Missing required fields', 400)
@@ -70,13 +70,13 @@ export const getTestimonialsEndpoint = (sanitized: SanitizedLfrsConfig): Payload
     try {
       const featuredOnly = req.query?.featured === 'true'
       const limit = parseInt((req.query?.limit as string) || '3', 10)
-      
+
       const where: any = {}
       if (featuredOnly) {
         where.featured = { equals: true }
       }
       // Only get accepted ones
-      where.testimonialAcceptedDate = { exists: true }
+      where.status = { equals: 'accepted' }
 
       const testimonials = await req.payload.find({
         collection: sanitized.collectionSlugs.testimonials,

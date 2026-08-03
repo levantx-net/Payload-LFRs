@@ -8,7 +8,7 @@ The Testimonials feature allows administrators to easily collect, manage, and di
 2. **Email Delivery**: The plugin's hooks automatically generate a secure `uniqueCode` and send an email invitation to the user with a customized link.
 3. **Submission**: The user clicks the link, bringing them to your frontend application. They fill out a form (using the provided `LfrsTestimonialForm` component) with their First Name, Rating, and Testimonial text.
 4. **Acceptance**: The API validates the unique code and updates the existing testimonial document in the CMS, setting `testimonialAcceptedDate`.
-5. **Curation**: Administrators can optionally mark testimonials as `featured`.
+5. **Moderation & Curation**: Testimonials default to `pending` status. Administrators can change their status to `accepted` or `rejected`, and optionally mark them as `featured`. Only `accepted` testimonials are served via the REST API endpoint.
 6. **Display**: The frontend can display featured testimonials using the `LfrsTestimonials` UI component.
 
 ## Configuration

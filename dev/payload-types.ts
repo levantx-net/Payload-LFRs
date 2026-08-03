@@ -76,6 +76,7 @@ export interface Config {
     'lfrs-reviews': LfrsReview;
     'lfrs-replies': LfrsReply;
     'lfrs-shares': LfrsShare;
+    'lfrs-testimonials': LfrsTestimonial;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +97,7 @@ export interface Config {
     'lfrs-reviews': LfrsReviewsSelect<false> | LfrsReviewsSelect<true>;
     'lfrs-replies': LfrsRepliesSelect<false> | LfrsRepliesSelect<true>;
     'lfrs-shares': LfrsSharesSelect<false> | LfrsSharesSelect<true>;
+    'lfrs-testimonials': LfrsTestimonialsSelect<false> | LfrsTestimonialsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -306,6 +308,28 @@ export interface LfrsShare {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-testimonials".
+ */
+export interface LfrsTestimonial {
+  id: string;
+  /**
+   * The email address to send the invitation to.
+   */
+  invitedEmail: string;
+  uniqueCode?: string | null;
+  firstName?: string | null;
+  rating?: number | null;
+  testimonial?: string | null;
+  featured?: boolean | null;
+  status?: ('pending' | 'accepted' | 'rejected') | null;
+  invitationSentDate?: string | null;
+  testimonialAcceptedDate?: string | null;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -363,6 +387,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'lfrs-shares';
         value: string | LfrsShare;
+      } | null)
+    | ({
+        relationTo: 'lfrs-testimonials';
+        value: string | LfrsTestimonial;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -559,6 +587,24 @@ export interface LfrsSharesSelect<T extends boolean = true> {
   targetDoc?: T;
   platform?: T;
   url?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-testimonials_select".
+ */
+export interface LfrsTestimonialsSelect<T extends boolean = true> {
+  invitedEmail?: T;
+  uniqueCode?: T;
+  firstName?: T;
+  rating?: T;
+  testimonial?: T;
+  featured?: T;
+  status?: T;
+  invitationSentDate?: T;
+  testimonialAcceptedDate?: T;
+  photo?: T;
   updatedAt?: T;
   createdAt?: T;
 }
