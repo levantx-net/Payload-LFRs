@@ -75,6 +75,8 @@ export interface Config {
     'lfrs-favourites': LfrsFavourite;
     'lfrs-reviews': LfrsReview;
     'lfrs-replies': LfrsReply;
+    'lfrs-shares': LfrsShare;
+    'lfrs-testimonials': LfrsTestimonial;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -94,6 +96,8 @@ export interface Config {
     'lfrs-favourites': LfrsFavouritesSelect<false> | LfrsFavouritesSelect<true>;
     'lfrs-reviews': LfrsReviewsSelect<false> | LfrsReviewsSelect<true>;
     'lfrs-replies': LfrsRepliesSelect<false> | LfrsRepliesSelect<true>;
+    'lfrs-shares': LfrsSharesSelect<false> | LfrsSharesSelect<true>;
+    'lfrs-testimonials': LfrsTestimonialsSelect<false> | LfrsTestimonialsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -180,6 +184,7 @@ export interface Post {
     ratingsCount?: number | null;
     ratingsAverage?: number | null;
     reviewsCount?: number | null;
+    sharesCount?: number | null;
   };
   updatedAt: string;
   createdAt: string;
@@ -289,6 +294,42 @@ export interface LfrsReply {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-shares".
+ */
+export interface LfrsShare {
+  id: string;
+  user?: (string | null) | User;
+  targetCollection: string;
+  targetDoc: string;
+  platform: 'facebook' | 'twitter' | 'whatsapp' | 'telegram' | 'linkedin' | 'web' | 'other';
+  url?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-testimonials".
+ */
+export interface LfrsTestimonial {
+  id: string;
+  /**
+   * The email address to send the invitation to.
+   */
+  invitedEmail: string;
+  uniqueCode?: string | null;
+  firstName?: string | null;
+  rating?: number | null;
+  testimonial?: string | null;
+  featured?: boolean | null;
+  status?: ('pending' | 'accepted' | 'rejected') | null;
+  invitationSentDate?: string | null;
+  testimonialAcceptedDate?: string | null;
+  photo?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -342,6 +383,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'lfrs-replies';
         value: string | LfrsReply;
+      } | null)
+    | ({
+        relationTo: 'lfrs-shares';
+        value: string | LfrsShare;
+      } | null)
+    | ({
+        relationTo: 'lfrs-testimonials';
+        value: string | LfrsTestimonial;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -426,6 +475,7 @@ export interface PostsSelect<T extends boolean = true> {
         ratingsCount?: T;
         ratingsAverage?: T;
         reviewsCount?: T;
+        sharesCount?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -529,6 +579,37 @@ export interface LfrsRepliesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-shares_select".
+ */
+export interface LfrsSharesSelect<T extends boolean = true> {
+  user?: T;
+  targetCollection?: T;
+  targetDoc?: T;
+  platform?: T;
+  url?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lfrs-testimonials_select".
+ */
+export interface LfrsTestimonialsSelect<T extends boolean = true> {
+  invitedEmail?: T;
+  uniqueCode?: T;
+  firstName?: T;
+  rating?: T;
+  testimonial?: T;
+  featured?: T;
+  status?: T;
+  invitationSentDate?: T;
+  testimonialAcceptedDate?: T;
+  photo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -585,8 +666,15 @@ export interface LfrsSetting {
     favourites?: boolean | null;
     ratings?: boolean | null;
     reviews?: boolean | null;
-    replies?: boolean | null;
+    /**
+     * When enabled, users can submit more than one review per document.
+     */
     allowMultipleReviews?: boolean | null;
+    /**
+     * Replies let users respond to reviews. Requires Reviews to be enabled.
+     */
+    replies?: boolean | null;
+    shares?: boolean | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -607,8 +695,9 @@ export interface LfrsSettingsSelect<T extends boolean = true> {
         favourites?: T;
         ratings?: T;
         reviews?: T;
-        replies?: T;
         allowMultipleReviews?: T;
+        replies?: T;
+        shares?: T;
       };
   updatedAt?: T;
   createdAt?: T;

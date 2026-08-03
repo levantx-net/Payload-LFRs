@@ -2,6 +2,7 @@ import type { CollectionConfig, Field } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
+import { canReadReviews } from '../access/canReadReviews.js'
 import { isAuthenticated } from '../access/isAuthenticated.js'
 import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
 import { enforceUser } from '../hooks/enforceUser.js'
@@ -58,6 +59,9 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
         { label: 'Approved', value: 'approved' },
         { label: 'Rejected', value: 'rejected' },
       ],
+      access: {
+        update: ({ req }) => config.isAdmin({ req }),
+      },
     })
   }
 
@@ -68,7 +72,7 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
     access: {
       create: isAuthenticated,
       delete: isOwnerOrAdmin(config),
-      read: isOwnerOrAdmin(config),
+      read: canReadReviews(config),
       update: isOwnerOrAdmin(config),
     },
     admin: {

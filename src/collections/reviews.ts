@@ -2,6 +2,7 @@ import type { CollectionBeforeChangeHook, CollectionConfig, Field } from 'payloa
 
 import type { SanitizedLfrsConfig, SanitizedReviewMediaConfig } from '../types.js'
 
+import { canReadReviews } from '../access/canReadReviews.js'
 import { isAuthenticated } from '../access/isAuthenticated.js'
 import { isOwnerOrAdmin } from '../access/isOwnerOrAdmin.js'
 import { createEnforceUniqueness } from '../hooks/enforceUniqueness.js'
@@ -111,6 +112,9 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
         { label: 'Approved', value: 'approved' },
         { label: 'Rejected', value: 'rejected' },
       ],
+      access: {
+        update: ({ req }) => config.isAdmin({ req }),
+      },
     })
   }
 
@@ -179,7 +183,7 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
     access: {
       create: isAuthenticated,
       delete: isOwnerOrAdmin(config),
-      read: isOwnerOrAdmin(config),
+      read: canReadReviews(config),
       update: isOwnerOrAdmin(config),
     },
     admin: {
