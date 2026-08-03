@@ -99,7 +99,6 @@ export interface LfrsCollectionOptions {
    * Default: false
    */
   allowMultipleReviews?: boolean
-
 }
 
 // ─── Rating Config ─────────────────────────────────────────────────────────────
@@ -191,12 +190,29 @@ export interface LfrsCallbacks {
   onReviewSubmitted?: (args: { req: PayloadRequest; review: any }) => void | Promise<void>
   onReplySubmitted?: (args: { req: PayloadRequest; reply: any }) => void | Promise<void>
   onRatingSubmitted?: (args: { req: PayloadRequest; rating: any }) => void | Promise<void>
-  onReviewStateChanged?: (args: { previousStatus?: string; req: PayloadRequest; review: any }) => void | Promise<void>
+  onReviewStateChanged?: (args: {
+    previousStatus?: string
+    req: PayloadRequest
+    review: any
+  }) => void | Promise<void>
   onLiked?: (args: { like: any; req: PayloadRequest }) => void | Promise<void>
   onDisliked?: (args: { dislike: any; req: PayloadRequest }) => void | Promise<void>
-  onUnliked?: (args: { req: PayloadRequest; targetCollection: string; targetDoc: string }) => void | Promise<void>
-  onUndisliked?: (args: { req: PayloadRequest; targetCollection: string; targetDoc: string }) => void | Promise<void>
-  onReviewDeleted?: (args: { req: PayloadRequest; reviewId: string; targetCollection: string; targetDoc: string }) => void | Promise<void>
+  onUnliked?: (args: {
+    req: PayloadRequest
+    targetCollection: string
+    targetDoc: string
+  }) => void | Promise<void>
+  onUndisliked?: (args: {
+    req: PayloadRequest
+    targetCollection: string
+    targetDoc: string
+  }) => void | Promise<void>
+  onReviewDeleted?: (args: {
+    req: PayloadRequest
+    reviewId: string
+    targetCollection: string
+    targetDoc: string
+  }) => void | Promise<void>
   onRatingUpdated?: (args: { rating: any; req: PayloadRequest }) => void | Promise<void>
   onShared?: (args: { req: PayloadRequest; share: any }) => void | Promise<void>
 }
@@ -233,7 +249,15 @@ export interface LfrsPluginConfig {
     replies?: string
     reviews?: string
     shares?: string
+    testimonials?: string
   }
+
+  /**
+   * URL to the testimonial form page.
+   * If provided, this URL will be used in the invitation email instead of origin/path.
+   * Example: 'https://example.com/add-testimonial'
+   */
+  testimonialFormUrl?: string
 
   /**
    * Enable the plugin (default: true).
@@ -300,6 +324,7 @@ export interface SanitizedLfrsConfig {
   collections: Record<string, SanitizedCollectionOptions>
   collectionSlugs: Required<NonNullable<LfrsPluginConfig['collectionSlugs']>>
   disabled: boolean
+  testimonialFormUrl?: string
   /** Whether any collection has dislikes enabled */
   dislikesEnabled: boolean
   /** Whether media was resolved successfully */

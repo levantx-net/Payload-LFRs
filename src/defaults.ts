@@ -30,6 +30,7 @@ export const DEFAULT_COLLECTION_SLUGS = {
   replies: 'lfrs-replies',
   reviews: 'lfrs-reviews',
   shares: 'lfrs-shares',
+  testimonials: 'lfrs-testimonials',
 } as const
 
 // ─── Sanitization ──────────────────────────────────────────────────────────────
@@ -126,6 +127,7 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     replies: input.collectionSlugs?.replies ?? DEFAULT_COLLECTION_SLUGS.replies,
     reviews: input.collectionSlugs?.reviews ?? DEFAULT_COLLECTION_SLUGS.reviews,
     shares: input.collectionSlugs?.shares ?? DEFAULT_COLLECTION_SLUGS.shares,
+    testimonials: input.collectionSlugs?.testimonials ?? DEFAULT_COLLECTION_SLUGS.testimonials,
   }
 
   // Sanitize each collection's options
@@ -165,6 +167,7 @@ export function sanitizePluginConfig(input: LfrsPluginConfig): SanitizedLfrsConf
     collections,
     collectionSlugs,
     disabled: input.disabled ?? false,
+    testimonialFormUrl: input.testimonialFormUrl,
     dislikesEnabled,
     enableReviewReactions,
     mediaEnabled: reviewMedia !== null,

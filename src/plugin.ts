@@ -8,6 +8,7 @@ import { createLikesCollection } from './collections/likes.js'
 import { createRepliesCollection } from './collections/replies.js'
 import { createReviewsCollection } from './collections/reviews.js'
 import { createSharesCollection } from './collections/shares.js'
+import { createTestimonialsCollection } from './collections/testimonials.js'
 import { sanitizePluginConfig } from './defaults.js'
 import { createDislikeEndpoint } from './endpoints/dislike.js'
 import { createDistributionEndpoint } from './endpoints/distribution.js'
@@ -23,6 +24,7 @@ import { createSharesCountEndpoint } from './endpoints/sharesCount.js'
 import { createStatusEndpoint } from './endpoints/status.js'
 import { createUserFavouritesEndpoint } from './endpoints/userFavourites.js'
 import { createUserReviewsEndpoint } from './endpoints/userReviews.js'
+import { getTestimonialsEndpoint, submitTestimonialEndpoint } from './endpoints/testimonials.js'
 import { createDislikesUsersEndpoint } from './endpoints/dislikesUsers.js'
 import { createDislikesCountEndpoint } from './endpoints/dislikesCount.js'
 import { createAggregateFields } from './fields/aggregateFields.js'
@@ -74,6 +76,8 @@ export const payloadLFRs =
     if (sanitized.sharesEnabled) {
       config.collections.push(createSharesCollection(sanitized))
     }
+
+    config.collections.push(createTestimonialsCollection(sanitized))
 
     // ── Inject aggregate fields and join fields into target collections ─────
     config.collections = config.collections.map((collection) => {
@@ -204,6 +208,16 @@ export const payloadLFRs =
         handler: createUserReviewsEndpoint(sanitized),
         method: 'get',
         path: '/lfrs/user-reviews',
+      },
+      {
+        handler: getTestimonialsEndpoint(sanitized),
+        method: 'get',
+        path: '/lfrs/testimonials',
+      },
+      {
+        handler: submitTestimonialEndpoint(sanitized),
+        method: 'post',
+        path: '/lfrs/testimonials/submit',
       },
     )
 

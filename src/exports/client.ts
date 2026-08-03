@@ -10,3 +10,8 @@ export { LfrsReplyCard, type LfrsReplyCardProps } from '../components/LfrsReplyC
 export { LfrsReviewCard, type LfrsReviewCardProps } from '../components/LfrsReviewCard.js'
 export { LfrsReviewsSection, type LfrsReviewsSectionProps } from '../components/LfrsReviewsSection.js'
 export { LfrsShare, type LfrsShareProps } from '../components/LfrsShare.js'
+export {
+  LfrsTestimonialForm,
+  type LfrsTestimonialFormProps,
+} from '../components/LfrsTestimonialForm.js'
+export { LfrsTestimonials, type Testimonial } from '../components/LfrsTestimonials.js'

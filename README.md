@@ -9,6 +9,7 @@ A comprehensive plugin for [Payload CMS 3.x](https://payloadcms.com) that adds *
 - **Ratings**: Add customizable rating systems (e.g., 5-star, 10-point scale, half-stars).
 - **Reviews & Replies**: Let users write reviews and others to reply to them.
 - **Review Media**: Users can attach images or videos to their reviews
+- **Testimonials**: Invite-only testimonial collection with frontend showcase components.
 - **Sharing**: Allow users to share documents across multiple platforms (Facebook, X/Twitter, WhatsApp, etc.) and track share counts.
 - **Admin Moderation**: Moderation view to approve or delete reviews and replies
 - **Extensible API**: Headless REST API for full frontend flexibility
@@ -99,6 +100,7 @@ export default buildConfig({
         maxFiles: 5,
         maxFileSize: 5 * 1024 * 1024, // 5MB
       },
+      testimonialFormUrl: 'https://example.com/add-testimonial', // URL to your frontend form page
       reviewModeration: true, // Require reviews to be approved before they are public (default: false)
       adminControls: true, // Set to false to hide the Global Settings from the Admin UI
       adminGroup: 'LFRs', // Navigation group name in the Admin panel (default: 'LFRs')
@@ -199,6 +201,10 @@ Set to `true` to require reviews to be approved before they are publicly visible
 ```typescript
 reviewModeration: true
 ```
+
+### `testimonialFormUrl`
+
+The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the email. See [docs/testimonial.md](./docs/testimonial.md) for full details.
 
 ### `usersCollectionSlug`
 
@@ -323,6 +329,12 @@ The plugin exposes several endpoints for interacting with the LFRs features from
 - `DELETE /api/lfrs/reply` — Deletes a reply.
   - **Body:** `{ replyId: string }`
   - **Returns:** `{ deleted: true, repliesCount: number }`
+- `GET /api/lfrs/testimonials` — Returns accepted testimonials.
+  - **Query:** `featured` (optional, boolean)
+  - **Returns:** `{ docs: Array, ... }`
+- `POST /api/lfrs/testimonials/submit` — Submits a testimonial via an invite code.
+  - **Body:** `{ uniqueCode: string, firstName: string, rating: number, testimonial: string }`
+  - **Returns:** `{ success: boolean, testimonial: object }`
 - `GET /api/lfrs/status` — Returns feature configuration flags and the current user's interaction states.
   - **Query:** `collection` (required), `id` (required)
   - **Returns:** `{ likesCount: number, dislikesCount: number, liked: boolean, favourited: boolean, rating: number | null, review: object | null, ... }`
@@ -372,6 +384,8 @@ The plugin provides a suite of ready-to-use React components for your frontend a
 - **`LfrsComposeReview` / `LfrsComposeReply`**: Forms for submitting text reviews and nested replies.
 - **`LfrsReviewCard` / `LfrsReplyCard`**: Display components for rendering individual reviews and replies.
 - **`LfrsReviewsSection`**: A complete, integrated reviews area combining the summary, compose form, and a list of reviews.
+- **`LfrsTestimonialForm`**: A form to capture invited testimonials securely.
+- **`LfrsTestimonials`**: A beautiful display component showcasing featured testimonials.
 - **`LfrsShare`**: A share button that opens an inline panel to share the document across social platforms or copy the link, while tracking share counts.
 
 ### Example Usage
