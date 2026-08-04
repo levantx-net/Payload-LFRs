@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 
-import styles from './styles/lfrs.module.css'
+import classes from './styles/lfrs.module.css'
 
 // ── Platform definitions ────────────────────────────────────────────────────────
 
@@ -98,43 +98,15 @@ const ShareIcon = () => (
   </svg>
 )
 
-// ── Props ───────────────────────────────────────────────────────────────────────
+import type { LfrsStyleProps } from './types.js'
 
-export interface LfrsShareProps {
+export interface LfrsShareProps extends LfrsStyleProps<'container' | 'button' | 'panel' | 'platformButton' | 'copyRow' | 'copyButton'> {
   /** The base path of the REST API (defaults to '/api') */
   apiBase?: string
-  /** Optional CSS class name for the share trigger button (or container wrapper) */
-  className?: string
-  /** Optional CSS class name for the share trigger button */
-  buttonClassName?: string
-  /** Optional inline styles for the share trigger button */
-  buttonStyle?: React.CSSProperties
-  /** Optional CSS class name for the outer container wrapper */
-  containerClassName?: string
-  /** Optional inline styles for the outer container wrapper */
-  containerStyle?: React.CSSProperties
-  /** Optional CSS class name for the copy link button */
-  copyButtonClassName?: string
-  /** Optional inline styles for the copy link button */
-  copyButtonStyle?: React.CSSProperties
-  /** Optional CSS class name for the copy link row container */
-  copyRowClassName?: string
-  /** Optional inline styles for the copy link row container */
-  copyRowStyle?: React.CSSProperties
   /** Callback when the user is not authenticated and tries to share (optional) */
   onAuthError?: () => void
   /** Callback fired after a share is successfully recorded */
   onShared?: (platform: string, sharesCount: number) => void
-  /** Optional CSS class name for the share dropdown panel */
-  panelClassName?: string
-  /** Optional inline styles for the share dropdown panel */
-  panelStyle?: React.CSSProperties
-  /** Optional CSS class name for individual platform share buttons */
-  platformButtonClassName?: string
-  /** Optional inline styles for individual platform share buttons */
-  platformButtonStyle?: React.CSSProperties
-  /** Optional inline styles for the share trigger button (or container wrapper) */
-  style?: React.CSSProperties
   /** The slug of the Payload CMS collection for the target document */
   targetCollection: string
   /** The unique ID of the target document */
@@ -164,21 +136,11 @@ export interface LfrsShareProps {
  */
 export const LfrsShare: React.FC<LfrsShareProps> = ({
   apiBase = '/api',
-  buttonClassName = '',
-  buttonStyle,
   className = '',
-  containerClassName = '',
-  containerStyle,
-  copyButtonClassName = '',
-  copyButtonStyle,
-  copyRowClassName = '',
-  copyRowStyle,
+  classNames,
+  styles,
   onAuthError,
   onShared,
-  panelClassName = '',
-  panelStyle,
-  platformButtonClassName = '',
-  platformButtonStyle,
   style,
   targetCollection,
   targetDoc,
@@ -256,20 +218,20 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
   }
 
   const triggerClassName = [
-    styles.toggleButton,
-    open ? styles.shareActive : '',
+    classes.toggleButton,
+    open ? classes.shareActive : '',
     className,
-    buttonClassName,
+    classNames?.button,
   ]
     .filter(Boolean)
     .join(' ')
 
-  const triggerStyle = { ...style, ...buttonStyle }
+  const triggerStyle = { ...style, ...styles?.button }
 
-  const containerClasses = [styles.shareContainer, containerClassName].filter(Boolean).join(' ')
+  const containerClasses = [classes.shareContainer, classNames?.container].filter(Boolean).join(' ')
 
   return (
-    <div className={containerClasses} style={{ position: 'relative', display: 'inline-block', ...containerStyle }}>
+    <div className={containerClasses} style={{ position: 'relative', display: 'inline-block', ...styles?.container }}>
       {/* Trigger button */}
       <button
         aria-expanded={open}
@@ -292,7 +254,7 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
           {/* Backdrop */}
           <div
             aria-hidden="true"
-            className={styles.shareBackdrop}
+            className={classes.shareBackdrop}
             onClick={() => setOpen(false)}
             onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false) }}
             role="presentation"
@@ -309,7 +271,7 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
           <div
             role="dialog"
             aria-label="Share options"
-            className={`${styles.sharePanel} ${panelClassName}`.trim()}
+            className={`${classes.sharePanel} ${classNames?.panel}`.trim()}
             style={{
               background: 'var(--lfrs-bg, #ffffff)',
               border: '1px solid var(--lfrs-border, #e0e0e0)',
@@ -321,12 +283,12 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
               position: 'absolute',
               top: 'calc(100% + 6px)',
               zIndex: 999,
-              ...panelStyle,
+              ...styles?.panel,
             }}
           >
             {/* Platform buttons */}
             <div
-              className={styles.sharePlatforms}
+              className={classes.sharePlatforms}
               style={{
                 display: 'grid',
                 gap: '8px',
@@ -339,7 +301,7 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
                   disabled={loading === platform.id}
                   key={platform.id}
                   onClick={() => handlePlatformShare(platform)}
-                  className={`${styles.sharePlatformButton} ${platformButtonClassName}`.trim()}
+                  className={`${classes.sharePlatformButton} ${classNames?.platformButton}`.trim()}
                   style={{
                     alignItems: 'center',
                     background: 'transparent',
@@ -355,12 +317,12 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
                     opacity: loading === platform.id ? 0.6 : 1,
                     padding: '8px 4px',
                     transition: 'background 0.15s ease',
-                    ...platformButtonStyle,
+                    ...styles?.platformButton,
                   }}
                   title={`Share on ${platform.label}`}
                   type="button"
                 >
-                  <span className={styles.sharePlatformIcon} style={{ display: 'block', height: 22, width: 22 }}>
+                  <span className={classes.sharePlatformIcon} style={{ display: 'block', height: 22, width: 22 }}>
                     <platform.Icon />
                   </span>
                   {platform.label}
@@ -370,7 +332,7 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
 
             {/* Copy link row */}
             <div
-              className={`${styles.shareCopyRow} ${copyRowClassName}`.trim()}
+              className={`${classes.shareCopyRow} ${classNames?.copyRow}`.trim()}
               style={{
                 alignItems: 'center',
                 background: 'var(--lfrs-bg-muted, #f5f5f5)',
@@ -378,11 +340,11 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
                 display: 'flex',
                 gap: '8px',
                 padding: '6px 8px',
-                ...copyRowStyle,
+                ...styles?.copyRow,
               }}
             >
               <span
-                className={styles.shareCopyUrl}
+                className={classes.shareCopyUrl}
                 style={{
                   color: 'var(--lfrs-text-muted, #666666)',
                   flex: 1,
@@ -397,7 +359,7 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
               <button
                 disabled={loading === 'web'}
                 onClick={handleCopy}
-                className={`${styles.shareCopyButton} ${copied ? styles.shareCopyButtonCopied : ''} ${copyButtonClassName}`.trim()}
+                className={`${classes.shareCopyButton} ${copied ? classes.shareCopyButtonCopied : ''} ${classNames?.copyButton}`.trim()}
                 style={{
                   alignItems: 'center',
                   background: copied ? 'var(--lfrs-like-active, #0066cc)' : 'var(--lfrs-primary, #000000)',
@@ -412,12 +374,12 @@ export const LfrsShare: React.FC<LfrsShareProps> = ({
                   fontSize: '12px',
                   fontWeight: 500,
                   transition: 'background 0.2s ease',
-                  ...copyButtonStyle,
+                  ...styles?.copyButton,
                 }}
                 title={copied ? 'Copied!' : 'Copy link'}
                 type="button"
               >
-                <span className={styles.shareCopyIcon} style={{ display: 'block', height: 14, width: 14 }}>
+                <span className={classes.shareCopyIcon} style={{ display: 'block', height: 14, width: 14 }}>
                   <CopyIcon copied={copied} />
                 </span>
                 {copied ? 'Copied!' : 'Copy'}

@@ -5,7 +5,9 @@ import { LfrsRating } from './LfrsRating.js'
 
 import classes from './styles/lfrs.module.css'
 
-export type LfrsTestimonialFormProps = {
+import type { LfrsStyleProps } from './types.js'
+
+export interface LfrsTestimonialFormProps extends LfrsStyleProps<'container' | 'form' | 'input' | 'textarea' | 'submitButton' | 'error' | 'success'> {
   uniqueCode: string
   ratingMax?: number
   ratingStep?: number
@@ -14,22 +16,6 @@ export type LfrsTestimonialFormProps = {
    * If omitted, photo upload UI is hidden and no photo payload is sent.
    */
   mediaCollectionSlug?: string
-  className?: string
-  style?: React.CSSProperties
-  containerClassName?: string
-  containerStyle?: React.CSSProperties
-  formClassName?: string
-  formStyle?: React.CSSProperties
-  inputClassName?: string
-  inputStyle?: React.CSSProperties
-  textareaClassName?: string
-  textareaStyle?: React.CSSProperties
-  submitButtonClassName?: string
-  submitButtonStyle?: React.CSSProperties
-  errorClassName?: string
-  errorStyle?: React.CSSProperties
-  successClassName?: string
-  successStyle?: React.CSSProperties
 }
 
 export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
@@ -39,20 +25,8 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
   mediaCollectionSlug,
   className,
   style,
-  containerClassName,
-  containerStyle,
-  formClassName,
-  formStyle,
-  inputClassName,
-  inputStyle,
-  textareaClassName,
-  textareaStyle,
-  submitButtonClassName,
-  submitButtonStyle,
-  errorClassName,
-  errorStyle,
-  successClassName,
-  successStyle,
+  classNames,
+  styles,
 }) => {
   const [firstName, setFirstName] = useState('')
   const [rating, setRating] = useState(0)
@@ -131,8 +105,8 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
   if (success) {
     return (
       <div
-        className={[classes.testimonialFormSuccess, successClassName].filter(Boolean).join(' ')}
-        style={successStyle}
+        className={[classes.testimonialFormSuccess, classNames?.success, className].filter(Boolean).join(' ')}
+        style={{ ...styles?.success, ...style }}
       >
         <h3>Thank you!</h3>
         <p>Your testimonial has been successfully submitted.</p>
@@ -140,25 +114,25 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
     )
   }
 
-  const containerClasses = [classes.testimonialFormContainer, containerClassName, className]
+  const containerClasses = [classes.testimonialFormContainer, classNames?.container, className]
     .filter(Boolean)
     .join(' ')
 
-  const formClasses = [classes.testimonialForm, formClassName].filter(Boolean).join(' ')
-  const errorClasses = [classes.testimonialFormError, errorClassName].filter(Boolean).join(' ')
-  const inputClasses = [classes.formInput, inputClassName].filter(Boolean).join(' ')
-  const textareaClasses = [classes.formTextarea, textareaClassName].filter(Boolean).join(' ')
-  const buttonClasses = [classes.submitButton, submitButtonClassName].filter(Boolean).join(' ')
+  const formClasses = [classes.testimonialForm, classNames?.form].filter(Boolean).join(' ')
+  const errorClasses = [classes.testimonialFormError, classNames?.error].filter(Boolean).join(' ')
+  const inputClasses = [classes.formInput, classNames?.input].filter(Boolean).join(' ')
+  const textareaClasses = [classes.formTextarea, classNames?.textarea].filter(Boolean).join(' ')
+  const buttonClasses = [classes.submitButton, classNames?.submitButton].filter(Boolean).join(' ')
 
   return (
-    <div className={containerClasses} style={{ ...containerStyle, ...style }}>
+    <div className={containerClasses} style={{ ...styles?.container, ...style }}>
       <h3>Leave a Testimonial</h3>
       {error && (
-        <div className={errorClasses} style={errorStyle}>
+        <div className={errorClasses} style={styles?.error}>
           {error}
         </div>
       )}
-      <form onSubmit={handleSubmit} className={formClasses} style={formStyle}>
+      <form onSubmit={handleSubmit} className={formClasses} style={styles?.form}>
         <div className={classes.formGroup}>
           <label htmlFor="firstName">First Name *</label>
           <input
@@ -168,7 +142,7 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
             onChange={(e) => setFirstName(e.target.value)}
             required
             className={inputClasses}
-            style={inputStyle}
+            style={styles?.input}
           />
         </div>
 
@@ -191,7 +165,7 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
             required
             rows={4}
             className={textareaClasses}
-            style={textareaStyle}
+            style={styles?.textarea}
           />
         </div>
 
@@ -207,12 +181,12 @@ export const LfrsTestimonialForm: React.FC<LfrsTestimonialFormProps> = ({
                 setSelectedFile(file)
               }}
               className={inputClasses}
-              style={inputStyle}
+              style={styles?.input}
             />
           </div>
         )}
 
-        <button type="submit" disabled={loading} className={buttonClasses} style={submitButtonStyle}>
+        <button type="submit" disabled={loading} className={buttonClasses} style={styles?.submitButton}>
           {loading ? 'Submitting...' : 'Submit Testimonial'}
         </button>
       </form>

@@ -465,45 +465,53 @@ Here are the available variables and their default fallback values:
 }
 ```
 
-#### Customizing `LfrsShare` Styles & Buttons
+#### Unified Component Styling (`classNames` & `styles`)
 
-`LfrsShare` allows detailed customization for all sub-elements (outer container, trigger button, dropdown panel, platform buttons, and copy link button) via specific `className` and `style` props:
+All LFRs UI components follow a unified styling API. You can apply styles to the root element using `className` and `style`, or target specific nested elements using the `classNames` and `styles` objects.
+
+Here is an example for **LfrsShare**:
 
 ```tsx
 <LfrsShare
   targetCollection="posts"
   targetDoc={post.id}
-  containerClassName="custom-share-container"
-  containerStyle={{ margin: '10px 0' }}
-  buttonClassName="custom-share-trigger"
-  buttonStyle={{ backgroundColor: '#10b981', color: '#ffffff' }}
-  panelClassName="custom-share-panel"
-  panelStyle={{ borderRadius: '12px' }}
-  platformButtonClassName="custom-platform-btn"
-  platformButtonStyle={{ fontSize: '12px' }}
-  copyButtonClassName="custom-copy-btn"
-  copyButtonStyle={{ backgroundColor: '#3b82f6' }}
+  classNames={{
+    container: 'custom-share-container',
+    button: 'custom-share-trigger',
+    panel: 'custom-share-panel',
+    platformButton: 'custom-platform-btn',
+    copyButton: 'custom-copy-btn',
+  }}
+  styles={{
+    container: { margin: '10px 0' },
+    button: { backgroundColor: '#10b981', color: '#ffffff' },
+    panel: { borderRadius: '12px' },
+    platformButton: { fontSize: '12px' },
+    copyButton: { backgroundColor: '#3b82f6' },
+  }}
 />
 ```
 
-#### Customizing `LfrsTestimonialForm` Styles
-
-`LfrsTestimonialForm` supports custom styling for all inner elements via dedicated `className` and `style` props:
+And here is an example for **LfrsTestimonialForm**:
 
 ```tsx
 <LfrsTestimonialForm
   uniqueCode={code}
   mediaCollectionSlug="media" // Optional: enables photo attachment input
-  containerClassName="custom-testimonial-container"
-  containerStyle={{ padding: '24px', backgroundColor: '#fafafa' }}
-  formClassName="custom-testimonial-form"
-  inputClassName="custom-testimonial-input"
-  inputStyle={{ borderRadius: '8px' }}
-  textareaClassName="custom-testimonial-textarea"
-  submitButtonClassName="custom-testimonial-submit"
-  submitButtonStyle={{ backgroundColor: '#2563eb', color: '#fff' }}
-  errorClassName="custom-testimonial-error"
-  successClassName="custom-testimonial-success"
+  classNames={{
+    container: 'custom-testimonial-container',
+    form: 'custom-testimonial-form',
+    input: 'custom-testimonial-input',
+    textarea: 'custom-testimonial-textarea',
+    submitButton: 'custom-testimonial-submit',
+    error: 'custom-testimonial-error',
+    success: 'custom-testimonial-success',
+  }}
+  styles={{
+    container: { padding: '24px', backgroundColor: '#fafafa' },
+    input: { borderRadius: '8px' },
+    submitButton: { backgroundColor: '#2563eb', color: '#fff' },
+  }}
 />
 ```
 
