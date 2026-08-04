@@ -69,6 +69,18 @@ export function createLikesCollection(config: SanitizedLfrsConfig): CollectionCo
         createValidateTarget(config),
       ],
     },
+    indexes: [
+      {
+        fields: ['targetCollection', 'targetDoc'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'user'],
+        unique: true,
+      },
+      {
+        fields: ['user', 'targetCollection'],
+      },
+    ],
     timestamps: true,
   }
 }

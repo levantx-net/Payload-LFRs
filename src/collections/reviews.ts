@@ -210,6 +210,20 @@ export function createReviewsCollection(config: SanitizedLfrsConfig): Collection
       afterDelete: [createRecalculateAfterDelete(config)],
       beforeChange: beforeChangeHooks,
     },
+    indexes: [
+      {
+        fields: ['targetCollection', 'targetDoc'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'status'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'user'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'score'],
+      },
+    ],
     timestamps: true,
   }
 }
