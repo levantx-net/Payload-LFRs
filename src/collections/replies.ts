@@ -86,6 +86,14 @@ export function createRepliesCollection(config: SanitizedLfrsConfig): Collection
       afterDelete: [createRepliesAfterDelete(config)],
       beforeChange: [enforceUser],
     },
+    indexes: [
+      {
+        fields: ['review', 'status'],
+      },
+      {
+        fields: ['review', 'user'],
+      },
+    ],
     timestamps: true,
   }
 }

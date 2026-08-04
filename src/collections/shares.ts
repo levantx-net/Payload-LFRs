@@ -104,6 +104,14 @@ export function createSharesCollection(config: SanitizedLfrsConfig): CollectionC
         createValidateTarget(config),
       ],
     },
+    indexes: [
+      {
+        fields: ['targetCollection', 'targetDoc'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'platform'],
+      },
+    ],
     timestamps: true,
   }
 }

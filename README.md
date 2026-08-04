@@ -204,7 +204,17 @@ reviewModeration: true
 
 ### `testimonialFormUrl`
 
-The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the email. See [docs/testimonial.md](./docs/testimonial.md) for full details.
+The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the invitation email.
+
+You can set this dynamically using an environment variable in your `payload.config.ts`:
+
+```typescript
+payloadLFRs({
+  testimonialFormUrl: process.env.TESTIMONIAL_FORM_URL || 'http://localhost:3000/add-testimonial',
+})
+```
+
+Add `TESTIMONIAL_FORM_URL` (or your chosen variable name) to your `.env` file pointing to the URL of the page hosting your testimonial submission form. See [docs/testimonial.md](./docs/testimonial.md) for full details.
 
 ### `usersCollectionSlug`
 
@@ -455,24 +465,53 @@ Here are the available variables and their default fallback values:
 }
 ```
 
-#### Customizing `LfrsShare` Styles & Buttons
+#### Unified Component Styling (`classNames` & `styles`)
 
-`LfrsShare` allows detailed customization for all sub-elements (outer container, trigger button, dropdown panel, platform buttons, and copy link button) via specific `className` and `style` props:
+All LFRs UI components follow a unified styling API. You can apply styles to the root element using `className` and `style`, or target specific nested elements using the `classNames` and `styles` objects.
+
+Here is an example for **LfrsShare**:
 
 ```tsx
 <LfrsShare
   targetCollection="posts"
   targetDoc={post.id}
-  containerClassName="custom-share-container"
-  containerStyle={{ margin: '10px 0' }}
-  buttonClassName="custom-share-trigger"
-  buttonStyle={{ backgroundColor: '#10b981', color: '#ffffff' }}
-  panelClassName="custom-share-panel"
-  panelStyle={{ borderRadius: '12px' }}
-  platformButtonClassName="custom-platform-btn"
-  platformButtonStyle={{ fontSize: '12px' }}
-  copyButtonClassName="custom-copy-btn"
-  copyButtonStyle={{ backgroundColor: '#3b82f6' }}
+  classNames={{
+    container: 'custom-share-container',
+    button: 'custom-share-trigger',
+    panel: 'custom-share-panel',
+    platformButton: 'custom-platform-btn',
+    copyButton: 'custom-copy-btn',
+  }}
+  styles={{
+    container: { margin: '10px 0' },
+    button: { backgroundColor: '#10b981', color: '#ffffff' },
+    panel: { borderRadius: '12px' },
+    platformButton: { fontSize: '12px' },
+    copyButton: { backgroundColor: '#3b82f6' },
+  }}
+/>
+```
+
+And here is an example for **LfrsTestimonialForm**:
+
+```tsx
+<LfrsTestimonialForm
+  uniqueCode={code}
+  mediaCollectionSlug="media" // Optional: enables photo attachment input
+  classNames={{
+    container: 'custom-testimonial-container',
+    form: 'custom-testimonial-form',
+    input: 'custom-testimonial-input',
+    textarea: 'custom-testimonial-textarea',
+    submitButton: 'custom-testimonial-submit',
+    error: 'custom-testimonial-error',
+    success: 'custom-testimonial-success',
+  }}
+  styles={{
+    container: { padding: '24px', backgroundColor: '#fafafa' },
+    input: { borderRadius: '8px' },
+    submitButton: { backgroundColor: '#2563eb', color: '#fff' },
+  }}
 />
 ```
 
@@ -554,6 +593,19 @@ To ensure high reliability and avoid transaction context poisoning within Payloa
 1. **Endpoints Suppress Hooks**: When a user interacts via the API endpoints (e.g., `/api/lfrs/like`), the endpoints perform the necessary database mutations (`create`, `delete`) while passing `context: { skipLfrsHooks: true }`. This suppresses the automatic hook-based recalculation.
 2. **Explicit Updates**: After all mutations complete successfully, the endpoint explicitly counts the interactions directly from the database (serving as the source of truth) and performs a single atomic update to the target document's aggregate fields.
 3. **Admin Panel Fallback**: The `afterChange` and `afterDelete` hooks in `src/hooks/recalculateAggregates.ts` are still kept as fallbacks. They will automatically recalculate the counts if an administrator creates or deletes an interaction manually from the Payload Admin UI, maintaining data consistency.
+
+## Roadmap
+
+We are continuously working to make `payload-lfrs` more robust, feature-rich, and developer-friendly. Below are planned features and improvements:
+
+- **Custom Emoji Reactions**: Ability to create custom reaction types (e.g., ❤️ love, 😡 anger, 😊 smile, 😂 laughter, 🚀 rocket) beyond simple likes and dislikes.
+- **Reaction Visibility Controls**: Granular settings for admins and developers to toggle whether user avatars/names who reacted on a document are visible publicly, restricted to logged-in users, or hidden completely.
+- **GraphQL Schema & Mutation Support**: Full integration with Payload CMS's GraphQL API alongside the existing REST endpoints.
+- **Real-Time Live Updates**: WebSocket / Server-Sent Events (SSE) support for broadcasting live interaction counts and real-time review updates.
+- **Author Notification Hooks**: Configurable email and in-app notifications to alert content authors when users leave reviews, replies, or reach reaction milestones.
+- **Automated Spam Detection & Sentiment Analysis**: Optional AI-assisted moderation hooks to flag offensive content or analyze review sentiment automatically.
+- **Admin Analytics Dashboard Widgets**: Visual charts and interaction velocity metrics directly in the Payload Admin dashboard to track user engagement trends.
+- **Export & Import Utilities**: Admin tools to export review data to CSV/JSON format for reporting or migrate interactions across environments.
 
 ## License
 

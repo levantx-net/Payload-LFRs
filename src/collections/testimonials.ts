@@ -12,6 +12,9 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
       admin: {
         description: 'The email address to send the invitation to.',
       },
+      access: {
+        read: ({ req }) => sanitized.isAdmin({ req }),
+      },
     },
     {
       name: 'uniqueCode',
@@ -20,6 +23,9 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
         readOnly: true,
       },
       index: true,
+      access: {
+        read: ({ req }) => sanitized.isAdmin({ req }),
+      },
     },
     {
       name: 'firstName',
@@ -97,7 +103,10 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
       ],
     },
     access: {
-      read: () => true, // Publicly readable for displaying them
+      read: async ({ req }) => {
+        if (await sanitized.isAdmin({ req })) return true
+        return { status: { equals: 'accepted' } }
+      },
       create: ({ req }) => sanitized.isAdmin({ req }),
       update: ({ req }) => sanitized.isAdmin({ req }),
       delete: ({ req }) => sanitized.isAdmin({ req }),
@@ -111,6 +120,10 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
             }
             if (!data.invitationSentDate) {
               data.invitationSentDate = new Date().toISOString()
+            }
+          } else if (operation === 'update') {
+            if (!data.uniqueCode) {
+              throw new Error('A valid invitation code (uniqueCode) is required.')
             }
           }
           return data

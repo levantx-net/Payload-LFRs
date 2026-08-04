@@ -64,6 +64,18 @@ export function createFavouritesCollection(config: SanitizedLfrsConfig): Collect
         createValidateTarget(config),
       ],
     },
+    indexes: [
+      {
+        fields: ['targetCollection', 'targetDoc'],
+      },
+      {
+        fields: ['targetCollection', 'targetDoc', 'user'],
+        unique: true,
+      },
+      {
+        fields: ['user', 'targetCollection'],
+      },
+    ],
     timestamps: true,
   }
 }
