@@ -19,19 +19,6 @@ export const createDislikesCountEndpoint = (sanitized: SanitizedLfrsConfig): Pay
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
-      // Enforce read access to target document to prevent data leaks
-      try {
-        await req.payload.findByID({
-          id,
-          collection,
-          req,
-          depth: 0,
-          overrideAccess: false,
-        })
-      } catch (_e) {
-        throw new APIError('Target document not found or access denied', 404)
-      }
-
       const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
       if (!enabledFeatures.has('dislikes')) {
         throw new APIError('Dislikes are not enabled for this collection', 404)

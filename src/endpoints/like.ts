@@ -30,7 +30,7 @@ export const createLikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandl
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: false,
+          overrideAccess: true,
           req,
         })
       } catch (_e) {

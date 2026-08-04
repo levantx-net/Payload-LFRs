@@ -58,7 +58,7 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: false,
+          overrideAccess: true,
           req,
         })
       } catch (_e) {

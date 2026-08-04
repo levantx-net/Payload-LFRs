@@ -30,7 +30,7 @@ export const createDislikeEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHa
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: false,
+          overrideAccess: true,
           req,
         })
       } catch (_e) {
