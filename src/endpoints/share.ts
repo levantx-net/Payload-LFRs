@@ -62,7 +62,7 @@ export const createShareEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
         })
       } catch (_e) {

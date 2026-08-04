@@ -30,7 +30,7 @@ export const createFavouriteEndpoint = (sanitized: SanitizedLfrsConfig): Payload
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
         })
       } catch (_e) {

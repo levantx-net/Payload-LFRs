@@ -24,7 +24,7 @@ export const createUserReviewsEndpoint = (sanitized: SanitizedLfrsConfig): Paylo
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
         })
       } catch (err: any) {

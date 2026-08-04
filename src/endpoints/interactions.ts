@@ -44,7 +44,7 @@ export const createInteractionsEndpoint = (sanitized: SanitizedLfrsConfig): Payl
         targetDoc = await req.payload.findByID({
           id,
           collection,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
         })
       } catch (_: any) {

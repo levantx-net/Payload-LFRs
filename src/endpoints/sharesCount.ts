@@ -25,6 +25,19 @@ export const createSharesCountEndpoint = (sanitized: SanitizedLfrsConfig): Paylo
         throw new APIError('LFRs is not enabled for this collection', 404)
       }
 
+      // Enforce read access to target document to prevent data leaks
+      try {
+        await req.payload.findByID({
+          id,
+          collection,
+          req,
+          depth: 0,
+          overrideAccess: false,
+        })
+      } catch (_e) {
+        throw new APIError('Target document not found or access denied', 404)
+      }
+
       const { totalDocs } = await req.payload.count({
         collection: sanitized.collectionSlugs.shares,
         overrideAccess: true,

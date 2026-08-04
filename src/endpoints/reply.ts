@@ -46,7 +46,7 @@ export const createReplyEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHand
         targetDoc = await req.payload.findByID({
           id: parentReview.targetDoc,
           collection,
-          overrideAccess: true,
+          overrideAccess: false,
           req,
         })
       } catch (_e) {
