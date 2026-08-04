@@ -1,4 +1,4 @@
-import { APIError, type PayloadHandler, type PayloadRequest } from 'payload'
+import { APIError, type PayloadHandler, type PayloadRequest, type Where } from 'payload'
 
 import type { SanitizedLfrsConfig } from '../types.js'
 
@@ -7,7 +7,6 @@ import {
   getMergedCollectionSettings,
   getMergedGlobalSettings,
 } from '../utilities/getMergedSettings.js'
-import { resolveFeatureAccess } from '../utilities/resolveFeatureAccess.js'
 
 export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHandler => {
   return async (req: PayloadRequest) => {
@@ -26,189 +25,191 @@ export const createStatusEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
 
       const userId = req.user?.id
 
-      let likesCount = 0
-      let dislikesCount = 0
-      let targetDoc: any
-      try {
-        targetDoc = await req.payload.findByID({
-          id,
-          collection,
-          overrideAccess: true,
-          req,
-        })
-        likesCount = targetDoc?.lfrs?.likesCount || 0
-        dislikesCount = targetDoc?.lfrs?.dislikesCount || 0
-      } catch (_) {
-        // Ignore
-      }
-
-      const enabledFeatures = await getEnabledFeatures(collectionOptions, collection, req)
-      const mergedCollectionSettings = await getMergedCollectionSettings(
-        collectionOptions,
-        collection,
-        req,
-      )
-      const mergedGlobalSettings = await getMergedGlobalSettings(sanitized, req)
+      const [enabledFeatures, mergedCollectionSettings, mergedGlobalSettings, isAdmin] =
+        await Promise.all([
+          getEnabledFeatures(collectionOptions, collection, req),
+          getMergedCollectionSettings(collectionOptions, collection, req),
+          getMergedGlobalSettings(sanitized, req),
+          sanitized.isAdmin({ req }),
+        ])
 
       const likesEnabled = enabledFeatures.has('likes')
       const dislikesEnabled = enabledFeatures.has('dislikes')
       const favouritesEnabled = enabledFeatures.has('favourites')
       const ratingsEnabled = enabledFeatures.has('ratings')
-      const isAdmin = await sanitized.isAdmin({ req })
       const repliesEnabled = enabledFeatures.has('replies') || isAdmin
       const reviewsEnabled = enabledFeatures.has('reviews')
       const sharesEnabled = enabledFeatures.has('shares')
 
-      const response: any = {
-        allowMultipleReviews: mergedCollectionSettings.allowMultipleReviews,
-        dislikesCount,
-        dislikesEnabled,
-        favouritesEnabled,
-        likesCount,
-        likesEnabled,
-        mediaEnabled: mergedGlobalSettings.mediaEnabled,
-        ratingConfig: sanitized.rating,
-        ratingsEnabled,
-        repliesEnabled,
-        reviewModeration: mergedGlobalSettings.reviewModeration,
-        reviewsEnabled,
-        sharesEnabled,
-        sharesCount: targetDoc?.lfrs?.sharesCount || 0,
-        currentUserId: userId,
-        enableReviewReactions: mergedGlobalSettings.enableReviewReactions,
-        reviewsCollectionSlug: sanitized.collectionSlugs.reviews,
-        repliesCollectionSlug: sanitized.collectionSlugs.replies,
+      const targetWhere: Where = {
+        and: [{ targetCollection: { equals: collection } }, { targetDoc: { equals: id } }],
       }
 
-      if (!userId) {
-        response.liked = false
-        response.disliked = false
-        response.favourited = false
-        response.rating = null
-        response.review = null
-        return Response.json(response)
-      }
+      const userTargetWhere: null | Where = userId
+        ? {
+            and: [
+              { user: { equals: userId } },
+              { targetCollection: { equals: collection } },
+              { targetDoc: { equals: id } },
+            ],
+          }
+        : null
 
-      // Check if liked
-      if (enabledFeatures.has('likes')) {
-        const likes = await req.payload.find({
+      /**
+       * Counts are computed LIVE from the interaction collections (the source of
+       * truth) instead of being read from the cached `lfrs.*` aggregate fields on
+       * the target document.
+       *
+       * The cached aggregates are only maintained by the toggle endpoints and the
+       * recalculate hooks, and can drift out of sync — e.g. interactions created
+       * outside the toggle endpoints (seed scripts, direct DB writes), a failed
+       * aggregate update, or an admin-panel save of the target document clearing
+       * the read-only `lfrs` group. That drift previously produced contradictory
+       * responses such as `liked: true` alongside `likesCount: 0`.
+       *
+       * The cached aggregates are still written on every mutation (they power
+       * list-view sorting/filtering), but this endpoint never trusts them.
+       */
+      const [
+        likesResult,
+        dislikesResult,
+        sharesResult,
+        userLike,
+        userDislike,
+        userFavourite,
+        userReview,
+      ] = await Promise.all([
+        req.payload.count({
           collection: sanitized.collectionSlugs.likes,
           overrideAccess: true,
           req,
-          where: {
-            and: [
-              { user: { equals: userId } },
-              { targetCollection: { equals: collection } },
-              { targetDoc: { equals: id } },
-            ],
-          },
-        })
-        response.liked = likes.docs.length > 0
-      } else {
-        response.liked = false
-      }
-
-      // Check if disliked
-      if (enabledFeatures.has('dislikes')) {
-        const dislikes = await req.payload.find({
-          collection: sanitized.collectionSlugs.dislikes,
-          overrideAccess: true,
-          req,
-          where: {
-            and: [
-              { user: { equals: userId } },
-              { targetCollection: { equals: collection } },
-              { targetDoc: { equals: id } },
-            ],
-          },
-        })
-        response.disliked = dislikes.docs.length > 0
-      }
-
-      // Check if favourited
-      if (enabledFeatures.has('favourites')) {
-        const favourites = await req.payload.find({
-          collection: sanitized.collectionSlugs.favourites,
-          overrideAccess: true,
-          req,
-          where: {
-            and: [
-              { user: { equals: userId } },
-              { targetCollection: { equals: collection } },
-              { targetDoc: { equals: id } },
-            ],
-          },
-        })
-        response.favourited = favourites.docs.length > 0
-      } else {
-        response.favourited = false
-      }
-
-
-
-      // Check review / rating
-      // Always fetch the user's own review/rating, even if reviews/ratings are
-      // currently disabled. This ensures the "Your Review" section in the UI
-      // can still display existing reviews (e.g. after an admin re-enables
-      // reviews, or to show the user their previous submission).
-      if (enabledFeatures.has('reviews') || enabledFeatures.has('ratings') || userId) {
-        const reviews = await req.payload.find({
-          collection: sanitized.collectionSlugs.reviews,
-          overrideAccess: true,
-          req,
-          where: {
-            and: [
-              { user: { equals: userId } },
-              { targetCollection: { equals: collection } },
-              { targetDoc: { equals: id } },
-            ],
-          },
-        })
-        if (reviews.docs.length > 0) {
-          const review = reviews.docs[0]
-
-          if (enabledFeatures.has('replies') || isAdmin) {
-            const replies = await req.payload.find({
-              collection: sanitized.collectionSlugs.replies,
-              limit: 100,
+          where: targetWhere,
+        }),
+        sanitized.dislikesEnabled
+          ? req.payload.count({
+              collection: sanitized.collectionSlugs.dislikes,
               overrideAccess: true,
               req,
-              sort: 'createdAt',
-              where: {
-                and: [
-                  { review: { equals: review.id } },
-                  ...(sanitized.reviewModeration
-                    ? req.user
-                      ? [
-                          {
-                            or: [
-                              { status: { equals: 'approved' } },
-                              { user: { equals: req.user.id } },
-                            ],
-                          },
-                        ]
-                      : [{ status: { equals: 'approved' } }]
-                    : []),
-                ],
-              },
+              where: targetWhere,
             })
-            review.replies = replies.docs
-          } else {
-            review.replies = []
-          }
+          : Promise.resolve(null),
+        sanitized.sharesEnabled
+          ? req.payload.count({
+              collection: sanitized.collectionSlugs.shares,
+              overrideAccess: true,
+              req,
+              where: targetWhere,
+            })
+          : Promise.resolve(null),
+        userTargetWhere && likesEnabled
+          ? req.payload.find({
+              collection: sanitized.collectionSlugs.likes,
+              limit: 1,
+              overrideAccess: true,
+              req,
+              where: userTargetWhere,
+            })
+          : Promise.resolve(null),
+        userTargetWhere && dislikesEnabled
+          ? req.payload.find({
+              collection: sanitized.collectionSlugs.dislikes,
+              limit: 1,
+              overrideAccess: true,
+              req,
+              where: userTargetWhere,
+            })
+          : Promise.resolve(null),
+        userTargetWhere && favouritesEnabled
+          ? req.payload.find({
+              collection: sanitized.collectionSlugs.favourites,
+              limit: 1,
+              overrideAccess: true,
+              req,
+              where: userTargetWhere,
+            })
+          : Promise.resolve(null),
+        // Always fetch the user's own review/rating when authenticated, even if
+        // reviews/ratings are currently toggled off — the UI still shows the
+        // user their previous submission ("Your Review" section).
+        userTargetWhere
+          ? req.payload.find({
+              collection: sanitized.collectionSlugs.reviews,
+              overrideAccess: true,
+              req,
+              where: userTargetWhere,
+            })
+          : Promise.resolve(null),
+      ])
 
-          response.review = review
-          response.rating = review.score !== undefined ? review.score : null
+      const likesCount = likesResult.totalDocs
+      const dislikesCount = dislikesResult?.totalDocs ?? 0
+      const sharesCount = sharesResult?.totalDocs ?? 0
+
+      // Resolve the user's own review (and its replies)
+      let review: any = null
+      let rating: null | number = null
+
+      const userReviewDoc = userReview?.docs?.[0] as any
+      if (userReviewDoc) {
+        review = userReviewDoc
+        rating = typeof userReviewDoc.score === 'number' ? userReviewDoc.score : null
+
+        if (repliesEnabled) {
+          const replies = await req.payload.find({
+            collection: sanitized.collectionSlugs.replies,
+            limit: 100,
+            overrideAccess: true,
+            req,
+            sort: 'createdAt',
+            where: {
+              and: [
+                { review: { equals: userReviewDoc.id } },
+                ...(sanitized.reviewModeration
+                  ? req.user
+                    ? [
+                        {
+                          or: [
+                            { status: { equals: 'approved' } },
+                            { user: { equals: req.user.id } },
+                          ],
+                        },
+                      ]
+                    : [{ status: { equals: 'approved' } }]
+                  : []),
+              ],
+            },
+          })
+          review.replies = replies.docs
         } else {
-          response.review = null
-          response.rating = null
+          review.replies = []
         }
-      } else {
-        response.review = null
-        response.rating = null
       }
 
-      return Response.json(response)
+      return Response.json({
+        allowMultipleReviews: mergedCollectionSettings.allowMultipleReviews,
+        currentUserId: userId,
+        disliked: (userDislike?.docs?.length ?? 0) > 0,
+        dislikesCount,
+        dislikesEnabled,
+        enableReviewReactions: mergedGlobalSettings.enableReviewReactions,
+        favourited: (userFavourite?.docs?.length ?? 0) > 0,
+        favouritesEnabled,
+        liked: (userLike?.docs?.length ?? 0) > 0,
+        likesCount,
+        likesEnabled,
+        mediaEnabled: mergedGlobalSettings.mediaEnabled,
+        rating,
+        ratingConfig: sanitized.rating,
+        ratingsEnabled,
+        repliesCollectionSlug: sanitized.collectionSlugs.replies,
+        repliesEnabled,
+        review,
+        reviewModeration: mergedGlobalSettings.reviewModeration,
+        reviewsCollectionSlug: sanitized.collectionSlugs.reviews,
+        reviewsEnabled,
+        sharesCount,
+        sharesEnabled,
+      })
     } catch (err: any) {
       const status = err.status || 500
       return Response.json({ error: err.message || 'Internal Server Error' }, { status })
