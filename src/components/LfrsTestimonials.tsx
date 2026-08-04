@@ -17,7 +17,7 @@ export const LfrsTestimonials: React.FC = () => {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/lfrs/testimonials?featured=true&limit=3')
+    fetch('/api/lfrs/testimonials?featured=true&limit=3', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (data.docs) {

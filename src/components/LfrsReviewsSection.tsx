@@ -80,6 +80,7 @@ export const LfrsReviewsSection: React.FC<LfrsReviewsSectionProps> = ({
         setReviewsLoading(true)
         const res = await fetch(
           `${apiBase}/lfrs/interactions?collection=${targetCollection}&id=${targetDoc}&type=reviews&page=${p}&limit=10`,
+          { cache: 'no-store' }
         )
         if (res.ok) {
           const data = await res.json()
