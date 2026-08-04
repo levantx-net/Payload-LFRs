@@ -594,6 +594,19 @@ To ensure high reliability and avoid transaction context poisoning within Payloa
 2. **Explicit Updates**: After all mutations complete successfully, the endpoint explicitly counts the interactions directly from the database (serving as the source of truth) and performs a single atomic update to the target document's aggregate fields.
 3. **Admin Panel Fallback**: The `afterChange` and `afterDelete` hooks in `src/hooks/recalculateAggregates.ts` are still kept as fallbacks. They will automatically recalculate the counts if an administrator creates or deletes an interaction manually from the Payload Admin UI, maintaining data consistency.
 
+## Roadmap
+
+We are continuously working to make `payload-lfrs` more robust, feature-rich, and developer-friendly. Below are planned features and improvements:
+
+- **Custom Emoji Reactions**: Ability to create custom reaction types (e.g., ❤️ love, 😡 anger, 😊 smile, 😂 laughter, 🚀 rocket) beyond simple likes and dislikes.
+- **Reaction Visibility Controls**: Granular settings for admins and developers to toggle whether user avatars/names who reacted on a document are visible publicly, restricted to logged-in users, or hidden completely.
+- **GraphQL Schema & Mutation Support**: Full integration with Payload CMS's GraphQL API alongside the existing REST endpoints.
+- **Real-Time Live Updates**: WebSocket / Server-Sent Events (SSE) support for broadcasting live interaction counts and real-time review updates.
+- **Author Notification Hooks**: Configurable email and in-app notifications to alert content authors when users leave reviews, replies, or reach reaction milestones.
+- **Automated Spam Detection & Sentiment Analysis**: Optional AI-assisted moderation hooks to flag offensive content or analyze review sentiment automatically.
+- **Admin Analytics Dashboard Widgets**: Visual charts and interaction velocity metrics directly in the Payload Admin dashboard to track user engagement trends.
+- **Export & Import Utilities**: Admin tools to export review data to CSV/JSON format for reporting or migrate interactions across environments.
+
 ## License
 
 MIT
