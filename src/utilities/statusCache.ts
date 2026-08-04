@@ -61,7 +61,9 @@ export async function fetchStatus(
   }
 
   // 3. Start a new request
-  const promise = fetch(`${apiBase}/lfrs/status?collection=${collection}&id=${id}`)
+  const promise = fetch(`${apiBase}/lfrs/status?collection=${collection}&id=${id}`, {
+    cache: 'no-store',
+  })
     .then((res) => {
       if (res.ok) {
         return res.json() as Promise<unknown>

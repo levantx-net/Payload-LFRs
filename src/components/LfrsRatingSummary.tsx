@@ -64,7 +64,9 @@ export const LfrsRatingSummary: React.FC<LfrsRatingSummaryProps> = ({
       try {
         setLoading(true)
         setError(null)
-        const res = await fetch(`${apiBase}/lfrs/distribution?collection=${targetCollection}&id=${targetDoc}`)
+        const res = await fetch(`${apiBase}/lfrs/distribution?collection=${targetCollection}&id=${targetDoc}`, {
+          cache: 'no-store',
+        })
         if (res.status === 404) {
           setData(null)
           setError('Disabled')

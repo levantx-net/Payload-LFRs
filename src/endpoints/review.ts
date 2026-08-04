@@ -45,12 +45,6 @@ export const createReviewEndpoint = (sanitized: SanitizedLfrsConfig): PayloadHan
         throw new APIError('Missing valid score', 400)
       }
 
-      // Body is required only when reviews are enabled (respecting admin override)
-      // If only ratings are enabled, body may be omitted.
-      if (isReviewsEnabled && !reviewBody) {
-        throw new APIError('Missing review body', 400)
-      }
-
       // Strip body/title when reviews are disabled (admin may have turned them off)
       let finalBody = reviewBody
       let finalTitle = title
