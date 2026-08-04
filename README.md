@@ -206,8 +206,6 @@ reviewModeration: true
 
 The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the invitation email.
 
-You can set this dynamically using an environment variable in your `payload.config.ts`:
-
 ```typescript
 payloadLFRs({
   testimonialFormUrl: process.env.TESTIMONIAL_FORM_URL || 'http://localhost:3000/add-testimonial',
@@ -257,6 +255,7 @@ The plugin automatically generates a **Payload Global** named `LFRs Settings` in
 There is also a checkbox option for **Enable Like/Dislike on Reviews and Replies** which allows admins to toggle review reactions dynamically.
 
 **Security & Access Control:**
+
 - Read and edit permissions on the `LFRs Settings` global are strictly restricted to administrators via the configured `isAdmin` callback. Non-admin users cannot view or modify plugin settings via the API or Admin UI.
 - The admin controls are strictly bounded by the developer's static config (`payload.config.ts`). An admin **cannot** turn on a feature (like `Reviews`) if the developer explicitly set it to `false` in the code.
 - Admin overrides (e.g., turning off Moderation or disabling Likes during a spam attack) are instantly synced with the frontend UI and the REST API securely blocks all associated mutations.
@@ -532,7 +531,6 @@ If you want to style a single component, you can pass the variables via the `sty
   }
 />
 ```
-
 
 ## Building Custom UIs (Headless Usage)
 

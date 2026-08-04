@@ -104,7 +104,9 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
     },
     access: {
       read: async ({ req }) => {
-        if (await sanitized.isAdmin({ req })) return true
+        if (await sanitized.isAdmin({ req })) {
+          return true
+        }
         return { status: { equals: 'accepted' } }
       },
       create: ({ req }) => sanitized.isAdmin({ req }),
@@ -143,7 +145,7 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
                 typeof req.headers.get === 'function'
                   ? req.headers.get('origin')
                   : (req.headers as any).origin
-              link = `${origin || process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/add-testimonial?code=${doc.uniqueCode}`
+              link = `${origin || process.env.NEXT_PUBLIC_SERVER_URL || process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3000'}/add-testimonial?code=${doc.uniqueCode}`
             }
             try {
               await req.payload.sendEmail({
