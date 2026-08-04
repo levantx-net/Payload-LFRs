@@ -636,7 +636,10 @@ These are the **Payload access control functions** set on the `lfrs-*` interacti
 
 ### Target Collection Aggregate Fields
 
-The `lfrs` group fields on target collections are **read-only** (`admin.readOnly: true`) and are updated only by plugin hooks (using `overrideAccess: true` internally).
+The `lfrs` group fields on target collections are **read-only** (`admin.readOnly: true`) and are updated only by plugin hooks (using `overrideAccess: true` internally). This invariant is also enforced at the API level by a `beforeChange` hook on target collections (`preserveLfrsAggregates`): any `update` that does not carry the plugin's `context.skipLfrsHooks` flag has its incoming `lfrs` data discarded in favour of the stored values, so admin-panel saves or consumer Local API updates can never wipe or forge the cached aggregates.
+
+> [!NOTE]
+> Read paths that must always be accurate (e.g. the `/api/lfrs/status` endpoint) compute counts **live** from the interaction collections rather than trusting the cached aggregates. The cached fields remain the right tool for list views, DB-level sorting/filtering (`sort: '-lfrs.likesCount'`), and the admin status widget.
 
 ---
 

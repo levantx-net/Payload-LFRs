@@ -31,6 +31,7 @@ import { createAggregateFields } from './fields/aggregateFields.js'
 import { createJoinFields } from './fields/joinFields.js'
 import { createLfrsSettingsGlobal } from './globals/lfrsSettings.js'
 import { createCascadeDelete } from './hooks/cascadeDelete.js'
+import { createPreserveLfrsAggregates } from './hooks/preserveLfrsAggregates.js'
 import { resolveReviewMedia } from './utilities/resolveReviewMedia.js'
 
 /**
@@ -123,6 +124,12 @@ export const payloadLFRs =
           afterDelete: [
             createCascadeDelete(sanitized, collection.slug),
             ...(collection.hooks?.afterDelete || []),
+          ],
+          beforeChange: [
+            ...(collection.hooks?.beforeChange || []),
+            // Runs last so it stays authoritative even if a consumer's own
+            // beforeChange hook touches the `lfrs` group.
+            createPreserveLfrsAggregates(),
           ],
         },
       }
