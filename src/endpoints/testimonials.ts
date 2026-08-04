@@ -46,7 +46,7 @@ export const submitTestimonialEndpoint = (sanitized: SanitizedLfrsConfig): Paylo
         testimonialAcceptedDate: new Date().toISOString(),
       }
 
-      if (photo) {
+      if (photo && sanitized.mediaEnabled && sanitized.reviewMedia?.uploadCollection) {
         updateData.photo = photo
       }
 

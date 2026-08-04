@@ -112,6 +112,10 @@ export const createTestimonialsCollection = (sanitized: SanitizedLfrsConfig): Co
             if (!data.invitationSentDate) {
               data.invitationSentDate = new Date().toISOString()
             }
+          } else if (operation === 'update') {
+            if (!data.uniqueCode) {
+              throw new Error('A valid invitation code (uniqueCode) is required.')
+            }
           }
           return data
         },

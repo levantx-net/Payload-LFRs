@@ -204,7 +204,17 @@ reviewModeration: true
 
 ### `testimonialFormUrl`
 
-The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the email. See [docs/testimonial.md](./docs/testimonial.md) for full details.
+The frontend URL where your testimonial submission form (using `LfrsTestimonialForm`) is hosted. When admins invite users to leave a testimonial, the plugin appends `?code=...` to this URL in the invitation email.
+
+You can set this dynamically using an environment variable in your `payload.config.ts`:
+
+```typescript
+payloadLFRs({
+  testimonialFormUrl: process.env.TESTIMONIAL_FORM_URL || 'http://localhost:3000/add-testimonial',
+})
+```
+
+Add `TESTIMONIAL_FORM_URL` (or your chosen variable name) to your `.env` file pointing to the URL of the page hosting your testimonial submission form. See [docs/testimonial.md](./docs/testimonial.md) for full details.
 
 ### `usersCollectionSlug`
 
@@ -473,6 +483,27 @@ Here are the available variables and their default fallback values:
   platformButtonStyle={{ fontSize: '12px' }}
   copyButtonClassName="custom-copy-btn"
   copyButtonStyle={{ backgroundColor: '#3b82f6' }}
+/>
+```
+
+#### Customizing `LfrsTestimonialForm` Styles
+
+`LfrsTestimonialForm` supports custom styling for all inner elements via dedicated `className` and `style` props:
+
+```tsx
+<LfrsTestimonialForm
+  uniqueCode={code}
+  mediaCollectionSlug="media" // Optional: enables photo attachment input
+  containerClassName="custom-testimonial-container"
+  containerStyle={{ padding: '24px', backgroundColor: '#fafafa' }}
+  formClassName="custom-testimonial-form"
+  inputClassName="custom-testimonial-input"
+  inputStyle={{ borderRadius: '8px' }}
+  textareaClassName="custom-testimonial-textarea"
+  submitButtonClassName="custom-testimonial-submit"
+  submitButtonStyle={{ backgroundColor: '#2563eb', color: '#fff' }}
+  errorClassName="custom-testimonial-error"
+  successClassName="custom-testimonial-success"
 />
 ```
 
